@@ -21,12 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Hubs\" />
     <Folder Include="Assets\" />
-    <Folder Include="Models\InputModels\" />
-    <Folder Include="Models\OutputModels\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

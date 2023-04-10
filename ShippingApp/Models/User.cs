@@ -2,15 +2,15 @@
 {
     public class User
     {
-        public Guid id { get; set; }
+        public Guid userId { get; set; }
         public string firstName { get; set; } = string.Empty;
         public string lastName { get; set; } = string.Empty;
         public string email { get; set; } = string.Empty;
         public long contactno { get; set; }
         public string address { get; set; } = string.Empty;
         public byte[] passwordHash { get; set; } = new byte[32];
+        public string userRole { get; set; } = string.Empty;
         public string pathToProfilePic { get; set; } = string.Empty;
-        public string role { get; set; } = string.Empty;
         // role can be deliveryBoy , manager, client
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
@@ -21,9 +21,9 @@
         public bool isDeleted { get; set; }
 
         public User() { }
-        public User(Guid id, string firstName, string lastName, string email, long contactno, string address, byte[] passwordHash, string pathToProfilePic, string role, string token)
+        public User(Guid userId, string firstName, string lastName, string email, long contactno, string address, byte[] passwordHash, string pathToProfilePic, string userRole, string token)
         {
-            this.id = id;
+            this.userId = userId;
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
@@ -31,7 +31,7 @@
             this.address = address;
             this.passwordHash = passwordHash;
             this.pathToProfilePic = pathToProfilePic;
-            this.role = role;
+            this.userRole = userRole;
             createdAt = DateTime.Now;
             updatedAt = DateTime.Now;
             this.token = token;

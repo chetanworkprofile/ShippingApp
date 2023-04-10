@@ -5,7 +5,7 @@ namespace ShippingApp.Data
 {
     public class ShippingDbContext : DbContext
     {
-        public ShippingDbContext()
+        public ShippingDbContext(DbContextOptions options) : base(options)
         {
 
         }

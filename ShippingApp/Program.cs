@@ -4,6 +4,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ShippingApp.Data;
+using ShippingApp.Services;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
@@ -81,7 +82,7 @@ builder.Services.AddCors(options => options.AddPolicy(name: "CorsPolicy",
     ));
 
 // service dependencies to be resolved here for dependency injection
-//builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 //builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.AddScoped<IUploadPicService, UploadPicService>();
 
