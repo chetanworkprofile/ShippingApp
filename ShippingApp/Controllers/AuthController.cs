@@ -122,7 +122,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpPost, Authorize(Roles = "client, deliveryBoy, manager")]
+        [HttpPost, Authorize(Roles = "client, deliveryBoy, manager, admin")]
         [Route("/api/v1/changePassword")]
         public ActionResult<User> ChangePassword(ChangePasswordModel r)
         {
@@ -145,7 +145,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpPost, Authorize(Roles = "client, deliveryBoy, manager")]
+        [HttpPost, Authorize(Roles = "client, deliveryBoy, manager, admin")]
         [Route("/api/v1/logout")]
         public ActionResult<User> Logout()
         {

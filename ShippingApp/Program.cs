@@ -87,6 +87,7 @@ builder.Services.AddCors(options => options.AddPolicy(name: "CorsPolicy",
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUploadPicService, UploadPicService>();
 builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IAPIGatewayService, APIGatewayService>();
 
 //rabbitmq
 builder.Services.AddScoped<IMessageProducer, MQProducer>();

@@ -46,19 +46,15 @@ namespace ShippingApp.Services
 
                 // send the email
                 client.Send(message);
-                response2.statusCode = 200;
-                response2.message = "Verification Email Sent successfully";
-                //response.Data = string.Empty;
-                response2.success = true;
+                response2 = new ResponseWithoutData(200, "Verification Email Sent successfully",true);
+                
                 return response2;
             }
             catch (Exception ex)
             {
-                response2.statusCode = 500;
-                response2.message = ex.Message;
-                //response.Data = ex.Data;
+                response2 = new ResponseWithoutData(500, ex.Message, false);
+                
                 Console.WriteLine(ex);
-                response2.success = false;
                 return response2;
             }
         }

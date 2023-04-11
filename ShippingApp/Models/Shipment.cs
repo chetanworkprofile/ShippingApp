@@ -12,7 +12,7 @@ namespace ShippingApp.Models
         public string destination { get; set; } = string.Empty;
         public string notes { get; set; } = string.Empty;
 
-        public Shipment(){}
+        public Shipment(){} 
 
         public Shipment(Guid id,AddShipment a)
         {
