@@ -1,7 +1,10 @@
-﻿namespace ShippingApp.RabbitMQ
+﻿using ShippingApp.Models.OutputModels;
+
+namespace ShippingApp.RabbitMQ
 {
     public interface IMessageProducer
     {
-        public void SendMessage<T>(T message);
+        public void SendShipment<T>(T message);
+        public ResponseWithoutData SendEmail<T>(T message);
     }
 }

@@ -4,27 +4,29 @@ using ShippingApp.Models.OutputModels;
 using ShippingApp.Models;
 using System.Text.RegularExpressions;
 using ShippingApp.Data;
+using ShippingApp.RabbitMQ;
 
 namespace ShippingApp.Services
 {
     public class AuthService : IAuthService
     {
         Response response = new Response();                             //response models/objects
-        ResponseWithoutData response2 = new ResponseWithoutData();
+        ResponseWithoutData response2 = new ResponseWithoutData();      // response model without data field
         CreateToken tokenUser = new CreateToken();              // model to create token
         object result = new object();
-        private readonly ShippingDbContext DbContext;
-        private readonly IConfiguration _configuration;
-
+        private readonly ShippingDbContext DbContext;           // entity framework dbcontext
+        private readonly ILogger<AuthController> _logger;       // for logging
         // secondary service file to make code clean
         SecondaryAuthService _secondaryAuthService;
+        private readonly IMessageProducer _messagePublisher;
 
         //constructor
-        public AuthService(IConfiguration configuration, ShippingDbContext dbContext, ILogger<AuthController> logger)
+        public AuthService(IConfiguration configuration, ShippingDbContext dbContext, ILogger<AuthController> logger, IMessageProducer messagePublisher)
         {
-            this._configuration = configuration;
             DbContext = dbContext;
+            _logger = logger;
             _secondaryAuthService = new SecondaryAuthService(configuration);
+            _messagePublisher = messagePublisher;
         }
 
         public Object CreateUser(RegisterUser inpUser, out int code)
@@ -80,6 +82,7 @@ namespace ShippingApp.Services
                 //response object
                 RegistrationLoginResponse data = new RegistrationLoginResponse(user.userId, user.email, user.firstName, user.lastName, user.userRole, token);
                 response = new Response(200, "User added Successfully", data, true);
+                _logger.LogInformation("User added successfully", data);
                 code = 200;
                 return response;
             }
@@ -109,14 +112,8 @@ namespace ShippingApp.Services
                 code = 400;
                 return response2;
             }
-            //int index = details.Teacher.FindIndex(t => t.Username == request.Username);
             var user = DbContext.Users.Where(u => u.email == request.email).FirstOrDefault();
-            /*if(user.isBlocked)
-            {
-                response2 = new ResponseWithoutData(401, "You are blocked. Please contact administrator", false);
-                code = 401;
-                return response2;
-            }*/
+            
             if (user == null)
             {
                 response2 = new ResponseWithoutData(404, "User not found", false);
@@ -188,7 +185,8 @@ namespace ShippingApp.Services
                 user.token = string.Empty;                                  //clear token from database
 
                 //send mail function used to send mail 
-                response2 = _secondaryAuthService.SendEmail(email, otp);
+                //response2 = _secondaryAuthService.SendEmail(email, otp);
+                response2 = _messagePublisher.SendEmail(new SendEmailModel(email,otp));
                 DbContext.SaveChanges();
 
                 // generate token used for reseting password can't user this token to login
@@ -216,12 +214,10 @@ namespace ShippingApp.Services
 
         public Object Verify(ResetPasswordModel r, string userId, out int code)
         {
-            //this api function is used after forget password to verify user and help user reset his/her password
-            //var user = await DbContext.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
-            //var user = await DbContext.Users.FirstOrDefaultAsync(u => u.email == email);
+
             Guid id = new Guid(userId);
             var user = DbContext.Users.Find(id);
-            //Console.WriteLine(user);
+
             if (user == null)               //check if email exists in database
             {
                 response2 = new ResponseWithoutData(404, "User not found", false);
@@ -249,7 +245,6 @@ namespace ShippingApp.Services
 
         internal Object ResetPassword(string password, Guid id, out int code)
         {
-            //var user = await DbContext.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
             var user = DbContext.Users.Find(id);
 
             //password validation

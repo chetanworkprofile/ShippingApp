@@ -8,6 +8,7 @@ using System.Data;
 using System.Security.Claims;
 using ShippingApp.Data;
 using ShippingApp.Services;
+using ShippingApp.RabbitMQ;
 
 namespace ShippingApp.Controllers
 {
@@ -24,9 +25,9 @@ namespace ShippingApp.Controllers
 
         //private readonly IValidator<User> _userValidator;
 
-        public AuthController(IConfiguration configuration, ShippingDbContext dbContext, ILogger<AuthController> logger)          //constructor
+        public AuthController(IConfiguration configuration, ShippingDbContext dbContext, ILogger<AuthController> logger, IMessageProducer messagePublisher)          //constructor
         {
-            authService = new AuthService(configuration, dbContext, logger);
+            authService = new AuthService(configuration, dbContext, logger, messagePublisher);
             _logger = logger;
             //_userValidator = validator;
         }
@@ -44,7 +45,8 @@ namespace ShippingApp.Controllers
                 return BadRequest(errors);
             }*/
             if (!ModelState.IsValid)
-            {   //checks for validation of model
+            { 
+                //checks for validation of model
                 response2 = new ResponseWithoutData(400, "Invalid Input/One or more fields are invalid", false);
                 return BadRequest(response2);
             }
@@ -128,7 +130,7 @@ namespace ShippingApp.Controllers
             try
             {
                 string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();        //getting token from header
-                var user = HttpContext.User;
+                var User = HttpContext.User;
                 //string email = user.FindFirst(ClaimTypes.Email)?.Value;
                 string? userId = User.FindFirstValue(ClaimTypes.Sid);
                 int statusCode = 0;

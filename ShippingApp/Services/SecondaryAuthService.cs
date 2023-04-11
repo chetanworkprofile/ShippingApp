@@ -14,9 +14,6 @@ namespace ShippingApp.Services
     {
         //Response response = new Response();
         ResponseWithoutData response2 = new ResponseWithoutData();
-        //CreateToken tokenUser = new CreateToken();
-        //object result = new object();
-        //private readonly ShippingDbContext DbContext;
         private readonly IConfiguration _configuration;
 
         public SecondaryAuthService(IConfiguration configuration)
