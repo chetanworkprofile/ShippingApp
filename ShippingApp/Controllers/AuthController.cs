@@ -128,8 +128,8 @@ namespace ShippingApp.Controllers
             try
             {
                 string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();        //getting token from header
-                /*var user = HttpContext.User;
-                string email = user.FindFirst(ClaimTypes.Email)?.Value;*/
+                var user = HttpContext.User;
+                //string email = user.FindFirst(ClaimTypes.Email)?.Value;
                 string? userId = User.FindFirstValue(ClaimTypes.Sid);
                 int statusCode = 0;
                 result = authService.ChangePassword(r, userId, token, out statusCode);

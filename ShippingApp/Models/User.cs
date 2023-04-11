@@ -6,7 +6,7 @@
         public string firstName { get; set; } = string.Empty;
         public string lastName { get; set; } = string.Empty;
         public string email { get; set; } = string.Empty;
-        public long contactno { get; set; }
+        public long contactNo { get; set; }
         public string address { get; set; } = string.Empty;
         public byte[] passwordHash { get; set; } = new byte[32];
         public string userRole { get; set; } = string.Empty;
@@ -21,13 +21,13 @@
         public bool isDeleted { get; set; }
 
         public User() { }
-        public User(Guid userId, string firstName, string lastName, string email, long contactno, string address, byte[] passwordHash, string pathToProfilePic, string userRole, string token)
+        public User(Guid userId, string firstName, string lastName, string email, long contactNo, string address, byte[] passwordHash, string pathToProfilePic, string userRole, string token)
         {
             this.userId = userId;
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
-            this.contactno = contactno;
+            this.contactNo = contactNo;
             this.address = address;
             this.passwordHash = passwordHash;
             this.pathToProfilePic = pathToProfilePic;

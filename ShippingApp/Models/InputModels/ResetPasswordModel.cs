@@ -2,8 +2,8 @@
 {
     public class ResetPasswordModel
     {
-        public int OTP { get; set; } = 0;
-        public string Password { get; set; } = string.Empty;
+        public int otp { get; set; } = 0;
+        public string password { get; set; } = string.Empty;
     }
 }
 

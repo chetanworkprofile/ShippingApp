@@ -228,7 +228,7 @@ namespace ShippingApp.Services
                 code = 404;
                 return response2;
             }
-            if (r.OTP != user.verificationOTP)//(user == null)
+            if (r.otp != user.verificationOTP)//(user == null)
             {
                 response2 = new ResponseWithoutData(400, "Invalid verification Value/Otp", false);
                 code = 400;
@@ -241,7 +241,7 @@ namespace ShippingApp.Services
                 return response2;
             }
             user.verifiedAt = DateTime.UtcNow;
-            result = ResetPassword(r.Password, id, out code);
+            result = ResetPassword(r.password, id, out code);
             user.otpUsableTill = DateTime.Now;
             DbContext.SaveChanges();
             return result;
@@ -305,7 +305,7 @@ namespace ShippingApp.Services
                 return response2;
             }
             string regexPatternPassword = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
-            if (!Regex.IsMatch(r.Password, regexPatternPassword))
+            if (!Regex.IsMatch(r.newPassword, regexPatternPassword))
             {
                 response2 = new ResponseWithoutData(400, "Enter Valid Password. Must contain atleast one uppercase letter, one lowercase letter, one number and one special chararcter and must be atleast 8 characters long", false);
                 code = 400;
@@ -320,7 +320,7 @@ namespace ShippingApp.Services
 
             try
             {
-                byte[] pass = _secondaryAuthService.CreatePasswordHash(r.Password);
+                byte[] pass = _secondaryAuthService.CreatePasswordHash(r.newPassword);
                 user.passwordHash = pass;
 
                 tokenUser = new CreateToken(user.userId, user.firstName, user.email, user.userRole);
