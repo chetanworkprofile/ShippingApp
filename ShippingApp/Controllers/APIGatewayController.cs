@@ -10,6 +10,8 @@ using ShippingApp.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
 using ShippingApp.RabbitMQ;
+using ShippingApp.Models.InputModels;
+using ShippingApp.Models;
 
 namespace ShippingApp.Controllers
 {
@@ -23,18 +25,20 @@ namespace ShippingApp.Controllers
         private readonly ILogger<APIGatewayController> _logger;
         public APIGatewayController(IConfiguration configuration, ShippingDbContext dbContext, ILogger<APIGatewayController> logger, IMessageProducer messagePublisher)
         {
-            _apiGatewayService = new APIGatewayService(dbContext,logger,messagePublisher);
+            _apiGatewayService = new APIGatewayService(configuration, dbContext,logger,messagePublisher);
             _logger = logger;
         }
 
         [HttpGet]
-        [Route("/api/v1/getShipments")]
+        [Route("/api/v1/get/shipments")]
         public ActionResult GetShipments(Guid? shipmentId=null,Guid? customerId = null,Guid? productTypeId = null,Guid? containerTypeId = null)
         {
             _logger.LogInformation("Getting list of shipments");
             try
             {
-                return Ok(_apiGatewayService.GetShipments(shipmentId, customerId, productTypeId, containerTypeId));
+                int statusCode = 0;
+                var res = _apiGatewayService.GetShipments(shipmentId, customerId, productTypeId, containerTypeId,out statusCode);
+                return StatusCode(statusCode, res);
             }
             catch (Exception ex)
             {
@@ -45,13 +49,15 @@ namespace ShippingApp.Controllers
         }
 
         [HttpGet]
-        [Route("/api/v1/getProductTypes")]
+        [Route("/api/v1/get/productTypes")]
         public ActionResult GetProductTypes(Guid? productTypeId = null, string? searchString = null)
         {
             _logger.LogInformation("Getting list of productTypes");
             try
             {
-                return Ok(_apiGatewayService.GetProductTypes(productTypeId, searchString));
+                int statusCode = 0;
+                var res = _apiGatewayService.GetProductTypes(productTypeId, searchString, out statusCode);
+                return StatusCode(statusCode, res);
             }
             catch (Exception ex)
             {
@@ -60,6 +66,76 @@ namespace ShippingApp.Controllers
                 return StatusCode(500, response2);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v1/get/containerTypes")]
+        public ActionResult GetContainerTypes(Guid? containerTypeId = null, string? searchString = null)
+        {
+            _logger.LogInformation("Getting list of productTypes");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetContainerTypes(containerTypeId, searchString, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
+        [HttpGet]
+        [Route("/api/v1/get/drivers")]
+        public ActionResult GetDrivers(Guid? driverId = null, string? searchString = null, string? location = null)
+        {
+            _logger.LogInformation("Getting list of drivers");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetDrivers(driverId, searchString, location, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
+        [HttpPost]
+        [Route("/api/v1/add/productType")]
+        public ActionResult AddProductType(AddProductType inpPtype)
+        {
+            int statusCode = 0;
+            var res = _apiGatewayService.AddProductType(inpPtype, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
+        [HttpPost]
+        [Route("/api/v1/add/containerType")]
+        public ActionResult AddContainerType(AddContainerType inpCtype)
+        {
+            int statusCode = 0;
+            var res = _apiGatewayService.AddContainerType(inpCtype, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
+        [HttpPost]
+        [Route("/api/v1/add/driver")]
+        public ActionResult AddDeliveryPerson(RegisterDriver inpUser)
+        {
+            int statusCode = 0;
+            var res = _apiGatewayService.AddDriver(inpUser, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
+        //public ActionResult GetCheckpoints(Guid? containerTypeId = null, string? searchString = null)
+        //post containertype
+        //post producttype
+        //post checkpoint
 
         /*[HttpPost]
         public Author Test2(Author value)

@@ -28,7 +28,7 @@ namespace ShippingApp.RabbitMQ
             var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
             channel.QueueDeclare("createShipment", 
-                     durable: false,
+                     durable: true,
                      exclusive: false,
                      autoDelete: false,
                      arguments: null);
@@ -43,7 +43,7 @@ namespace ShippingApp.RabbitMQ
             var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
             channel.QueueDeclare("sendEmail",
-                     durable: false,
+                     durable: true,
                      exclusive: false,
                      autoDelete: false,
                      arguments: null);

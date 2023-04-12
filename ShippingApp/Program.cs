@@ -4,6 +4,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ShippingApp.Data;
+using ShippingApp.Hubs;
 using ShippingApp.RabbitMQ;
 using ShippingApp.Services;
 using Swashbuckle.AspNetCore.Filters;
@@ -128,6 +129,9 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+//socket hub mapping 
+app.MapHub<ShippingHub>("/shippingHub");
 
 app.MapControllers();
 
