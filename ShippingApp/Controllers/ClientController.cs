@@ -32,7 +32,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpPost, Authorize(Roles = "client")]
+        [HttpPost, Authorize(Roles = "client, manager")]
         [Route("/api/v1/createShipment")]
         public IActionResult CreateNewShipment(AddShipment inpShipment)
         {
@@ -54,5 +54,7 @@ namespace ShippingApp.Controllers
                 return StatusCode(500, response2);
             }
         }
+
+        // getshipmenthistory api
     }
 }

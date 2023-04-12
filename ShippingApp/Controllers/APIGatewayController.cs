@@ -12,6 +12,8 @@ using System.Security.Claims;
 using ShippingApp.RabbitMQ;
 using ShippingApp.Models.InputModels;
 using ShippingApp.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace ShippingApp.Controllers
 {
@@ -29,7 +31,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "client, manager, admin")]
         [Route("/api/v1/get/shipments")]
         public ActionResult GetShipments(Guid? shipmentId=null,Guid? customerId = null,Guid? productTypeId = null,Guid? containerTypeId = null)
         {
@@ -48,7 +50,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "client, manager, admin")]
         [Route("/api/v1/get/productTypes")]
         public ActionResult GetProductTypes(Guid? productTypeId = null, string? searchString = null)
         {
@@ -67,7 +69,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "client, manager, admin")]
         [Route("/api/v1/get/containerTypes")]
         public ActionResult GetContainerTypes(Guid? containerTypeId = null, string? searchString = null)
         {
@@ -86,7 +88,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = " manager, admin")]
         [Route("/api/v1/get/drivers")]
         public ActionResult GetDrivers(Guid? driverId = null, string? searchString = null, string? location = null)
         {
@@ -105,7 +107,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/add/productType")]
         public ActionResult AddProductType(AddProductType inpPtype)
         {
@@ -114,7 +116,7 @@ namespace ShippingApp.Controllers
             return StatusCode(statusCode, res);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/add/containerType")]
         public ActionResult AddContainerType(AddContainerType inpCtype)
         {
@@ -123,7 +125,7 @@ namespace ShippingApp.Controllers
             return StatusCode(statusCode, res);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "manager, admin")]
         [Route("/api/v1/add/driver")]
         public ActionResult AddDeliveryPerson(RegisterDriver inpUser)
         {
@@ -137,25 +139,5 @@ namespace ShippingApp.Controllers
         //post producttype
         //post checkpoint
 
-        /*[HttpPost]
-        public Author Test2(Author value)
-        {
-            string responseString = string.Empty;
-            Author objAuthor = new Author();
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri("http://localhost:65346/");//WebApi 1 project URL
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                StringContent content = new StringContent(JsonConvert.SerializeObject(value), Encoding.UTF8, "application/json");
-                var response = client.PostAsync("api/default/Test2", content).Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    responseString = response.Content.ReadAsStringAsync().Result;
-                    objAuthor = response.Content.ReadAsAsync<Author>().Result;
-                }
-            }
-            return objAuthor;
-        }*/
     }
 }

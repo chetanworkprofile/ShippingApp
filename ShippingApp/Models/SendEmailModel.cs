@@ -2,15 +2,17 @@
 {
     public class SendEmailModel
     {
-        public string Email { get; set; } = string.Empty;
-        public int otp { get; set; } = 0;
+        public string email { get; set; } = string.Empty;
+        public string  subject { get; set; } = string.Empty;
+        public string body { get; set; } = string.Empty;
 
         public SendEmailModel() { }
 
-        public SendEmailModel(string email, int otp)
+        public SendEmailModel(string email, string subject, string body)
         {
-            Email = email;
-            this.otp = otp;
+            this.email = email;
+            this.subject = subject;
+            this.body = body;
         }
     }
 }

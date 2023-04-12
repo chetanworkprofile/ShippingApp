@@ -5,6 +5,8 @@ using ShippingApp.Models;
 using System.Text.RegularExpressions;
 using ShippingApp.Data;
 using ShippingApp.RabbitMQ;
+using System.Numerics;
+using System.Security.Policy;
 
 namespace ShippingApp.Services
 {
@@ -184,9 +186,11 @@ namespace ShippingApp.Services
                 user.otpUsableTill = DateTime.Now.AddHours(1);               // otp check valid for 1 hour only
                 user.token = string.Empty;                                  //clear token from database
 
+                string subject = "Mail Verification by Shipping Logistics Management System.Please Verify your account";
+                string body = "Please verify your email.This is system generated email, please do not reply back.Your One Time Password for verification is " + otp;
                 //send mail function used to send mail 
                 //response2 = _secondaryAuthService.SendEmail(email, otp);
-                response2 = _messagePublisher.SendEmail(new SendEmailModel(email,otp));
+                response2 = _messagePublisher.SendEmail(new SendEmailModel(email,subject,body));
                 DbContext.SaveChanges();
 
                 // generate token used for reseting password can't user this token to login

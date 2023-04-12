@@ -86,12 +86,17 @@ builder.Services.AddCors(options => options.AddPolicy(name: "CorsPolicy",
 
 // service dependencies to be resolved here for dependency injection
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUploadPicService, UploadPicService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IAPIGatewayService, APIGatewayService>();
 
 //rabbitmq
 builder.Services.AddScoped<IMessageProducer, MQProducer>();
+builder.Services.AddScoped<IMQConsumer, MQConsumer>();
+
+//add background hosted service
+builder.Services.AddHostedService<BackgroundServiceConsumer>();
 
 var app = builder.Build();
 

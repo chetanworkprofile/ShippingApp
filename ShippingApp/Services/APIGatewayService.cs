@@ -162,12 +162,13 @@ namespace ShippingApp.Services
                 //var data = res.Content.ReadAsStringAsync().Result;
                 //var data = System.Text.Json.JsonSerializer.Deserialize<GetDriversResponse>(res.ToString());
                 var data = JsonConvert.DeserializeObject<GetDriversResponse>(res.Content.ReadAsStringAsync().Result);
-                
+                var list = DbContext.Users.AsQueryable();
+                if (searchString != null) { list = list.Where(s => EF.Functions.Like(s.firstName, "%" + searchString + "%") || EF.Functions.Like(s.lastName, "%" + searchString + "%") || EF.Functions.Like(s.firstName + " " + s.lastName, "%" + searchString + "%")); }
                 List<ListdriversResponseToUser> listOfDrivers = new List<ListdriversResponseToUser>();
 
                 foreach (var driver in data.data)
                 {
-                    User a = DbContext.Users.Find(driver.driverId);
+                    User? a = list.Where(s => s.userId== driver.driverId).FirstOrDefault();
                     if(a == null)
                     {
                         continue;
@@ -176,7 +177,7 @@ namespace ShippingApp.Services
                     listOfDrivers.Add(temp);
                 }
                 _logger.LogInformation("list of drivers" + listOfDrivers);
-                if (searchString != null) { listOfDrivers = listOfDrivers.Where(s => EF.Functions.Like(s.firstName, "%" + searchString + "%") || EF.Functions.Like(s.lastName, "%" + searchString + "%") || EF.Functions.Like(s.firstName + " " + s.lastName, "%" + searchString + "%")).ToList(); }
+                
                 response = new Response(200, "Drivers list fetched", listOfDrivers, true);
                 code = 200;
                 return response;
