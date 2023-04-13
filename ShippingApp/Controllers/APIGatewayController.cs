@@ -50,7 +50,8 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin")]
+        //[HttpGet, Authorize(Roles = "client, manager, admin")]
+        [HttpGet]
         [Route("/api/v1/get/productTypes")]
         public ActionResult GetProductTypes(Guid? productTypeId = null, string? searchString = null)
         {

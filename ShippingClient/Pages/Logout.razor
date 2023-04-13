@@ -1,0 +1,12 @@
+﻿@page "/logout"
+@using ShippingClient.Services.Contracts;
+@inject NavigationManager _navMgr;
+@inject IAuthenticationService _authService;
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await _authService.Logout();
+        _navMgr.NavigateTo("/login");
+    }
+}

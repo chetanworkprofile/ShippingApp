@@ -1,0 +1,78 @@
+﻿@page "/register"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAuthenticationService _authService;
+@inject NavigationManager _navMgr;
+<h3>Login</h3>
+
+<div class="row my-2">
+    <div class="col-md-6">
+        <EditForm Model="@registerModel" OnValidSubmit="DoRegister">
+            <DataAnnotationsValidator />
+             <div class="form-group">
+               <label for="firstName">First Name</label>
+                <InputText id="firstName" class="form-control" @bind-Value="registerModel.firstName" />
+                <ValidationMessage For="@(()=>registerModel.firstName)" />
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <InputText id="lastName" class="form-control" placeholder="first name" @bind-Value="registerModel.lastName" />
+                <ValidationMessage For="@(()=>registerModel.lastName)" />
+            </div>
+             <div class="form-group">
+               <label for="email">Email</label>
+                <InputText id="email" class="form-control" placeholder="last name" @bind-Value="registerModel.email" />
+                <ValidationMessage For="@(()=>registerModel.email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="registerModel.password" />
+                <ValidationMessage For="@(()=>registerModel.password)" />
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
+                <ValidationMessage For="@(()=>registerModel.password)" />
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact No.</label>
+                <InputNumber  id="contact" class="form-control" @bind-Value="registerModel.contactno" />
+                <ValidationMessage For="@(()=>registerModel.contactno)" />
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address</label>
+                <InputText type="address" class="form-control" @bind-Value="registerModel.address" />
+                <ValidationMessage For="@(()=>registerModel.address)" />
+            </div>
+
+            <div class="my-2">
+                @registerResponse.message
+            </div>
+
+            <div class="my-2">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    RegisterUser registerModel = new();
+    LoginResponse registerResponse = new();
+    string confirmPassword = string.Empty;
+    async Task DoRegister()
+    {
+        if (confirmPassword != registerModel.password)
+        {
+            registerResponse.message = "Password and Confirm Password does not match...";
+        }
+        registerResponse.message = "Wait....";
+        registerResponse = await _authService.Register(registerModel);
+        if (registerResponse.statusCode == 1)
+            _navMgr.NavigateTo("/dashboard");
+    }
+}

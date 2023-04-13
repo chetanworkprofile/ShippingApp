@@ -1,0 +1,46 @@
+﻿@page "/login"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAuthenticationService _authService;
+@inject NavigationManager _navMgr;
+<h3>Login</h3>
+
+<div class="row my-2">
+    <div class="col-md-6">
+        <EditForm Model="@loginModel" OnValidSubmit="DoLogin">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label for="email">Email</label>
+               <InputText class="form-control" @bind-Value="loginModel.email"/>
+               <ValidationMessage For="@(()=>loginModel.email)"/>
+            </div>
+
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <InputText type="password" class="form-control" @bind-Value="loginModel.password" />
+                <ValidationMessage For="@(()=>loginModel.password)" />
+            </div>
+
+            <div class="my-2">
+                @loginResponse.message
+            </div>
+
+            <div class="my-2">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    LoginDTO loginModel = new();
+    LoginResponse loginResponse = new();
+    async Task DoLogin()
+    {
+        loginResponse.message = "Wait....";
+        loginResponse = await _authService.Login(loginModel);
+        if (loginResponse.statusCode == 1)
+            _navMgr.NavigateTo("/dashboard");
+    }
+}
