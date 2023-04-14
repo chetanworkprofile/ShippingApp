@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/productTypes"
 @using Microsoft.AspNetCore.Authorization;
 
 @inherits ProductTypesBase
@@ -8,6 +8,8 @@
 @*@code {
 
 }*@
+<AuthorizeView>
+<Authorized>
 @if(productTypes == null){
     <h3> Loading Product Types ...</h3>
 }
@@ -39,3 +41,8 @@ else{
         }
     }
 }
+</Authorized>
+            <NotAuthorized>
+                You are not authorized
+            </NotAuthorized>
+</AuthorizeView>

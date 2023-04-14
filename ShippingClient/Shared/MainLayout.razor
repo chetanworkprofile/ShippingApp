@@ -1,17 +1,33 @@
-﻿@inherits LayoutComponentBase
-
+﻿@using ShippingClient.Services.Contracts;
+@inherits LayoutComponentBase
+@inject NavigationManager _navMgr;
+@inject IAuthenticationService _authService;
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <AuthorizeView>
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    </AuthorizeView>
 
     <main>
-        @*<div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>*@
-
+        <AuthorizeView>
+            @*<div class="top-row px-4">
+                <a href=logout>Logout</a>
+            </div>*@
+        </AuthorizeView>
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // redirect to home if already logged in
+        if (_authService.GetToken() != null)
+        {
+            _navMgr.NavigateTo("/login",true);
+        }
+    }
+}

@@ -8,18 +8,18 @@
         public string lastName = string.Empty;
         //public string userRole { get; set; } = string.Empty;
         //public string token { get; set; } = string.Empty;
-        public string location { get; set; } = string.Empty;
+        public Guid checkpointLocation { get; set; }
         public bool isAvailable { get; set; } = true;
         public DriverRegistrationResponse() { }
 
-        public DriverRegistrationResponse(Guid userId, string email, string firstName, string lastName, string location,bool isAvailable)
+        public DriverRegistrationResponse(Guid userId, string email, string firstName, string lastName, Guid checkpointLocation,bool isAvailable)
         {
             this.userId = userId;
             this.email = email;
             this.firstName = firstName;
             this.lastName = lastName;
             //this.userRole = userRole;
-            this.location = location;
+            this.checkpointLocation = checkpointLocation;
             this.isAvailable = isAvailable;
         }
     }

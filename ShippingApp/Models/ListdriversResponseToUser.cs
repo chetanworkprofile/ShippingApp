@@ -12,14 +12,14 @@
         // role can be deliveryBoy , manager, client
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
-        public string location { get; set; } = string.Empty;
+        public Guid checkpointLocation { get; set; }
         public bool isAvailable { get; set; } = true;
 
         public ListdriversResponseToUser()
         {
 
         }
-        public ListdriversResponseToUser(User user, string location, bool isAvailable)
+        public ListdriversResponseToUser(User user, Guid checkpointLocation, bool isAvailable)
         {
             this.userId = user.userId;
             this.firstName = user.firstName;
@@ -29,7 +29,7 @@
             this.address = user.address;
             this.createdAt = user.createdAt;
             this.updatedAt = user.updatedAt;
-            this.location = location;
+            this.checkpointLocation = checkpointLocation;
             this.isAvailable = isAvailable;
         }
     }

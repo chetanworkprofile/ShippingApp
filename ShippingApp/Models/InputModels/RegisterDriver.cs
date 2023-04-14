@@ -8,7 +8,7 @@
         public long contactno { get; set; } = 9999999999;
         public string password { get; set; } = "fgh@98gh!#cf$5";
         public string address { get; set; } = string.Empty;
-        public string location { get; set; } = string.Empty;
+        public Guid checkpointLocation { get; set; } 
         public bool isAvailable { get; set; } = true;
 
         //public string pathToProfilePic { get; set; } = string.Empty;

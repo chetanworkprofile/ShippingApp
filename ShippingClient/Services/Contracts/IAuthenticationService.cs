@@ -7,5 +7,8 @@ namespace ShippingClient.Services.Contracts
         Task<LoginResponse> Login(LoginDTO model);
         Task<LoginResponse> Register(RegisterUser model);
         Task Logout();
+        Task<LoginResponse> ForgetPassword(string email);
+        Task<LoginResponse> ResetPassword(ResetPasswordModel model);
+        string GetToken();
     }
 }

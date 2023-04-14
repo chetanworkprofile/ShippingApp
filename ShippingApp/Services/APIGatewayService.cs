@@ -173,7 +173,7 @@ namespace ShippingApp.Services
                     {
                         continue;
                     }
-                    ListdriversResponseToUser temp = new ListdriversResponseToUser(a, driver.location, driver.isAvailable);
+                    ListdriversResponseToUser temp = new ListdriversResponseToUser(a, driver.checkpointLocation, driver.isAvailable);
                     listOfDrivers.Add(temp);
                 }
                 _logger.LogInformation("list of drivers" + listOfDrivers);
@@ -249,7 +249,7 @@ namespace ShippingApp.Services
                 
                 
                 var user = new User(Guid.NewGuid(), inpUser.firstName, inpUser.lastName, inpUser.email, inpUser.contactno, inpUser.address, _secondaryAuthService.CreatePasswordHash(inpUser.password), "pathToPic", "deliveryBoy", "token");
-                SendAddDriver sendToApi = new SendAddDriver(user.userId, inpUser.location, inpUser.isAvailable);
+                SendAddDriver sendToApi = new SendAddDriver(user.userId, inpUser.checkpointLocation, inpUser.isAvailable);
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseUrlS2);
@@ -269,7 +269,7 @@ namespace ShippingApp.Services
                 DbContext.SaveChanges();
                 
                 //response object
-                DriverRegistrationResponse data = new DriverRegistrationResponse(user.userId, user.email, user.firstName, user.lastName, inpUser.location,inpUser.isAvailable);
+                DriverRegistrationResponse data = new DriverRegistrationResponse(user.userId, user.email, user.firstName, user.lastName, inpUser.checkpointLocation,inpUser.isAvailable);
                 response = new Response(200, "Delivery Person added Successfully", data, true);
                 _logger.LogInformation("Delivery Person added successfully", data);
                 code = 200;

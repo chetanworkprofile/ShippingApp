@@ -1,16 +1,31 @@
-﻿@page "/dashboard"
+﻿@page "/"
+@inject NavigationManager _navMgr;
+@inject IAuthenticationService _authService;
 @using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+@using ShippingClient.Services.Contracts;
+
 <h3>Dashboard</h3>
 
 <AuthorizeView>
     <Authorized>
-        @context.User.Identity?.Name
+        <h1>Hello Welcome Back </h1>
+        <h2><b>@context.User.Identity?.Name</b></h2>
     </Authorized>
     <NotAuthorized>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login", true);
+        }
         You are not authorized
     </NotAuthorized>
 </AuthorizeView>
 @code {
-
+    protected override void OnInitialized()
+    {
+        // redirect to home if already logged in
+        if (_authService.GetToken() != null)
+        {
+            _navMgr.NavigateTo("/login", true);
+        }
+    }
 }

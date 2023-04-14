@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShippingApp", "ShippingApp\ShippingApp.csproj", "{16582DA9-BCDC-4F62-8BC7-2989E441A078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShippingClient", "ShippingClient\ShippingClient.csproj", "{F75EC7B4-71BE-4153-8A02-E0BCAEAB9BD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShippingClient", "ShippingClient\ShippingClient.csproj", "{F75EC7B4-71BE-4153-8A02-E0BCAEAB9BD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

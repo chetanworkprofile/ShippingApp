@@ -3,15 +3,15 @@
     public class SendAddDriver
     {
         public Guid driverId { get; set; } = Guid.NewGuid();
-        public string location { get; set; } = string.Empty;
+        public Guid checkpointLocation { get; set; }
         public bool isAvailable { get; set; } = true;
 
         public SendAddDriver() { }
 
-        public SendAddDriver(Guid driverId, string location, bool isAvailable)
+        public SendAddDriver(Guid driverId, Guid checkpointLocation, bool isAvailable)
         {
             this.driverId = driverId;
-            this.location = location;
+            this.checkpointLocation = checkpointLocation;
             this.isAvailable = isAvailable;
         }
     }
