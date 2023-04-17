@@ -73,6 +73,30 @@ namespace ShippingApp.Services
             }
         }
 
+        public string GetCheckpoints(Guid? checkpointId, out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);//WebApi 1 project URL
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                StringBuilder appendUrl = new StringBuilder("api/shipment/getCheckpoint?");
+                if (checkpointId != null)
+                {
+                    appendUrl.Append("&checkpointId=" + checkpointId + "");
+
+                }
+                var res = client.GetAsync(appendUrl.ToString()).Result;
+
+                var data = res.Content.ReadAsStringAsync().Result;
+
+                //response = new Response(200, "Shipments list fetched", data, true);
+                code = (int)res.StatusCode;
+                return data;
+            }
+        }
+
         public string GetProductTypes(Guid? productTypeId, string? searchString, out int code)
         {
             using (var client = new HttpClient())

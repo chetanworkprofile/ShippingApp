@@ -9,6 +9,7 @@ namespace ShippingClient.Services.Contracts
         Task Logout();
         Task<LoginResponse> ForgetPassword(string email);
         Task<LoginResponse> ResetPassword(ResetPasswordModel model);
+        Task<LoginResponse> ChangePassword(ChangePasswordModel model);
         string GetToken();
     }
 }

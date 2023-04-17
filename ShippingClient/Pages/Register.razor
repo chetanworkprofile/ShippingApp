@@ -87,8 +87,8 @@
             }
             registerResponse.message = "Wait....";
             registerResponse = await _authService.Register(registerModel);
-            if (registerResponse.statusCode == 1)
-                _navMgr.NavigateTo("/dashboard");
+            if (registerResponse.statusCode != 0)
+                _navMgr.NavigateTo("/");
         }
         catch (Exception ex)
         {

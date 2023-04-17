@@ -58,10 +58,10 @@
         {
             loginResponse.message = "Wait....";
             loginResponse = await _authService.Login(loginModel);
-            if (loginResponse.statusCode == 1)
+            if (loginResponse.statusCode != 0)
             {
-                AlertService.Success("Login successful", keepAfterRouteChange: true);
-                _navMgr.NavigateTo("/");
+                AlertService.Success("Login successful");
+                _navMgr.NavigateTo("/", true);
             }
         }
         catch(Exception ex)

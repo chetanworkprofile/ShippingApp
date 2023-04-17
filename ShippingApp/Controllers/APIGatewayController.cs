@@ -108,6 +108,25 @@ namespace ShippingApp.Controllers
             }
         }
 
+        [HttpGet, Authorize(Roles = "client, manager, admin")]
+        [Route("/api/v1/get/checkpoints")]
+        public ActionResult GetCheckpoints(Guid? checkpointId = null)
+        {
+            _logger.LogInformation("Getting list of checkpoints");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetCheckpoints(checkpointId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
         [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/add/productType")]
         public ActionResult AddProductType(AddProductType inpPtype)

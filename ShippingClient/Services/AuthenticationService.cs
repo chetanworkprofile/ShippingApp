@@ -8,6 +8,8 @@ using System.Net.Http.Json;
 using auth = ShippingClient.AuthProvider;
 
 using static System.Net.WebRequestMethods;
+using System.Text.Json;
+using System.Text;
 
 namespace ShippingClient.Services
 {
@@ -108,23 +110,58 @@ namespace ShippingClient.Services
 
         public async Task<LoginResponse> ResetPassword(ResetPasswordModel model)
         {
+            string savedToken = await _localStorage.GetItemAsync<string>("resetToken");
 
-            var resetResult = await _httpClient.PostAsJsonAsync($"{baseUrl}api/v1/resetPassword", model);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/resetPassword");
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var resetResult = await _httpClient.SendAsync(requestMessage);
+
+            Console.WriteLine("res" + resetResult);
             if (!resetResult.IsSuccessStatusCode)
             {
                 var errorResetResponseContent = await resetResult.Content.ReadFromJsonAsync<ErrorLoginResponse>();
                 return new LoginResponse { statusCode = 0, message = errorResetResponseContent.message };
             }
-            var forgetResponseContent = await resetResult.Content.ReadFromJsonAsync<LoginResponse>();
-            if (forgetResponseContent != null)
+            var resetResponseContent = await resetResult.Content.ReadFromJsonAsync<LoginResponse>();
+            if (resetResponseContent != null)
             {
                 await _localStorage.RemoveItemAsync("resetToken");
-                await _localStorage.SetItemAsync("accessToken", forgetResponseContent.data.token);
-                token = forgetResponseContent.data.token;
-                ((auth.AuthProvider)_authStateProvider).NotifyUserAuthentication(forgetResponseContent.data.token);
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", forgetResponseContent.data.token);
+                await _localStorage.SetItemAsync("accessToken", resetResponseContent.data.token);
+                token = resetResponseContent.data.token;
+                ((auth.AuthProvider)_authStateProvider).NotifyUserAuthentication(resetResponseContent.data.token);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resetResponseContent.data.token);
             }
-            return forgetResponseContent;
+            return resetResponseContent;
+
+        }
+
+        public async Task<LoginResponse> ChangePassword(ChangePasswordModel model)
+        {
+            string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/changePassword");
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var changeResult = await _httpClient.SendAsync(requestMessage);
+
+            if (!changeResult.IsSuccessStatusCode)
+            {
+                var errorResetResponseContent = await changeResult.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                return new LoginResponse { statusCode = 0, message = errorResetResponseContent.message };
+            }
+            var resetResponseContent = await changeResult.Content.ReadFromJsonAsync<LoginResponse>();
+            if (resetResponseContent != null)
+            {
+                await _localStorage.RemoveItemAsync("accessToken");
+                await _localStorage.SetItemAsync("accessToken", resetResponseContent.data.token);
+                token = resetResponseContent.data.token;
+                ((auth.AuthProvider)_authStateProvider).NotifyUserAuthentication(resetResponseContent.data.token);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resetResponseContent.data.token);
+            }
+            return resetResponseContent;
 
         }
 

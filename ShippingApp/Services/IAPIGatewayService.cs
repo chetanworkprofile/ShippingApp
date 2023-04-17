@@ -13,5 +13,6 @@ namespace ShippingApp.Services
         public string AddContainerType(AddContainerType inp, out int code);
         public object AddDriver(RegisterDriver inpUser, out int code);
         public Response GetDrivers(Guid? driverId, string? searchString, string? location, out int code);
+        public string GetCheckpoints(Guid? checkpointId, out int code);
     }
 }
