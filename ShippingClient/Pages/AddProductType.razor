@@ -1,0 +1,100 @@
+﻿@page "/addProductType"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "admin")]
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+            <h4 class="card-header">Add New Product Type</h4>
+            <div class="card-body">
+                <EditForm Model="productTypeModel" OnSubmit="DoAddProductType">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label for="type">Type (name)</label>
+                        <InputText name="type" class="form-control" @bind-Value="productTypeModel.type" />
+                        <ValidationMessage For="@(()=>productTypeModel.type)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price (per kg)</label>
+                        <InputNumber id="price" class="form-control" @bind-Value="productTypeModel.price" />
+                        <ValidationMessage For="@(()=>productTypeModel.price)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="isFragile">Is it Fragile?</label>
+                        <input type="radio" checked="@(isFragileCheck == true)"
+                               name="isFragile" @onchange="@(() => isFragileCheck = true)" />
+                        <label>Yes</label>
+
+                        <input type="radio" checked="@(isFragileCheck == false)"
+                               name="isFragile" @onchange="@(() => isFragileCheck = false)" />
+                        <label>No</label>
+                    </div>
+                    
+
+                    <div class="my-2">
+                        @addProductTypeResponse.message
+                    </div>
+
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
+                            }
+                            Add
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    Models.AddProductType productTypeModel = new();
+    AddProductTypeResponse addProductTypeResponse = new();
+    private bool loading;
+    private bool isFragileCheck = true;
+    //protected override async void OnInitialized()
+    //{
+    //    StateHasChanged();
+    //}
+    async Task DoAddProductType()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+        productTypeModel.isFragile = isFragileCheck;
+        try
+        {
+            addProductTypeResponse.message = "Wait....";
+            addProductTypeResponse = await _apiService.AddProductType(productTypeModel);
+            if (addProductTypeResponse.statusCode != 0)
+            {
+                AlertService.Success("Product Type Added successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

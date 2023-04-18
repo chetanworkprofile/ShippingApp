@@ -3,7 +3,7 @@
     public class AddProductType
     {
         public string type { get; set; } = string.Empty;
-        public decimal price { get; set; } = decimal.MinValue;
+        public float price { get; set; } = 0;
         public bool isFragile { get; set; } = true;
     }
 }

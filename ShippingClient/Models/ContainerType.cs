@@ -4,6 +4,6 @@
     {
         public Guid containerTypeId { get; set; }
         public string containerName { get; set; } = string.Empty;
-        public decimal price { get; set; } = decimal.MinValue;
+        public float price { get; set; } = 0;
     }
 }

@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @using ShippingClient.Services.Contracts;
 
+
 <h3>Dashboard</h3>
 
 <AuthorizeView>
@@ -12,11 +13,11 @@
         <h2><b>@context.User.Identity?.Name</b></h2>
     </Authorized>
     <NotAuthorized>
+        <p>You are not authorized</p>
         @if (true)
         {
-            _navMgr.NavigateTo("/login", true);
+            _navMgr.NavigateTo("/login");
         }
-        You are not authorized
     </NotAuthorized>
 </AuthorizeView>
 @code {

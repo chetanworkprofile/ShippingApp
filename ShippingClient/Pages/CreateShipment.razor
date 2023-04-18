@@ -5,111 +5,140 @@
 @inject IAPIService _apiService;
 @inject NavigationManager _navMgr;
 @inject IAlertService AlertService
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "admin,client,manager")]
 
-<div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
-    <h4 class="card-header">Create Shipment</h4>
-    <div class="card-body">
-        if(productTypeList == null || containerTypeList == null){
-            <p><em>Loading...</em></p>
-        }
-        else{
-        <EditForm OnSubmit="DoCreateShipment">
-            <DataAnnotationsValidator />
-            <div class="row">
-                <div class="col-md-4">
-                    <label for="ProductType" class="control-label">Product Type</label>
-                </div>
-                <div class="col-md-4">
-                    <label for="ContainerType" class="control-label">Container Type</label>
-                </div>
-            </div>
-            <div class="row" style="padding-top:10px">
-                <div class="col-md-4">
-                    <select class="form-control" onchange="@ProductTypeClicked">
-                        <option value="">-- Select ProductType --</option>
-                        @foreach (var product in productTypeList)
-                        {
-                            <option value="@product.productTypeId">@product.type</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <select class="form-control" onchange="@ContainerTypeClicked">
-                        <option value="">-- Select ContainerType --</option>
-                        @if (containerTypeList != null)
-                        {
-                            @foreach (var container in containerTypeList)
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+            <h4 class="card-header">Create Shipment</h4>
+            <div class="card-body">
+                @if(productTypeList == null || containerTypeList == null){
+                    <p><em>Loading...</em></p>
+                }
+                else{
+                    <EditForm Model="shipmentModel" OnSubmit="DoCreateShipment">
+                    <DataAnnotationsValidator />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="ProductType" class="control-label">Product Type</label>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-md">
+                            <select class="form-control" onchange="@ProductTypeClicked">
+                                <option value="">-- Select ProductType --</option>
+                                @foreach (var product in productTypeList)
+                                {
+                                    <option value="@product.productTypeId">@product.type</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="ContainerType" class="control-label">Container Type</label>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-md">
+                            <select class="form-control" onchange="@ContainerTypeClicked">
+                                <option value="">-- Select ContainerType --</option>
+                                @if (containerTypeList != null)
+                                {
+                                    @foreach (var container in containerTypeList)
+                                    {
+                                        <option value="@container.containerTypeId">@container.containerName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    @*//----------------------------------------------------------------//*@
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="origin" class="control-label">Origin</label>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-md">
+                            <select class="form-control" onchange="@OriginClicked">
+                                <option value="">-- Select Origin --</option>
+                                @foreach (var origin in checkpointsList)
+                                {
+                                    if (origin.checkpointId == destination)
+                                    {
+                                        continue;
+                                    }
+                                    <option value="@origin.checkpointId">@origin.checkpointName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                        <div class="row">
+                        <div class="col-md-4">
+                            <label for="destination" class="control-label">Destination</label>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-md">
+                            <select class="form-control" onchange="@DestinationClicked">
+                                <option value="">-- Select Destination --</option>
+                                    @foreach (var dest in checkpointsList)
+                                    {
+                                        if(dest.checkpointId == origin)
+                                        {
+                                            continue;
+                                        }
+                                        <option value="@dest.checkpointId">@dest.checkpointName</option>
+                                    }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Weight</label>
+                        <InputNumber id="contact" class="form-control" @bind-Value="shipmentModel.shipmentWeight" />
+                        <ValidationMessage For="@(()=>shipmentModel.shipmentWeight)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <InputTextArea type="notes" class="form-control" @bind-Value="shipmentModel.notes" />
+                        <ValidationMessage For="@(()=>shipmentModel.notes)" />
+                    </div>
+
+                    <div class="my-2">
+                        @createShipmentResponse.message
+                    </div>
+
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
                             {
-                                <option value="@container.containerTypeId">@container.containerName</option>
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
                             }
-                        }
-                    </select>
-                </div>
+                            Create
+                        </button>
+                    </div>
+                </EditForm>
+                }
             </div>
-            @*//----------------------------------------------------------------//*@
-            <div class="row">
-                <div class="col-md-4">
-                    <label for="origin" class="control-label">Origin</label>
-                </div>
-                <div class="col-md-4">
-                    <label for="destination" class="control-label">Destination</label>
-                </div>
-            </div>
-            <div class="row" style="padding-top:10px">
-                <div class="col-md-4">
-                    <select class="form-control" onchange="@OriginClicked">
-                        <option value="">-- Select Origin --</option>
-                        @foreach (var origin in checkpointsList)
-                        {
-                            <option value="@origin.checkpointId">@origin.checkpointName</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <select class="form-control" onchange="@DestinationClicked">
-                        <option value="">-- Select Destination --</option>
-                            @foreach (var dest in checkpointsList)
-                            {
-                                <option value="@dest.checkpointId">@dest.checkpointName</option>
-                            }
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="contact">Weight</label>
-                <InputNumber id="contact" class="form-control" @bind-Value="this.weight" />
-                <ValidationMessage For="@(()=>this.weight)" />
-            </div>
-
-            <div class="form-group">
-                <label for="address">Address</label>
-                <InputText type="address" class="form-control" @bind-Value="this.notes" />
-                <ValidationMessage For="@(()=>this.notes)" />
-            </div>
-
-            <div class="my-2">
-                @createShipmentResponse.message
-            </div>
-
-            <div class="my-2">
-                <button disabled="@loading" type="submit" class="btn btn-primary">
-                    @if (loading)
-                    {
-                        <span class="spinner-border spinner-border-sm mr-1"></span>
-                        Task.Delay(5000);
-                        loading = false;
-                    }
-                    Create
-                </button>
-            </div>
-        </EditForm>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
         }
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 
 @code {
-    CreateShipment shipmentModel = new();
+    Models.CreateShipment shipmentModel = new();
     CreateShipmentResponse createShipmentResponse = new();
     private bool loading;
 
@@ -121,7 +150,7 @@
     Guid origin;
     Guid destination;
     decimal weight;
-    string notes;
+    string notes = string.Empty;
     protected override async void OnInitialized()
     {
         GetProductsResponse productTypes = await _apiService.GetProductTypes();
@@ -130,16 +159,21 @@
         productTypeList = productTypes.data;
         containerTypeList = containerTypes.data;
         checkpointsList = checkpoints.data;
+        StateHasChanged();
     }
     async Task DoCreateShipment()
     {
         // reset alerts on submit
         AlertService.Clear();
         loading = true;
+        shipmentModel.origin = origin;
+        shipmentModel.destination = destination;
+        shipmentModel.productTypeId = productTypeId;
+        shipmentModel.containerTypeId = containerTypeId;
         try
         {
             createShipmentResponse.message = "Wait....";
-            createShipmentResponse = await (shipmentModel);
+            createShipmentResponse = await _apiService.CreateShipment(shipmentModel);
             if (createShipmentResponse.statusCode != 0)
             {
                 AlertService.Success("Shipment Queued successfully", keepAfterRouteChange: true);
@@ -155,20 +189,27 @@
     }
     void OriginClicked(ChangeEventArgs originEvent)
     {
-        Checkpoints temp = checkpointsList.Where(s => s.checkpointId == new Guid(originEvent.Value.ToString())).FirstOrDefault();
-        checkpointsList.Remove(temp)
-        = new Guid(productTypeEvent.Value.ToString());
+        //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(originEvent.Value!.ToString()!)).FirstOrDefault();
+        //checkpointsList.Remove(temp);
+        origin = new Guid(originEvent.Value!.ToString()!);
+        this.StateHasChanged();
+    }
+    void DestinationClicked(ChangeEventArgs destEvent)
+    {
+        //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(destEvent.Value!.ToString()!)).FirstOrDefault();
+        //checkpointsList.Remove(temp);
+        destination = new Guid(destEvent.Value!.ToString()!);
         this.StateHasChanged();
     }
     void ProductTypeClicked(ChangeEventArgs productTypeEvent)
     {
-        productTypeList.Clear();
+        //productTypeList.Clear();
         productTypeId = new Guid(productTypeEvent.Value.ToString());
         this.StateHasChanged();
     }
     void ContainerTypeClicked(ChangeEventArgs containerTypeEvent)
     {
-        containerTypeList.Clear();
+        //containerTypeList.Clear();
         containerTypeId = new Guid(containerTypeEvent.Value.ToString());
         this.StateHasChanged();
     }

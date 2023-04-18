@@ -1,0 +1,97 @@
+﻿@page "/getContainerTypes"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "admin")]
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Container Types List</h3>
+                <input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Type Name</th>
+                            <th>Price(/kg)</th>
+                        </tr>
+                    </thead>
+                    @if (containerTypeList != null && containerTypeList.Count > 0)
+                    {
+                        @foreach (var containerType in containerTypeList)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>@containerType.containerTypeId</td>
+                                    <td>@containerType.containerName</td>
+                                    <td>@containerType.price</td>
+                                </tr>
+                            </tbody>
+                        }
+                    }
+                    else
+                    {
+                        <p><em>No Record found</em></p>
+                    }
+                </table>
+                </div>
+            </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    GetContainerTypesResponse containerTypesResponse = new();
+    List<ContainerType> containerTypeList = new();
+    string searchString = string.Empty;
+    private bool loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetContainerTypesList();
+        StateHasChanged();
+    }
+
+    protected async Task Search()
+    {
+        await GetContainerTypesList(searchString);
+        StateHasChanged();
+    }
+
+    async Task GetContainerTypesList(string? search=null)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+
+        try
+        {
+            containerTypesResponse = await _apiService.GetContainerTypes(search);
+            containerTypeList = containerTypesResponse.data;
+            if (containerTypesResponse.statusCode != 0)
+            {
+                AlertService.Success("Container Types list fetched successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

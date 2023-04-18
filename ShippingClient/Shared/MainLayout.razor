@@ -22,12 +22,5 @@
 </div>
 
 @code {
-    protected override void OnInitialized()
-    {
-        // redirect to home if already logged in
-        if (_authService.GetToken() != null)
-        {
-            _navMgr.NavigateTo("/login",true);
-        }
-    }
+    
 }

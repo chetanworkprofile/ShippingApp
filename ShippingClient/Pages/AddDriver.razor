@@ -1,0 +1,170 @@
+﻿@page "/addDriver"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "admin")]
+
+<style type="text/css">
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+</style>
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+            <h4 class="card-header">Add New Driver</h4>
+            <div class="card-body">
+                <EditForm Model="driverModel" OnSubmit="DoAddDriver">
+                    <DataAnnotationsValidator />
+                     <div class="form-group">
+                       <label for="firstName">First Name</label>
+                        <InputText id="firstName" class="form-control" @bind-Value="driverModel.firstName" />
+                        <ValidationMessage For="@(()=>driverModel.firstName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <InputText id="lastName" class="form-control" @bind-Value="driverModel.lastName" />
+                        <ValidationMessage For="@(()=>driverModel.lastName)" />
+                    </div>
+                     <div class="form-group">
+                       <label for="email">Email</label>
+                        <InputText id="email" class="form-control" @bind-Value="driverModel.email" />
+                        <ValidationMessage For="@(()=>driverModel.email)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <InputText id="password" type="password" class="form-control" @bind-Value="driverModel.password" />
+                        <ValidationMessage For="@(()=>driverModel.password)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Contact No.</label>
+                        <InputNumber id="contact" class="form-control" @bind-Value="driverModel.contactno" />
+                        <ValidationMessage For="@(()=>driverModel.contactno)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <InputText type="address" class="form-control" @bind-Value="driverModel.address" />
+                        <ValidationMessage For="@(()=>driverModel.address)" />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="checkpointLocation" class="control-label">Current Checkpoint</label>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-md">
+                            <select class="form-control" onchange="@CheckpointClicked">
+                                <option value="">-- Select Checkpoint --</option>
+                                @foreach (var origin in checkpointsList)
+                                {
+                                    <option value="@origin.checkpointId">@origin.checkpointName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="isAvailable">Is Available (not busy)?</label>
+                        <input type="radio" checked="@(isAvailable == true)"
+                               name="isAvailable" @onchange="@(() => isAvailable = true)" />
+                        <label>Yes</label>
+
+                        <input type="radio" checked="@(isAvailable == false)"
+                               name="isAvailable" @onchange="@(() => isAvailable = false)" />
+                        <label>No</label>
+                    </div>
+                    <div class="my-2">
+                        @addDriverResponse.message
+                    </div>
+
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
+                            }
+                            Add
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    Models.AddDriver driverModel = new();
+    AddDriverResponse addDriverResponse = new();
+    private bool loading;
+    private bool isAvailable = true;
+    string confirmPassword = string.Empty;
+    Guid checkPoint;
+
+    List<Checkpoints> checkpointsList = new List<Checkpoints>();
+
+    protected override async void OnInitialized()
+    {
+        GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
+        checkpointsList = checkpoints.data;
+        StateHasChanged();
+    }
+    void CheckpointClicked(ChangeEventArgs originEvent)
+    {
+        checkPoint = new Guid(originEvent.Value!.ToString()!);
+        this.StateHasChanged();
+    }
+    async Task DoAddDriver()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+        driverModel.checkpointLocation = checkPoint;
+        driverModel.isAvailable = isAvailable;
+        try
+        {
+            if (confirmPassword != driverModel.password)
+            {
+                addDriverResponse.message = "Password and Confirm Password does not match...";
+                loading = false;
+                return;
+            }
+            addDriverResponse.message = "Wait....";
+            addDriverResponse = await _apiService.AddDriver(driverModel);
+            if (addDriverResponse.statusCode != 0)
+            {
+                AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

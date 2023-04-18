@@ -3,6 +3,6 @@
     public class AddContainerType
     {
         public string containerName { get; set; } = string.Empty;
-        public decimal price { get; set; } = decimal.Zero;
+        public float price { get; set; } = 0;
     }
 }

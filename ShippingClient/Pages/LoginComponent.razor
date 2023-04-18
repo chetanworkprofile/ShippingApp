@@ -5,43 +5,55 @@
 @inject NavigationManager _navMgr;
 @inject IAlertService AlertService
 
-<div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
-    <h4 class="card-header">Login</h4>
-    <div class="card-body">
-        <EditForm Model="@loginModel" OnValidSubmit="DoLogin">
-            <DataAnnotationsValidator />
-            <div class="form-group">
-                <label for="email">Email</label>
-               <InputText class="form-control" @bind-Value="loginModel.email"/>
-               <ValidationMessage For="@(()=>loginModel.email)"/>
-            </div>
+<AuthorizeView>
+    <Authorized>
+        <p>You are already authorized</p>
+        @if (true)
+        {
+            Task.Delay(2000);
+            _navMgr.NavigateTo("/");
+        }
+    </Authorized>
+    <NotAuthorized Context="auth">
+        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+            <h4 class="card-header">Login</h4>
+            <div class="card-body">
+                <EditForm Model="@loginModel" OnValidSubmit="DoLogin">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                       <InputText class="form-control" @bind-Value="loginModel.email"/>
+                       <ValidationMessage For="@(()=>loginModel.email)"/>
+                    </div>
 
-            <div class="form-group">
-                <label for="Password">Password</label>
-                <InputText type="password" class="form-control" @bind-Value="loginModel.password" />
-                <ValidationMessage For="@(()=>loginModel.password)" />
-            </div>
+                    <div class="form-group">
+                        <label for="Password">Password</label>
+                        <InputText type="password" class="form-control" @bind-Value="loginModel.password" />
+                        <ValidationMessage For="@(()=>loginModel.password)" />
+                    </div>
 
-            <div class="my-2">
-                @loginResponse.message
-            </div>
+                    <div class="my-2">
+                        @loginResponse.message
+                    </div>
 
-            <div class="my-2">
-                <button disabled="@loading" type="submit" class="btn btn-primary">
-                    @if (loading)
-                    {
-                        <span class="spinner-border spinner-border-sm mr-1"></span>
-                        Task.Delay(5000);
-                        loading = false;
-                    }
-                    Login
-                </button>
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
+                            }
+                            Login
+                        </button>
+                    </div>
+                    <p>Don't have a account?</p><NavLink href="/register" class="btn btn-link">Register</NavLink>
+                    <NavLink href="/forgetPassword" class="btn btn-link">Forget Password</NavLink>
+                </EditForm>
             </div>
-            <p>Don't have a account?</p><NavLink href="/register" class="btn btn-link">Register</NavLink>
-            <NavLink href="/forgetPassword" class="btn btn-link">Forget Password</NavLink>
-        </EditForm>
-    </div>
-</div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 
 @code {

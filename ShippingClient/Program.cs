@@ -17,7 +17,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 builder.Services.AddScoped<AuthenticationStateProvider, AuthProvider>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAPIService, APIService>();
-builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
