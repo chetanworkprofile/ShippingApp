@@ -11,5 +11,13 @@ namespace ShippingClient.Services.Contracts
         public Task<AddProductTypeResponse> AddProductType(AddProductType model);
         public Task<AddContainerTypeResponse> AddContainerType(AddContainerType model);
         public Task<AddDriverResponse> AddDriver(AddDriver model);
+        public Task<LoginResponse> AddManager(AddManager model);
+        public Task<GetUsersResponse> GetUsers(int pageNumber = 1, string? search = null);
+        public Task<UpdateDriverLocationResponse> UpdateDriverLocation(Guid checkpointId);
+        public Task<GetYourselfResponse> GetYourself();
+        public Task<GetShipmentsCutomerResponse> GetShipmentsForCustomer(Guid customerId);
+        public Task<ProductType> GetProductTypeSingle(Guid id);
+        public Task<ContainerType> GetContainerTypeSingle(Guid id);
+        public Task<Checkpoints> GetCheckpointTypeSingle(Guid id);
     }
 }

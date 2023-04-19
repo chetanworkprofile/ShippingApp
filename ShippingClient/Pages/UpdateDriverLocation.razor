@@ -1,0 +1,114 @@
+﻿@page "/updateDriverLocation"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "deliveryBoy")]
+<PageTitle>Shipment App</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+            <h4 class="card-header">Update Location</h4>
+            <div class="card-body">
+                <EditForm Model="point" OnSubmit="DoUpdateLocation">
+                    <DataAnnotationsValidator />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="checkpoint" class="control-label">Current Checkpoint</label>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-md">
+                            <select class="form-control" onchange="@CheckpointClicked">
+                                <option value="">-- Select Checkpoint --</option>
+                                @foreach (var checkpoint in checkpointsList)
+                                {
+                                    <option value="@checkpoint.checkpointId">@checkpoint.checkpointName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="my-2">
+                        @updateResponse.message
+                    </div>
+
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
+                            }
+                            Update
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    //Models.AddProductType productTypeModel = new();
+    UpdateDriverLocationResponse updateResponse = new();
+    private bool loading;
+
+    public class Point{
+        public Guid checkpoint { get; set; }
+        public Point()
+        {
+
+        }
+    }
+    Point point = new Point();
+    List<Checkpoints> checkpointsList = new List<Checkpoints>();
+
+    protected override async void OnInitialized()
+    {
+        GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
+        checkpointsList = checkpoints.data;
+        StateHasChanged();
+    }
+
+    async Task DoUpdateLocation()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+
+        try
+        {
+            updateResponse.message = "Wait....";
+            updateResponse = await _apiService.UpdateDriverLocation(point.checkpoint);
+            if (updateResponse.statusCode != 0)
+            {
+                AlertService.Success("Driver location updated successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    void CheckpointClicked(ChangeEventArgs updateEvent)
+    {
+        point.checkpoint = new Guid(updateEvent.Value!.ToString()!);
+        StateHasChanged();
+    }
+}

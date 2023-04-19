@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text;
 using static System.Net.WebRequestMethods;
+using System.Reflection;
 
 namespace ShippingClient.Services
 {
@@ -170,6 +171,162 @@ namespace ShippingClient.Services
             
             return resultContent!;
 
+        }
+        
+        public async Task<LoginResponse> AddManager(AddManager model)
+        {
+            string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/admin/addManager");
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var result = await _httpClient.SendAsync(requestMessage);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                return new LoginResponse { statusCode = 0, message = errorResponseContent!.message };
+            }
+            var resultContent = await result.Content.ReadFromJsonAsync<LoginResponse>();
+            
+            return resultContent!;
+
+        }
+
+        public async Task<GetUsersResponse> GetUsers(int pageNumber = 1,string? search = null)
+        {
+            try
+            {
+                GetUsersResponse? users;
+                string url = string.Empty;
+                string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+                if (search != null)
+                {
+                    url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}&searchString={search}";
+                }
+                else
+                {
+                    url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}";
+                }
+                var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}{url}");
+                
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+                var result = await _httpClient.SendAsync(requestMessage);
+
+                
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                    return new GetUsersResponse { statusCode = 0, message = errorResponseContent!.message };
+                }
+                var res = await result.Content.ReadFromJsonAsync<GetUsersResponse>()!;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<UpdateDriverLocationResponse> UpdateDriverLocation(Guid checkpointId)
+        {
+            string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"{baseUrl}api/v1/update/driverLocation?checkpointId={checkpointId}");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var result = await _httpClient.SendAsync(requestMessage);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                return new UpdateDriverLocationResponse { statusCode = 0, message = errorResponseContent!.message };
+            }
+            var resultContent = await result.Content.ReadFromJsonAsync<UpdateDriverLocationResponse>();
+            return resultContent!;
+        }
+
+        public async Task<GetShipmentsCutomerResponse> GetShipmentsForCustomer(Guid customerId)
+        {
+            try
+            {
+                GetShipmentsCutomerResponse? shipments;
+
+                shipments = await _httpClient.GetFromJsonAsync<GetShipmentsCutomerResponse>($"api/v1/get/shipments?customerId={customerId}");
+                return shipments!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<GetYourselfResponse> GetYourself()
+        {
+            try
+            {
+                GetYourselfResponse? yourself;
+
+                yourself = await _httpClient.GetFromJsonAsync<GetYourselfResponse>("api/v1/user/getYourself");
+                return yourself!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<ProductType> GetProductTypeSingle(Guid id)
+        {
+            try
+            {
+                ProductType? productTypes;
+                productTypes = await _httpClient.GetFromJsonAsync<ProductType>($"api/v1/get/productTypes?productTypeId={id}");
+                return productTypes!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+        public async Task<ContainerType> GetContainerTypeSingle(Guid id)
+        {
+            try
+            {
+                ContainerType? containerTypes;
+                containerTypes = await _httpClient.GetFromJsonAsync<ContainerType>($"api/v1/get/containerTypes?containerTypeId={id}");
+                return containerTypes!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+        public async Task<Checkpoints> GetCheckpointTypeSingle(Guid id)
+        {
+            try
+            {
+                Checkpoints? checkpoint;
+                checkpoint = await _httpClient.GetFromJsonAsync<Checkpoints>($"api/v1/get/checkpoints?checkpointId={id}");
+                return checkpoint!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
         }
     }
 }

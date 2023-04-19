@@ -114,7 +114,12 @@ namespace ShippingApp.Services
             if (contactNo != -1) { userss = userss.Where(s => (s.contactNo == contactNo)); }
 
             var users = userss.ToList();
-
+            if (!users.Any())
+            {
+                response2 = new ResponseWithoutData(404, "No User found.", true);
+                code = 404;
+                return response2;
+            }
             // delegate used to create orderby depending on user input
             Func<User, Object> orderBy = s => s.userId;
             if (OrderBy == "UserId" || OrderBy == "ID" || OrderBy == "Id")
@@ -160,12 +165,6 @@ namespace ShippingApp.Services
                 list.Add(r);
             }
 
-            if (!list.Any())
-            {
-                response2 = new ResponseWithoutData(404, "No User found.", true);
-                code = 404;
-                return response2;
-            }
             DataListForGet res = new DataListForGet(count, list);
             response = new Response(200, "Users list fetched", res, true);
             code = 200;

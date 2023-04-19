@@ -1,0 +1,169 @@
+﻿@page "/getUsers"
+@using ShippingClient.Models;
+@inject HttpClient http
+@inject IJSRuntime jsRuntime
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@using ShippingClient.Services.Contracts;
+@attribute [Authorize(Roles = "admin")]
+<PageTitle>Shipment App</PageTitle>
+
+<h3>Users List</h3>
+@*<a href="/person/add" class="btn btn-secondary my-2">Add more</a>*@
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="row vw-85">
+            <div class="col-md-6">
+
+            <input type="text" class="form-control" placeholder="search by name" @bind="searchText" @bind:event="oninput" @onkeyup="async ()=>await Search()" />
+                @if (list != null && list.Count > 0)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Contact No.</th>
+                                <th>Role</th>
+                                <th>Address</th>
+                                @*<th>Action</th>*@
+                            </tr>
+                        </thead>
+                        @foreach (var person in list)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>@person.userId</td>
+                                    <td>@person.firstName @person.lastName</td>
+                                    <td>@person.email</td>
+                                    <td>@person.contactNo</td>
+                                    <td>@person.userRole</td>
+                                    <td>@person.address</td>
+                                    @*<td>
+                            <a href="/person/edit/@person.Id" class="btn btn-success">Edit</a>
+                            <a class="btn btn-danger" @onclick="async ()=> await Delete(person)">Delete</a>
+                            </td>*@
+                                </tr>
+                            </tbody>
+                        }
+                    </table>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            @if (pageNumber > 1)
+                            {
+                                <li class="page-item">
+                                    <a @onclick="async ()=> await GetPersons(pageNumber-1)" class="page-link" style="cursor:pointer" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            }
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+
+                                string activeClass = (i == pageNumber) ? "active" : "";
+                                int c = i;
+                                <li class="page-item @activeClass"><a @onclick="async ()=> await GetPersons(c)" style="cursor:pointer" class="page-link">@c</a></li>
+                            }
+                            @if (pageNumber < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a @onclick="async ()=> await GetPersons(pageNumber+1)" class="page-link" style="cursor:pointer" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact No.</th>
+                        <th>Role</th>
+                        <th>Address</th>
+                        @*<th>Action</th>*@
+                    </tr>
+                </thead>
+            </table>
+            <div class="my-2">
+                @result.message
+            </div>
+        }
+        </div>
+    </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private int totalPages = 1;
+    private int pageNumber = 1;
+    private List<ResponseUser> list = new();
+    private string searchText = string.Empty;
+    private GetUsersResponse? result = new();
+
+    private async Task Search()
+    {
+        await GetPersons(1, searchText);
+    }
+
+    //private async Task Delete(Person person)
+    //{
+    //    bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+    //    if (confirmed)
+    //    {
+    //        var result = await http.DeleteFromJsonAsync<Status>($"api/person/delete/{person.Id}");
+    //        if (result.StatusCode == 1)
+    //            await GetPersons();
+    //    }
+    //}
+
+    private async Task GetPersons(int pageNo = 1, string? search = null)
+    {
+        try
+        {
+            result.message = "Wait....";
+            result = await _apiService.GetUsers(pageNo, search);
+
+            if (result.statusCode != 0)
+            {
+                AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+                list = result.data.list;
+                totalPages = (int)Math.Ceiling(result.data.totalAvailableRecords / 10.0);
+                StateHasChanged();
+            }
+            else
+            {
+                list.Clear();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPersons();
+    }
+
+}

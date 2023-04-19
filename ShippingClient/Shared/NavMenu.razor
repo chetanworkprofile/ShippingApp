@@ -22,32 +22,37 @@
                     <span class="oi oi-plus" aria-hidden="true"></span> Add Product Type
                 </NavLink>
             </div>
-        </AuthorizeView>
-        <AuthorizeView Roles="admin">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="addContainerType">
                     <span class="oi oi-plus" aria-hidden="true"></span> Add Container Type
                 </NavLink>
             </div>
-        </AuthorizeView>
-        <AuthorizeView Roles="admin">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="addDriver">
                     <span class="oi oi-plus" aria-hidden="true"></span> Add Driver
                 </NavLink>
             </div>
-        </AuthorizeView>
-        <AuthorizeView Roles="admin">
+        
+        @*<AuthorizeView Roles="admin">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="addManager">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Add Manager
+                </NavLink>
+            </div>
+        </AuthorizeView>*@
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="getContainerTypes">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Container Types
                 </NavLink>
             </div>
-        </AuthorizeView>
-        <AuthorizeView Roles="admin">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="getProductTypes">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Product Types
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="getUsers">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> All Users
                 </NavLink>
             </div>
         </AuthorizeView>
@@ -55,6 +60,18 @@
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="createShipment">
                     <span class="oi oi-plus" aria-hidden="true"></span> Create Shipment
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="customerGetShipments">
+                    <span class="oi oi-list" aria-hidden="true"></span> Shipments List
+                </NavLink>
+            </div>
+        </AuthorizeView>
+        <AuthorizeView Roles="deliveryBoy">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="updateDriverLocation">
+                    <span class="oi oi-location" aria-hidden="true"></span> Update Location
                 </NavLink>
             </div>
         </AuthorizeView>

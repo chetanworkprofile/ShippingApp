@@ -31,7 +31,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin")]
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
         [Route("/api/v1/get/shipments")]
         public ActionResult GetShipments(Guid? shipmentId=null,Guid? customerId = null,Guid? productTypeId = null,Guid? containerTypeId = null)
         {
@@ -51,7 +51,7 @@ namespace ShippingApp.Controllers
         }
 
         //[HttpGet, Authorize(Roles = "client, manager, admin")]
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
         [Route("/api/v1/get/productTypes")]
         public ActionResult GetProductTypes(Guid? productTypeId = null, string? searchString = null)
         {
@@ -70,7 +70,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin")]
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
         [Route("/api/v1/get/containerTypes")]
         public ActionResult GetContainerTypes(Guid? containerTypeId = null, string? searchString = null)
         {
@@ -89,7 +89,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = " manager, admin")]
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
         [Route("/api/v1/get/drivers")]
         public ActionResult GetDrivers(Guid? driverId = null, string? searchString = null, string? location = null)
         {
@@ -108,7 +108,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin")]
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
         [Route("/api/v1/get/checkpoints")]
         public ActionResult GetCheckpoints(Guid? checkpointId = null)
         {
@@ -151,6 +151,17 @@ namespace ShippingApp.Controllers
         {
             int statusCode = 0;
             var res = _apiGatewayService.AddDriver(inpUser, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+        
+        [HttpPut, Authorize(Roles = "deliveryBoy")]
+        [Route("/api/v1/update/driverLocation")]
+        public ActionResult UpdateDriverLocation(Guid checkPointId)
+        {
+            int statusCode = 0;
+            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string? userId = User.FindFirstValue(ClaimTypes.Sid);
+            var res = _apiGatewayService.UpdateDriverLocation(userId, token, checkPointId, out statusCode);
             return StatusCode(statusCode, res);
         }
 

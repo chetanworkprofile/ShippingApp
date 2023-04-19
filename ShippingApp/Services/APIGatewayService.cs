@@ -12,6 +12,7 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace ShippingApp.Services
 {
     public class APIGatewayService : IAPIGatewayService
@@ -311,6 +312,35 @@ namespace ShippingApp.Services
                 response2 = new ResponseWithoutData(400, "Email already registered please try another", false);
                 code = 400;
                 return response2;
+            }
+        }
+
+        public object UpdateDriverLocation(string userId, string token, Guid checkPointId, out int code)
+        {
+            Guid driverId = new Guid(userId);
+            var userLoggedIn = DbContext.Users.Find(driverId);
+            if (token != userLoggedIn.token)
+            {
+                response = new Response(401, "Invalid/expired token. Login First","", false);
+                code = 401;
+                return response;
+            }
+            UpdateDriverLocation updateDriver = new UpdateDriverLocation()
+            {
+                driverId= driverId,
+                checkpointLocation = checkPointId,
+                isAvailable = false
+            };
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS2);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent content = new StringContent(JsonConvert.SerializeObject(updateDriver), Encoding.UTF8, "application/json");
+                var apiResponse = client.PutAsync("api/Driver/Update", content).Result;
+
+                code = (int)apiResponse.StatusCode;
+                return apiResponse.Content.ReadAsStringAsync().Result;
             }
         }
     }

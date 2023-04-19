@@ -1,0 +1,138 @@
+﻿@page "/addManager"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "admin")]
+<PageTitle>Shipment App</PageTitle>
+
+<style type="text/css">
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+</style>
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+            <h4 class="card-header">Add New Manager</h4>
+            <div class="card-body">
+                <EditForm Model="managerModel" OnSubmit="DoAddManager">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <InputText id="firstName" class="form-control" @bind-Value="managerModel.firstName" />
+                        <ValidationMessage For="@(()=>managerModel.firstName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <InputText id="lastName" class="form-control" @bind-Value="managerModel.lastName" />
+                        <ValidationMessage For="@(()=>managerModel.lastName)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <InputText id="email" class="form-control" @bind-Value="managerModel.email" />
+                        <ValidationMessage For="@(()=>managerModel.email)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <InputText id="password" type="password" class="form-control" @bind-Value="managerModel.password" />
+                        <ValidationMessage For="@(()=>managerModel.password)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Contact No.</label>
+                        <InputNumber id="contact" class="form-control" @bind-Value="managerModel.contactno" />
+                        <ValidationMessage For="@(()=>managerModel.contactno)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <InputText type="address" class="form-control" @bind-Value="managerModel.address" />
+                        <ValidationMessage For="@(()=>managerModel.address)" />
+                    </div>
+                    
+                    <div class="my-2">
+                        @addManagerResponse.message
+                    </div>
+
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
+                            }
+                            Add
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    Models.AddManager managerModel = new();
+    LoginResponse addManagerResponse = new();
+    private bool loading;
+    private bool isAvailable = true;
+    string confirmPassword = string.Empty;
+    Guid checkPoint;
+
+    //protected override async void OnInitialized()
+    //{
+    //    GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
+    //    checkpointsList = checkpoints.data;
+    //    StateHasChanged();
+    //}
+   
+    async Task DoAddManager()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+        try
+        {
+            if (confirmPassword != managerModel.password)
+            {
+                addManagerResponse.message = "Password and Confirm Password does not match...";
+                loading = false;
+                return;
+            }
+            addManagerResponse.message = "Wait....";
+            addManagerResponse = await _apiService.AddManager(managerModel);
+            if (addManagerResponse.statusCode != 0)
+            {
+                AlertService.Success("Manager Added successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

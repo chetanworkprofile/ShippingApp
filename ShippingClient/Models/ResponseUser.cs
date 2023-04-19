@@ -1,4 +1,4 @@
-﻿namespace ShippingApp.Models.OutputModels
+﻿namespace ShippingClient.Models
 {
     public class ResponseUser
     {
@@ -15,7 +15,7 @@
         //public bool isActive { get; set; } = false;
 
         public ResponseUser() { }
-        public ResponseUser(User user)
+        /*public ResponseUser(User user)
         {
             this.userId = user.userId;
             this.firstName = user.firstName;
@@ -28,6 +28,6 @@
             this.createdAt = user.createdAt;
             this.updatedAt = user.updatedAt;
             //this.isActive = false;
-        }
+        }*/
     }
 }

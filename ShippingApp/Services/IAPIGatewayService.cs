@@ -14,5 +14,6 @@ namespace ShippingApp.Services
         public object AddDriver(RegisterDriver inpUser, out int code);
         public Response GetDrivers(Guid? driverId, string? searchString, string? location, out int code);
         public string GetCheckpoints(Guid? checkpointId, out int code);
+        public object UpdateDriverLocation(string userId, string token, Guid checkPointId, out int code);
     }
 }

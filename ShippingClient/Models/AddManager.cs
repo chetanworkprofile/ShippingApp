@@ -2,7 +2,7 @@
 
 namespace ShippingClient.Models
 {
-    public class AddDriver
+    public class AddManager
     {
         [Required]
         public string firstName { get; set; }
@@ -17,13 +17,9 @@ namespace ShippingClient.Models
         public string password { get; set; }
         [Required]
         public string address { get; set; }
-        [Required]
-        public Guid checkpointLocation { get; set; }
-        [Required]
-        public bool isAvailable { get; set; }
 
         //public string pathToProfilePic { get; set; } = string.Empty;
 
-        public AddDriver() { }
+        public AddManager() { }
     }
 }

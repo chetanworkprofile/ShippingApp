@@ -23,7 +23,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpPost, Authorize]
+        [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/admin/addManager")]
         public IActionResult RegisterManager([FromBody] RegisterUser inpUser)             //register user function uses authService to create a new user in db
         {

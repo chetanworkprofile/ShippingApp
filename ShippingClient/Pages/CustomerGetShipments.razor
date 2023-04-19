@@ -1,0 +1,147 @@
+﻿@page "/customerGetShipments"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "client,admin")]
+<PageTitle>Shipment App</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Shipment History</h3>
+                @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            @*<th>customerId</th>*@
+                            <th>Product Type</th>
+                            <th>Container Type</th>
+                            <th>Shipment Price</th>
+                            <th>Shipment Weight</th>
+                            <th>Origin</th>
+                            <th>Destination</th>
+                            <th>Order Date</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Current Location</th>
+                        </tr>
+                    </thead>
+                    @if (shipmentListConverted != null && shipmentListConverted.Count > 0)
+                    {
+                        @foreach (var shipment in shipmentListConverted)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>@shipment.shipmentId</td>
+                                    <td>@shipment.productTypeName</td>
+                                    <td>@shipment.containerTypeName</td>
+                                    <td>@shipment.shipmentPrice</td>
+                                    <td>@shipment.shipmentWeight</td>
+                                    <td>@shipment.origin</td>
+                                    <td>@shipment.destination</td>
+                                    <td>@shipment.dateOfOrder</td>
+                                    <td>@shipment.notes</td>
+                                    <td>@shipment.shipmentStatus</td>
+                                    <td>@shipment.currentLocation</td>
+                                </tr>
+                            </tbody>
+                        }
+                    }
+                    else
+                    {
+                        <p><em>No Record found</em></p>
+                    }
+                </table>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    GetShipmentsCutomerResponse shipmentsResponse = new();
+    List<GetListOfShipments> shipmentList = new();
+    List<GetShipmentsConverted> shipmentListConverted = new();
+    private bool loading;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetShipmentsTypesList();
+        StateHasChanged();
+    }
+    public ProductType GetProductType(Guid id)
+    {
+        return _apiService.GetProductTypeSingle(id).Result;
+    }
+    public ContainerType GetContainerType(Guid id)
+    {
+        return _apiService.GetContainerTypeSingle(id).Result;
+    }
+    public Checkpoints GetCheckpointType(Guid id)
+    {
+        Checkpoints temp = _apiService.GetCheckpointTypeSingle(id).Result;
+        if(temp.checkpointId == Guid.Empty)
+        {
+            temp.checkpointName = "At Origin";
+        }
+        return temp;
+    }
+
+    public void ConvertList(List<GetListOfShipments> shipments)
+    {
+        foreach(var shipment in shipments)
+        {
+            string product = GetProductType(shipment.productTypeId).type;
+            string container = GetContainerType(shipment.containerTypeId).containerName;
+            string origin = GetCheckpointType(shipment.origin).checkpointName;
+            string destination = GetCheckpointType(shipment.destination).checkpointName;
+            string current = GetCheckpointType(shipment.currentLocation).checkpointName;
+
+            GetShipmentsConverted temp = new GetShipmentsConverted(shipment.shipmentId, product, container, shipment.shipmentPrice, shipment.shipmentWeight, origin, destination, shipment.dateOfOrder, shipment.notes, shipment.shipmentStatus, current);
+            shipmentListConverted.Add(temp);
+        }
+        //Console.WriteLine(shipmentListConverted);
+    }
+
+    async Task GetShipmentsTypesList()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+
+        try
+        {
+            GetYourselfResponse temp = await _apiService.GetYourself();
+            Guid tempId = temp.data.userId;
+            shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
+            shipmentList = shipmentsResponse.data;
+            if (shipmentsResponse.statusCode != 0)
+            {
+                AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+            }
+            ConvertList(shipmentList);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

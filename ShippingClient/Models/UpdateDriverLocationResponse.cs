@@ -1,17 +1,16 @@
 ﻿namespace ShippingClient.Models
 {
-    public class AddDriverResponse
+    public class UpdateDriverLocationResponse
     {
         public int statusCode { get; set; }
         public string message { get; set; } = string.Empty;
-        public DataDriver data { get; set; } = new DataDriver();
+        public DataDriverUpdate data { get; set; } = new DataDriverUpdate();
         public bool isSuccess { get; set; }
     }
 
-    public class DataDriver
+    public class DataDriverUpdate
     {
-        public Guid userId { get; set; }
-        public string email { get; set; }
+        public Guid driverId { get; set; }
         public Guid checkpointLocation { get; set; }
         public bool isAvailable { get; set; } = true;
     }
