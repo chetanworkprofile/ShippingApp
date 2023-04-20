@@ -1,0 +1,97 @@
+﻿@page "/addCheckpoint"
+@using ShippingClient.Models;
+@using ShippingClient.Services.Contracts;
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(Roles = "admin")]
+<PageTitle>Shipment App</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+            <h4 class="card-header">Add New Checkpoint</h4>
+            <div class="card-body">
+                <EditForm Model="checkpointModel" OnSubmit="DoAddProductType">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label for="type">Name</label>
+                        <InputText name="type" class="form-control" @bind-Value="checkpointModel.checkpointName" />
+                        <ValidationMessage For="@(()=>checkpointModel.checkpointName)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Latitude</label>
+                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.latitude" />
+                        <ValidationMessage For="@(()=>checkpointModel.latitude)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Longitude</label>
+                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.longitude" />
+                        <ValidationMessage For="@(()=>checkpointModel.longitude)" />
+                    </div>
+                    
+
+
+                    <div class="my-2">
+                        @addResponse.message
+                    </div>
+
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
+                            }
+                            Add
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    Models.AddCheckpoint checkpointModel = new();
+    ResponseModel addResponse = new();
+    private bool loading;
+    
+    //protected override async void OnInitialized()
+    //{
+    //    StateHasChanged();
+    //}
+    async Task DoAddProductType()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+        
+        try
+        {
+            addResponse.message = "Wait....";
+            addResponse = await _apiService.AddCheckpoint(checkpointModel);
+            if (addResponse.statusCode != 0)
+            {
+                AlertService.Success("Checkpoint Added successfully", keepAfterRouteChange: true);
+                //_navMgr.NavigateTo("/shipmentHistory");
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

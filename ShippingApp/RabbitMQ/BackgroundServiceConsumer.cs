@@ -28,8 +28,9 @@ namespace ShippingApp.RabbitMQ
             using (var scope = _scopeFactory.CreateScope())
             {
                 var consumerService = scope.ServiceProvider.GetService<IMQConsumer>();
-                //consumerService.ShipmentConsumer();
+                consumerService.NotifyDeliveryBoy();
             }
         }
     }
 }
+

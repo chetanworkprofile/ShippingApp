@@ -1,7 +1,9 @@
-﻿namespace ShippingApp.RabbitMQ
+﻿using ShippingApp.Models.InputModels;
+
+namespace ShippingApp.RabbitMQ
 {
     public interface IMQConsumer
     {
-        public void ShipmentConsumer();
+        public void NotifyDeliveryBoy();
     }
 }

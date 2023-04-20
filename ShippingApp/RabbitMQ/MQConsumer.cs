@@ -2,13 +2,21 @@
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
+using ShippingApp.Models.InputModels;
+using Microsoft.AspNetCore.SignalR;
+using ShippingApp.Hubs;
+using ShippingApp.Data;
+using ShippingApp.Models;
 
 namespace ShippingApp.RabbitMQ
 {
     public class MQConsumer : IMQConsumer
     {
         private ConnectionFactory factory;
-        public MQConsumer()
+        private IHubContext<ShippingHub> _hubContext;
+        private IMessageProducer _producer;
+        private ShippingDbContext _shippingDbContext;
+        public MQConsumer(ShippingDbContext dbContext, ILogger<string> logger, IHubContext<ShippingHub> hubContext, IMessageProducer producer)
         {
             factory = new ConnectionFactory
             {
@@ -19,30 +27,61 @@ namespace ShippingApp.RabbitMQ
                 VirtualHost = "/",
                 ContinuationTimeout = new TimeSpan(10, 0, 0, 0)
             };
+            _shippingDbContext= dbContext;
+            _hubContext = hubContext;
+            _producer = producer;
         }
-        public void ShipmentConsumer()
+        public void NotifyDeliveryBoy()
         {
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
-            channel.QueueDeclare("createShipment",
+            channel.QueueDeclare("notifyDriver",
                      durable: true,
                      exclusive: false,
                      autoDelete: false,
                      arguments: null);
             var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (sender, e) =>
+            consumer.Received += async (sender, e) =>
             {
                 var body = e.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(message);
-                /*AddShipmentModel shipment = JsonSerializer.Deserialize<>(message)!;
-                if (shipment != null)
+                NotifyDriver driver = JsonSerializer.Deserialize<NotifyDriver>(message)!;
+                if (driver != null)
                 {
-                    var response = shipmentService!.AddShipment(shipment!);
-                }*/
+                    EmailDriver(driver);
+                    //var response = shipmentService!.AddShipment(shipment!);
+                    string driverConnId = GetConnectionIdByUser(driver.driverId.ToString());
+                    Console.WriteLine(driver);
+                    Console.WriteLine(driverConnId);
+                    await _hubContext.Clients.Clients(driverConnId).SendAsync("driverGetsShipment",driver);
+                    
+                    //var res = _hubContext.SendShipmentForDelivery(driver.shipmentId.ToString(), driver.driverId.ToString());
+                }
             };
-            channel.BasicConsume("createShipment", true, consumer);
+            
+            channel.BasicConsume("notifyDriver", true, consumer);
             Console.ReadLine();
         }
+
+        public void EmailDriver(NotifyDriver notify)
+        {
+            User driver = _shippingDbContext.Users.Find(notify.driverId);
+            SendEmailModel model = new SendEmailModel(driver.email,"New Shipment Alloted to you",$"You have been alloted a new shipment Id {notify.shipmentId}");
+            _producer.SendEmail(model);
+        }
+
+        public string GetConnectionIdByUser(string user)
+        {
+            lock (ConnectionIds.Users)
+            {
+                return ConnectionIds.Users.Where(x => x.Key == user).Select(x => x.Value).FirstOrDefault();
+            }
+        }
+    }
+
+    public static class ConnectionIds
+    {
+        public static readonly Dictionary<string, string> Users = new Dictionary<string, string>();
     }
 }

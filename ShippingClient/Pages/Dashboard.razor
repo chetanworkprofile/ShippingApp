@@ -5,13 +5,57 @@
 @using ShippingClient.Services.Contracts;
 <PageTitle>Shipment App</PageTitle>
 
-
-<h3>Dashboard</h3>
-
 <AuthorizeView>
     <Authorized>
         <h1>Hello Welcome Back </h1>
         <h2><b>@context.User.Identity?.Name</b></h2>
+        <div class="about-section">
+            <h1>About Us </h1>
+            <p>We ship your goods while you enjoy in your Couch</p>
+            <p>Welcome to our shipping app! We are a team of dedicated individuals who are passionate about providing reliable and efficient shipping services to our customers. Our mission is to make shipping easy and accessible for everyone, no matter where they are in the world.</p>
+        </div>
+
+        <h2 style="text-align:center">Our Team</h2>
+        <div class="row">
+            <div class="column">
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Chetan" style="width:100%">
+                    <div class="container">
+                        <h2>Chetan Gupta</h2>
+                        <p class="title">.Net Intern</p>
+                        <p>Highly passionate and hardworking</p>
+                        <p>chetan.gupta@chicmic.co.in</p>
+                        <p><button class="button">Contact</button></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="card">
+                    <img src="https://buffer.com/library/content/images/size/w1000/2022/03/sigmund-MQ2xYBHImKM-unsplash--1--1.jpg" alt="Ajay" style="width:100%">
+                    <div class="container">
+                        <h2>Ajay Joshi</h2>
+                        <p class="title">.Net Intern</p>
+                        <p>Creative, ethical and extremely hardworking</p>
+                        <p>ajay.joshi@chicmic.co.in</p>
+                        <p><button class="button">Contact</button></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="card">
+                    <img src="https://st.depositphotos.com/1028979/2311/i/600/depositphotos_23114154-stock-photo-tired-young-business-woman-with.jpg" alt="Rakesh" style="width:100%">
+                    <div class="container">
+                        <h2>Rakesh Kumar</h2>
+                        <p class="title">.Net Intern</p>
+                        <p>Efficient and true to principles</p>
+                        <p>rakesh.kumar23@chicmic.co.in</p>
+                        <p><button class="button">Contact</button></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>
@@ -24,6 +68,7 @@
 @code {
     protected override void OnInitialized()
     {
+        Console.WriteLine("hello rakesh");
         // redirect to home if already logged in
         if (_authService.GetToken() != null)
         {

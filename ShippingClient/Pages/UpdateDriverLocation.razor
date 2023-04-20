@@ -23,7 +23,7 @@
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
                             <select class="form-control" onchange="@CheckpointClicked">
-                                <option value="">-- Select Checkpoint --</option>
+                                <option value="@Guid.Empty">-- Select Checkpoint --</option>
                                 @foreach (var checkpoint in checkpointsList)
                                 {
                                     <option value="@checkpoint.checkpointId">@checkpoint.checkpointName</option>

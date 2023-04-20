@@ -74,6 +74,72 @@ namespace ShippingApp.Services
             }
         }
 
+
+        public string GetShipmentHistory(Guid? shipmentId, out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);//WebApi 1 project URL
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                StringBuilder appendUrl = new StringBuilder("api/shipment/getShipmentStatus?");
+                if (shipmentId != null)
+                {
+                    appendUrl.Append("&shipmentId=" + shipmentId + "");
+
+                }
+                var res = client.GetAsync(appendUrl.ToString()).Result;
+
+                var data = res.Content.ReadAsStringAsync().Result;
+
+                //response = new Response(200, "Shipments list fetched", data, true);
+                code = (int)res.StatusCode;
+                return data;
+            }
+        }
+
+        public string GetBestRoute(Guid? shipmentId, out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);//WebApi 1 project URL
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                StringBuilder appendUrl = new StringBuilder($"api/shipment/getShipmentRoute?shipmentId={shipmentId}");
+                
+                var res = client.GetAsync(appendUrl.ToString()).Result;
+
+                var data = res.Content.ReadAsStringAsync().Result;
+
+                //response = new Response(200, "Shipments list fetched", data, true);
+                code = (int)res.StatusCode;
+                return data;
+            }
+        }
+
+        public string GetShipmentHistoryDriver(string driverId, out int code)
+        {
+            Guid driverGuid = new Guid(driverId);
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);//WebApi 1 project URL
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                StringBuilder appendUrl = new StringBuilder($"api/shipment/getDriverShipment?driverId={driverGuid}");
+                
+                var res = client.GetAsync(appendUrl.ToString()).Result;
+
+                var data = res.Content.ReadAsStringAsync().Result;
+
+                //response = new Response(200, "Shipments list fetched", data, true);
+                code = (int)res.StatusCode;
+                return data;
+            }
+        }
+
         public string GetCheckpoints(Guid? checkpointId, out int code)
         {
             using (var client = new HttpClient())
@@ -238,6 +304,21 @@ namespace ShippingApp.Services
                 StringContent content = new StringContent(JsonConvert.SerializeObject(inp), Encoding.UTF8, "application/json");
                 var response = client.PostAsync("api/ContainerType/Add", content).Result;
                 
+                code = (int)response.StatusCode;
+                return response.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public string AddCheckpoint(AddCheckpoint inp, out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent content = new StringContent(JsonConvert.SerializeObject(inp), Encoding.UTF8, "application/json");
+                var response = client.PostAsync("api/shipment/addCheckpoint", content).Result;
+
                 code = (int)response.StatusCode;
                 return response.Content.ReadAsStringAsync().Result;
             }

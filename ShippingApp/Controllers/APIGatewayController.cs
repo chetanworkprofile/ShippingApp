@@ -50,6 +50,64 @@ namespace ShippingApp.Controllers
             }
         }
 
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [Route("/api/v1/get/shipmentHistory")]
+        public ActionResult GetShipmentHistory(Guid? shipmentId = null)
+        {
+            _logger.LogInformation("Getting shipment history");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetShipmentHistory(shipmentId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [Route("/api/v1/get/bestRoute")]
+        public ActionResult GetBestRoute(Guid? shipmentId = null)
+        {
+            _logger.LogInformation("Getting shipment history");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetBestRoute(shipmentId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [Route("/api/v1/get/driver/shipmentHistory")]
+        public ActionResult GetShipmentHistoryDriver()
+        {
+            _logger.LogInformation("Getting shipment history");
+            try
+            {
+                int statusCode = 0;
+                string? driverId = User.FindFirstValue(ClaimTypes.Sid);
+                var res = _apiGatewayService.GetShipmentHistoryDriver(driverId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
         //[HttpGet, Authorize(Roles = "client, manager, admin")]
         [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
         [Route("/api/v1/get/productTypes")]
@@ -142,6 +200,15 @@ namespace ShippingApp.Controllers
         {
             int statusCode = 0;
             var res = _apiGatewayService.AddContainerType(inpCtype, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
+        [HttpPost, Authorize(Roles = "admin")]
+        [Route("/api/v1/add/checkpoint")]
+        public ActionResult AddCheckpoint(AddCheckpoint inp)
+        {
+            int statusCode = 0;
+            var res = _apiGatewayService.AddCheckpoint(inp, out statusCode);
             return StatusCode(statusCode, res);
         }
 

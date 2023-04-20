@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using ShippingApp.Data;
 using ShippingApp.Models;
+using ShippingApp.Models.InputModels;
 using ShippingApp.Models.OutputModels;
+using ShippingApp.RabbitMQ;
 using System.Security.Claims;
 
 namespace ShippingApp.Hubs
 {
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ShippingHub : Hub
     {
         Response response = new Response();
@@ -16,16 +18,17 @@ namespace ShippingApp.Hubs
         object result = new object();
 
         private readonly ShippingDbContext DbContext;
-        //private readonly IConfiguration _configuration;
         private readonly ILogger<string> _logger;
-
+        private readonly IMQConsumer _consumer;
+        //List<NotifyDriver> notifications;
         // to keep track of online users dict key-value pair
         // key - userId     value - connectionId
-        private static readonly Dictionary<string, string> Users = new Dictionary<string, string>();
-        public ShippingHub(ShippingDbContext dbContext, ILogger<string> logger)
+        //private static readonly Dictionary<string, string> Users = new Dictionary<string, string>();
+        public ShippingHub(ShippingDbContext dbContext, ILogger<string> logger, IMQConsumer consumer)
         {
             DbContext = dbContext;
             _logger = logger;
+            _consumer = consumer;
         }
         public async override Task<Task> OnConnectedAsync()
         {
@@ -35,6 +38,7 @@ namespace ShippingApp.Hubs
                 await Clients.Caller.SendAsync("UserConnected");
                 string? userId = Context.User.FindFirstValue(ClaimTypes.Sid);
                 AddUserConnectionId(userId);
+
                 /*AddUserConnectionId(userId);
                 adminId = GetConnectionIdByUser(adminUserId);
                 _logger.LogInformation($"admin userId: {adminUserId} admin id: {adminId}");
@@ -72,9 +76,9 @@ namespace ShippingApp.Hubs
         }
         public bool AddUserToList(string userToAdd, string connectionId)
         {
-            lock (Users)
+            lock (ConnectionIds.Users)
             {
-                foreach (var user in Users)
+                foreach (var user in ConnectionIds.Users)
                 {
                     if (user.Key.ToLower() == userToAdd.ToLower())
                     {
@@ -82,7 +86,7 @@ namespace ShippingApp.Hubs
                     }
                 }
 
-                Users.Add(userToAdd, connectionId);
+                ConnectionIds.Users.Add(userToAdd, connectionId);
                 _logger.LogInformation($"Add user : {userToAdd} connection id: {connectionId}");
                 return true;
             }
@@ -90,53 +94,53 @@ namespace ShippingApp.Hubs
 
         public string GetUserByConnectionId(string connectionId)
         {
-            lock (Users)
+            lock (ConnectionIds.Users)
             {
-                return Users.Where(x => x.Value == connectionId).Select(x => x.Key).First();
+                return  ConnectionIds.Users.Where(x => x.Value == connectionId).Select(x => x.Key).First();
             }
         }
 
         public string GetConnectionIdByUser(string user)
         {
-            lock (Users)
+            lock (ConnectionIds.Users)
             {
-                return Users.Where(x => x.Key == user).Select(x => x.Value).FirstOrDefault();
+                return ConnectionIds.Users.Where(x => x.Key == user).Select(x => x.Value).FirstOrDefault();
             }
         }
 
         public void RemoveUserFromList(string user)
         {
-            lock (Users)
+            lock (ConnectionIds.Users)
             {
-                if (Users.ContainsKey(user))
+                if (ConnectionIds.Users.ContainsKey(user))
                 {
-                    Users.Remove(user);
+                    ConnectionIds.Users.Remove(user);
                 }
             }
         }
 
         public string[] GetOnlineUsers()
         {
-            lock (Users)
+            lock (ConnectionIds.Users)
             {
-                return Users.OrderBy(x => x.Key).Select(x => x.Key).ToArray();
+                return ConnectionIds.Users.OrderBy(x => x.Key).Select(x => x.Key).ToArray();
             }
         }
 
         //this functin will be called when s3 allocates driver to shipment and calls
-        public async Task SendShipmentForDelivery(string shipmentId, string driverId)
+        /*public async Task SendShipmentForDelivery(string shipmentId, string driverId)
         {
-            /*var driver = await DbContext.Users.FindAsync(driverId);
+            *//*var driver = await DbContext.Users.FindAsync(driverId);
             if(driver == null || driver.userRole != "deliverBoy")
             {
                 return;
-            }*/
+            }*//*
             string connectionId = GetConnectionIdByUser(driverId);
-            if(connectionId != null) {
+            *//*if(connectionId != null) {
                 await Clients.Client(connectionId).SendAsync("DeliveryBoyGetsShipment", shipmentId);
-            }
+            }*//*
             
-            await Clients.Caller.SendAsync("Delivery initiated ",shipmentId);
-        }
+            await Clients.All.SendAsync("Deliveryinitiated",shipmentId);
+        }*/
     }
 }

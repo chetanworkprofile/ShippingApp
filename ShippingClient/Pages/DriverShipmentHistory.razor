@@ -1,4 +1,4 @@
-﻿@page "/customerGetShipments"
+﻿@page "/getDriverShipments"
 @using ShippingClient.Models;
 @using ShippingClient.Services.Contracts;
 @inject IAPIService _apiService;
@@ -6,7 +6,7 @@
 @inject IAlertService AlertService;
 
 @using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize(Roles = "client,admin")]
+@attribute [Authorize(Roles = "deliveryBoy,admin")]
 <PageTitle>Shipment App</PageTitle>
 
 <AuthorizeView>
@@ -31,6 +31,7 @@
                             <th>Status</th>
                             <th>Current Location</th>
                             <th>Action</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     @if (shipmentList != null && shipmentList.Count > 0)
@@ -53,6 +54,11 @@
                                     <td>
                                         <button @onclick="() => ShowStatus(shipment.shipmentId)" class="btn btn-primary">
                                             Show Status
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button @onclick="() => ShowRoute(shipment.shipmentId)" class="btn btn-primary">
+                                            Get Route
                                         </button>
                                     </td>
                                 </tr>
@@ -96,6 +102,11 @@
         return 0;
     }
 
+    public object ShowRoute(Guid id)
+    {
+        _navMgr.NavigateTo($"/bestRoute/{id}");
+        return 0;
+    }
 
     async Task GetShipmentsTypesList()
     {
@@ -107,7 +118,7 @@
         {
             GetYourselfResponse temp = await _apiService.GetYourself();
             Guid tempId = temp.data.userId;
-            shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
+            shipmentsResponse = await _apiService.GetShipmentHistoryDriver();
             shipmentList = shipmentsResponse.data;
             if (shipmentsResponse.statusCode != 0)
             {

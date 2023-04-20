@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text;
 using static System.Net.WebRequestMethods;
 using System.Reflection;
+using System.Net;
 
 namespace ShippingClient.Services
 {
@@ -23,7 +24,8 @@ namespace ShippingClient.Services
         {
             this._httpClient = httpClient;
             this._localStorage = localStorage;
-            baseUrl = "https://localhost:7147/";
+            //baseUrl = "https://localhost:7147/";
+            baseUrl = "http://192.180.0.192:5656/";
         }
 
         public async Task<GetProductsResponse> GetProductTypes(string? search=null)
@@ -33,11 +35,11 @@ namespace ShippingClient.Services
                 GetProductsResponse? productTypes;
                 if (search != null)
                 {
-                    productTypes = await _httpClient.GetFromJsonAsync<GetProductsResponse>($"api/v1/get/productTypes?searchString={search}");
+                    productTypes = await _httpClient.GetFromJsonAsync<GetProductsResponse>($"{baseUrl}api/v1/get/productTypes?searchString={search}");
                 }
                 else
                 {
-                    productTypes = await _httpClient.GetFromJsonAsync<GetProductsResponse>("api/v1/get/productTypes");
+                    productTypes = await _httpClient.GetFromJsonAsync<GetProductsResponse>($"{baseUrl}api/v1/get/productTypes");
                 }
                 return productTypes!;
             }
@@ -56,11 +58,11 @@ namespace ShippingClient.Services
                 GetContainerTypesResponse? containerTypes;
                 if (search != null)
                 {
-                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"api/v1/get/containerTypes?searchString={search}");
+                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"{baseUrl}api/v1/get/containerTypes?searchString={search}");
                 }
                 else
                 {
-                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>("api/v1/get/containerTypes");
+                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"{baseUrl}api/v1/get/containerTypes");
                 }
                 return containerTypes!;
             }
@@ -75,7 +77,7 @@ namespace ShippingClient.Services
         {
             try
             {
-                var checkpoints = await _httpClient.GetFromJsonAsync<GetCheckpointsResponse>("api/v1/get/checkpoints");
+                var checkpoints = await _httpClient.GetFromJsonAsync<GetCheckpointsResponse>($"{baseUrl}api/v1/get/checkpoints");
                 return checkpoints!;
             }
             catch (Exception ex)
@@ -131,7 +133,28 @@ namespace ShippingClient.Services
             return resultContent!;
 
         }
-        
+
+        public async Task<ResponseModel> AddCheckpoint(AddCheckpoint model)
+        {
+            string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/add/checkpoint");
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var result = await _httpClient.SendAsync(requestMessage);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorResponseContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+                return new ResponseModel { statusCode = 0, message = errorResponseContent!.message };
+            }
+            var resultContent = await result.Content.ReadFromJsonAsync<ResponseModel>();
+
+            return resultContent!;
+
+        }
+
         public async Task<AddContainerTypeResponse> AddContainerType(AddContainerType model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
@@ -255,7 +278,7 @@ namespace ShippingClient.Services
             {
                 GetShipmentsCutomerResponse? shipments;
 
-                shipments = await _httpClient.GetFromJsonAsync<GetShipmentsCutomerResponse>($"api/v1/get/shipments?customerId={customerId}");
+                shipments = await _httpClient.GetFromJsonAsync<GetShipmentsCutomerResponse>($"{baseUrl}api/v1/get/shipments?customerId={customerId}");
                 return shipments!;
             }
             catch (Exception ex)
@@ -272,7 +295,7 @@ namespace ShippingClient.Services
             {
                 GetYourselfResponse? yourself;
 
-                yourself = await _httpClient.GetFromJsonAsync<GetYourselfResponse>("api/v1/user/getYourself");
+                yourself = await _httpClient.GetFromJsonAsync<GetYourselfResponse>($"{baseUrl}api/v1/user/getYourself");
                 return yourself!;
             }
             catch (Exception ex)
@@ -288,7 +311,7 @@ namespace ShippingClient.Services
             try
             {
                 ProductType? productTypes;
-                productTypes = await _httpClient.GetFromJsonAsync<ProductType>($"api/v1/get/productTypes?productTypeId={id}");
+                productTypes = await _httpClient.GetFromJsonAsync<ProductType>($"{baseUrl}api/v1/get/productTypes?productTypeId={id}");
                 return productTypes!;
             }
             catch (Exception ex)
@@ -303,7 +326,7 @@ namespace ShippingClient.Services
             try
             {
                 ContainerType? containerTypes;
-                containerTypes = await _httpClient.GetFromJsonAsync<ContainerType>($"api/v1/get/containerTypes?containerTypeId={id}");
+                containerTypes = await _httpClient.GetFromJsonAsync<ContainerType>($"{baseUrl}api/v1/get/containerTypes?containerTypeId={id}");
                 return containerTypes!;
             }
             catch (Exception ex)
@@ -318,7 +341,7 @@ namespace ShippingClient.Services
             try
             {
                 Checkpoints? checkpoint;
-                checkpoint = await _httpClient.GetFromJsonAsync<Checkpoints>($"api/v1/get/checkpoints?checkpointId={id}");
+                checkpoint = await _httpClient.GetFromJsonAsync<Checkpoints>($"{baseUrl}api/v1/get/checkpoints?checkpointId={id}");
                 return checkpoint!;
             }
             catch (Exception ex)
@@ -327,6 +350,62 @@ namespace ShippingClient.Services
                 Console.WriteLine(ex);
                 throw;
             }
+        }
+
+        public async Task<ShipmentHistory> GetShipmentHistory(Guid shipmentId)
+        {
+            try
+            {
+                ShipmentHistory? history;
+                history = await _httpClient.GetFromJsonAsync<ShipmentHistory>($"{baseUrl}api/v1/get/shipmentHistory?shipmentId={shipmentId}");
+                return history!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<GetShipmentsCutomerResponse> GetShipmentHistoryDriver()
+        {
+            try
+            {
+                GetShipmentsCutomerResponse? shipments;
+
+                shipments = await _httpClient.GetFromJsonAsync<GetShipmentsCutomerResponse>($"{baseUrl}api/v1/get/driver/shipmentHistory");
+                return shipments!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<List<CheckpointModel>> GetShortRoute(Guid shipmentId)
+        {
+            List<CheckpointModel> checkpoints = new List<CheckpointModel>();
+            try
+            {
+                var result = await _httpClient.GetAsync($"{baseUrl}api/v1/get/bestRoute?shipmentId={shipmentId}");
+                if (result.StatusCode == HttpStatusCode.OK)
+                {
+                    var res = await result.Content.ReadFromJsonAsync<ResponseModel>();
+                    var dat = JsonSerializer.Serialize(res!.data!);
+                    checkpoints = JsonSerializer.Deserialize<List<CheckpointModel>>(dat)!;
+                    return checkpoints;
+                };
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+            return checkpoints;
         }
     }
 }

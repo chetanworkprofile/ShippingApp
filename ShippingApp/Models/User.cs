@@ -10,7 +10,7 @@
         public string address { get; set; } = string.Empty;
         public byte[] passwordHash { get; set; } = new byte[32];
         public string userRole { get; set; } = string.Empty;
-        //public string pathToProfilePic { get; set; } = string.Empty;
+        public string pathToProfilePic { get; set; } = string.Empty;
         // role can be deliveryBoy , manager, client
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
@@ -30,7 +30,7 @@
             this.contactNo = contactNo;
             this.address = address;
             this.passwordHash = passwordHash;
-            //this.pathToProfilePic = pathToProfilePic;
+            this.pathToProfilePic = pathToProfilePic;
             this.userRole = userRole;
             createdAt = DateTime.Now;
             updatedAt = DateTime.Now;

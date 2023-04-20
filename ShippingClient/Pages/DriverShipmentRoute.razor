@@ -1,0 +1,69 @@
+﻿@page "/bestRoute"
+@page "/bestRoute/{Id}"
+@inject IAPIService _apiService;
+@inject NavigationManager _navMgr;
+@inject IAlertService AlertService;
+@using Microsoft.AspNetCore.Authorization;
+@using ShippingClient.Services.Contracts;
+@attribute [Authorize(Roles = "client,admin,deliveryBoy")]
+<PageTitle>Shipment App</PageTitle>
+
+<h3>shipmentId @shipmentId</h3>
+<AuthorizeView>
+    <Authorized>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>checkpointName</th>
+                    <th>checkpointId</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var checkpoint in list)
+                {
+                    <tr>
+                        <td>
+                            <i class="oi oi-location"></i>
+                        </td>
+                        <td>@checkpoint.checkpointName</td>
+                        <td>@checkpoint.checkpointId</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    [Parameter]
+    public string? Id { get; set; }
+    Guid shipmentId;
+    protected override async void OnParametersSet()
+    {
+        if (Id != null)
+        {
+            shipmentId = new Guid(Id);
+            Console.WriteLine(shipmentId);
+            list = await _apiService.GetShortRoute(shipmentId);
+        }
+        else
+        {
+            shipmentId = Guid.Empty;
+        }
+        StateHasChanged();
+    }
+
+    List<CheckpointModel> list = new();
+
+}

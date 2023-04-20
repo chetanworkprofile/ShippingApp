@@ -5,6 +5,7 @@ namespace ShippingClient.Services.Contracts
     public interface IAPIService
     {
         public Task<GetProductsResponse> GetProductTypes(string? search = null);
+        public Task<ResponseModel> AddCheckpoint(AddCheckpoint model);
         public Task<GetContainerTypesResponse> GetContainerTypes(string? search = null);
         public Task<GetCheckpointsResponse> GetCheckpoints();
         public Task<CreateShipmentResponse> CreateShipment(CreateShipment model);
@@ -19,5 +20,8 @@ namespace ShippingClient.Services.Contracts
         public Task<ProductType> GetProductTypeSingle(Guid id);
         public Task<ContainerType> GetContainerTypeSingle(Guid id);
         public Task<Checkpoints> GetCheckpointTypeSingle(Guid id);
+        public Task<ShipmentHistory> GetShipmentHistory(Guid shipmentId);
+        public Task<GetShipmentsCutomerResponse> GetShipmentHistoryDriver();
+        public Task<List<CheckpointModel>> GetShortRoute(Guid shipmentId);
     }
 }
