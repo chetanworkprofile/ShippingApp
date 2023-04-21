@@ -127,6 +127,11 @@ namespace ShippingApp.Hubs
             }
         }
 
+        public async Task HelloFromUser(string msg)
+        {
+            await Clients.All.SendAsync("message",$"{Context.ConnectionId} says {msg}");
+        }
+
         //this functin will be called when s3 allocates driver to shipment and calls
         /*public async Task SendShipmentForDelivery(string shipmentId, string driverId)
         {

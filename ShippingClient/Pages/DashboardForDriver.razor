@@ -1,0 +1,135 @@
+﻿@page "/dd"
+@inject IJSRuntime JSRuntime;
+@implements IAsyncDisposable;
+@inject NavigationManager _navMgr;
+@inject IAuthenticationService _authService;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using ShippingClient.Services.Contracts;
+@attribute [Authorize(Roles = "deliveryBoy")]
+<PageTitle>Shipment App</PageTitle>
+
+<AuthorizeView Roles="deliverBoy">
+    <Authorized>
+        <h1>Hello Welcome Back </h1>
+        <h2><b>@context.User.Identity?.Name</b></h2>
+
+        @if (!IsConnected)
+        {
+            <div class="input-group">
+                <button class="btn btn-primary form-control-append" @onclick="Connect">
+                    Connect
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="input-group">
+                <div>
+                    <p>@messages</p>
+                </div>
+                @*<input @bind-value="message"
+                   @bind-value:event="oninput"
+                   @onkeyup="HandleInput"
+                   class="form-control">
+                <button class="btn btn-primary form-group-append"
+                    @onclick="Send"
+                    disabled="@(!IsConnected)">
+                    Send
+                </button>*@
+            </div>
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // redirect to home if already logged in
+        if (_authService.GetToken() != null)
+        {
+            _navMgr.NavigateTo("/login", true);
+        }
+        //var authenticationState = _authProvider.GetAuthenticationStateAsync();
+        //string token = authenticationState.Result.User.FindFirst("access_token")!.Value;
+
+        //hubConnection = new HubConnectionBuilder()
+        //    .WithUrl(_navMgr.ToAbsoluteUri("https://localhost:7147/shippingHub"), options =>
+        //    {
+        //        options.AccessTokenProvider = () => Task.FromResult(token);
+        //    })
+        //    .WithAutomaticReconnect()
+        //    .Build();
+
+        Connect();
+    }
+    private HubConnection? hubConnection;
+    private string messages = string.Empty;
+    //private string username = string.Empty;
+    //private string message = string.Empty;
+    ElementReference TextAreaRef;
+
+    private async Task Connect()
+    {
+        //hubConnection = new HubConnectionBuilder()
+        //    .WithUrl(_navMgr.ToAbsoluteUri($"/shippingHub"))
+        //    .Build();
+
+        //hubConnection.On<string, string>("GetThatMessageDude", (user, message) =>
+        //{
+        //    var msg = $"{(string.IsNullOrEmpty(user) ? "" : user + ": ")}{message}";
+        //    messages += msg + "\n";
+        //    JSRuntime.InvokeVoidAsync("scrollToBottom", TextAreaRef);
+        //    StateHasChanged();
+        //});
+        hubConnection.On("UserConnected", () =>
+        {
+            messages = "UserConnected";
+            StateHasChanged();
+            hubConnection.SendAsync("HelloFromUser", "hello all");
+        });
+        hubConnection.On("message", (string a) =>
+        {
+            messages = a;
+            StateHasChanged();
+            
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    //private async Task Send()
+    //{
+    //    if (hubConnection != null)
+    //    {
+    //        await hubConnection.SendAsync("AddMessageToChat", username, message);
+    //        message = string.Empty;
+    //    }
+    //}
+
+    //private async Task HandleInput(KeyboardEventArgs args)
+    //{
+    //    if (args.Key.Equals("Enter"))
+    //    {
+    //        await Send();
+    //    }
+    //}
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

@@ -71,6 +71,7 @@
         {
             loginResponse.message = "Wait....";
             loginResponse = await _authService.Login(loginModel);
+            
             if (loginResponse.statusCode != 0)
             {
                 AlertService.Success("Login successful");

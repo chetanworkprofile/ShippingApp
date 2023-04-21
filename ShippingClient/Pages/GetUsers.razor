@@ -55,22 +55,27 @@
                             @if (pageNumber > 1)
                             {
                                 <li class="page-item">
-                                    <a @onclick="async ()=> await GetPersons(pageNumber-1)" class="page-link" style="cursor:pointer" aria-label="Previous">
+                                    <a @onclick="async ()=> {await GetPersons(pageNumber-1); pageNumber--;}" class="page-link" style="cursor:pointer" aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
                             }
-                            @for (int i = 1; i <= totalPages; i++)
+                            @if(totalPages==1){}
+                            else
                             {
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
 
-                                string activeClass = (i == pageNumber) ? "active" : "";
-                                int c = i;
-                                <li class="page-item @activeClass"><a @onclick="async ()=> await GetPersons(c)" style="cursor:pointer" class="page-link">@c</a></li>
+                                    string activeClass = (i == pageNumber) ? "active" : "";
+                                    int c = i;
+                                    <li class="page-item @activeClass"><a @onclick="async ()=> {await GetPersons(c); pageNumber=c;}" style="cursor:pointer" class="page-link">@c</a></li>
+                                }
                             }
+                            
                             @if (pageNumber < totalPages)
                             {
                                 <li class="page-item">
-                                    <a @onclick="async ()=> await GetPersons(pageNumber+1)" class="page-link" style="cursor:pointer" aria-label="Next">
+                                    <a @onclick="async ()=> {await GetPersons(pageNumber+1); pageNumber++;}" class="page-link" style="cursor:pointer" aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>
                                 </li>

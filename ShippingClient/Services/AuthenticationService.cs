@@ -27,8 +27,8 @@ namespace ShippingClient.Services
             this._httpClient = httpClient;
             this._authStateProvider = authStateProvider;
             this._localStorage = localStorage;
-            //baseUrl = "https://localhost:7147/";
-            baseUrl = "http://192.180.0.192:5656/";
+            baseUrl = "https://localhost:7147/";
+            //baseUrl = "http://192.180.0.192:5656/";
         }
 
 
