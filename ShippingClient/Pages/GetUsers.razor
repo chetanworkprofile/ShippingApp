@@ -1,12 +1,5 @@
 ﻿@page "/getUsers"
-@using ShippingClient.Models;
-@inject HttpClient http
-@inject IJSRuntime jsRuntime
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
-@using Microsoft.AspNetCore.Authorization;
-@using ShippingClient.Services.Contracts;
+
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -146,7 +139,7 @@
 
             if (result.statusCode != 0)
             {
-                AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
                 list = result.data.list;
                 totalPages = (int)Math.Ceiling(result.data.totalAvailableRecords / 10.0);
@@ -160,7 +153,7 @@
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             StateHasChanged();
         }
         

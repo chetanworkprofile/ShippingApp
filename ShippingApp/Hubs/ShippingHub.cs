@@ -35,22 +35,10 @@ namespace ShippingApp.Hubs
             _logger.LogInformation("New User connected to socket " + Context.ConnectionId);
             try
             {
-                await Clients.Caller.SendAsync("UserConnected");
+                //await Clients.Caller.SendAsync("UserConnected");
+                await Clients.Caller.SendAsync("UserConnected",Context.ConnectionId);
                 string? userId = Context.User.FindFirstValue(ClaimTypes.Sid);
                 AddUserConnectionId(userId);
-
-                /*AddUserConnectionId(userId);
-                adminId = GetConnectionIdByUser(adminUserId);
-                _logger.LogInformation($"admin userId: {adminUserId} admin id: {adminId}");
-                if (adminId != null)
-                {
-                    await Clients.Clients(adminId).SendAsync("GetOnlineUsers");
-                }
-                //await Clients.Clients(adminId).SendAsync("GetOnlineUsers");
-                //await Clients.Caller.SendAsync(adminId);
-                //await Clients.AllExcept(Context.ConnectionId).SendAsync("hi All");
-                //await Clients.All.SendAsync("GetOnlineUsers");
-                *//*await Clients.All.SendAsync("mes",new PlaceOrder());*/
             }
             catch (Exception ex)
             {
@@ -127,10 +115,6 @@ namespace ShippingApp.Hubs
             }
         }
 
-        public async Task HelloFromUser(string msg)
-        {
-            await Clients.All.SendAsync("message",$"{Context.ConnectionId} says {msg}");
-        }
 
         //this functin will be called when s3 allocates driver to shipment and calls
         /*public async Task SendShipmentForDelivery(string shipmentId, string driverId)

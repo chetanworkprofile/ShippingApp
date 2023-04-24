@@ -1,10 +1,5 @@
 ﻿@page "/addCheckpoint"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
-@using Microsoft.AspNetCore.Authorization;
+
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -74,7 +69,7 @@
     async Task DoAddProductType()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
         
         try
@@ -83,13 +78,13 @@
             addResponse = await _apiService.AddCheckpoint(checkpointModel);
             if (addResponse.statusCode != 0)
             {
-                AlertService.Success("Checkpoint Added successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Checkpoint Added successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

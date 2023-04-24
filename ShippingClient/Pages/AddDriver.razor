@@ -1,10 +1,5 @@
 ﻿@page "/addDriver"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
-@using Microsoft.AspNetCore.Authorization;
+
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -141,7 +136,7 @@
     async Task DoAddDriver()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
         driverModel.checkpointLocation = checkPoint;
         driverModel.isAvailable = isAvailable;
@@ -157,13 +152,13 @@
             addDriverResponse = await _apiService.AddDriver(driverModel);
             if (addDriverResponse.statusCode != 0)
             {
-                AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

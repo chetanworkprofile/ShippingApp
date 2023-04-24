@@ -1,10 +1,6 @@
 ﻿@page "/tracking"
 @page "/tracking/{Id}"
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
-@using Microsoft.AspNetCore.Authorization;
-@using ShippingClient.Services.Contracts;
+
 @attribute [Authorize(Roles = "client,admin,deliveryBoy")]
 <PageTitle>Shipment App</PageTitle>
 

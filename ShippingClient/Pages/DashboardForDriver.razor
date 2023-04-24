@@ -1,11 +1,5 @@
 ﻿@page "/dd"
-@inject IJSRuntime JSRuntime;
-@implements IAsyncDisposable;
-@inject NavigationManager _navMgr;
-@inject IAuthenticationService _authService;
-@using Microsoft.AspNetCore.Authorization;
-@using Microsoft.AspNetCore.SignalR.Client;
-@using ShippingClient.Services.Contracts;
+
 @attribute [Authorize(Roles = "deliveryBoy")]
 <PageTitle>Shipment App</PageTitle>
 

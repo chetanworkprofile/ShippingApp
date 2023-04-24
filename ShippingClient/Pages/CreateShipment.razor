@@ -1,10 +1,5 @@
 ﻿@page "/createShipment"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAuthenticationService _authService;
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService
+
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize(Roles = "admin,client,manager")]
 <PageTitle>Shipment App</PageTitle>
@@ -154,6 +149,13 @@
     string notes = string.Empty;
     protected override async void OnInitialized()
     {
+        HubConnection hub = socket.GetHubConnection();
+        if (hub == null)
+        {
+            socket.Connect();
+        }
+        hub = socket.GetHubConnection();
+        Console.WriteLine("create ship hub var" + hub);
         GetProductsResponse productTypes = await _apiService.GetProductTypes();
         GetContainerTypesResponse containerTypes = await _apiService.GetContainerTypes();
         GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
@@ -165,7 +167,7 @@
     async Task DoCreateShipment()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
         shipmentModel.origin = origin;
         shipmentModel.destination = destination;
@@ -177,13 +179,13 @@
             createShipmentResponse = await _apiService.CreateShipment(shipmentModel);
             if (createShipmentResponse.statusCode != 0)
             {
-                AlertService.Success("Shipment Queued successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Shipment Queued successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

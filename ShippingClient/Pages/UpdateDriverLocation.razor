@@ -1,9 +1,5 @@
 ﻿@page "/updateDriverLocation"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
+
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize(Roles = "deliveryBoy")]
 <PageTitle>Shipment App</PageTitle>
@@ -86,7 +82,7 @@
     async Task DoUpdateLocation()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
 
         try
@@ -95,13 +91,13 @@
             updateResponse = await _apiService.UpdateDriverLocation(point.checkpoint);
             if (updateResponse.statusCode != 0)
             {
-                AlertService.Success("Driver location updated successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Driver location updated successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

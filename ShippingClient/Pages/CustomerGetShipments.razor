@@ -1,11 +1,5 @@
 ﻿@page "/customerGetShipments"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
 
-@using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize(Roles = "client,admin")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -100,7 +94,7 @@
     async Task GetShipmentsTypesList()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
 
         try
@@ -111,14 +105,14 @@
             shipmentList = shipmentsResponse.data;
             if (shipmentsResponse.statusCode != 0)
             {
-                AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

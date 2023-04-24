@@ -1,10 +1,5 @@
 ﻿@page "/addManager"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
-@using Microsoft.AspNetCore.Authorization;
+
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -110,7 +105,7 @@
     async Task DoAddManager()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
         try
         {
@@ -124,13 +119,13 @@
             addManagerResponse = await _apiService.AddManager(managerModel);
             if (addManagerResponse.statusCode != 0)
             {
-                AlertService.Success("Manager Added successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Manager Added successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

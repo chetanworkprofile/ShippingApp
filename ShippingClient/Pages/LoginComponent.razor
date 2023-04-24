@@ -1,9 +1,6 @@
 ﻿@page "/login"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAuthenticationService _authService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
 <PageTitle>Shipment App</PageTitle>
 
 <AuthorizeView>
@@ -51,21 +48,58 @@
                     <p>Don't have a account?</p><NavLink href="/register" class="btn btn-link">Register</NavLink>
                     <NavLink href="/forgetPassword" class="btn btn-link">Forget Password</NavLink>
                 </EditForm>
+                @*<MudGrid>
+                    <MudItem xs="12" sm="7">
+                        <MudPaper Class="pa7">
+                            <MudForm Model="loginModel" ReadOnly="false" @bind-Errors="@errors" @onsubmit = "DoLogin">
+
+                                <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!" @bind-Value=loginModel.email
+                                              Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+                                <MudTextField T="string" Label="Password"  @bind-Value=loginModel.password
+                                              InputType="InputType.Password"
+                                              ValidationMessage For="@(()=>loginModel.password)" Required="true"
+                                              RequiredError="Password is required!" />
+                                <div class="d-flex align-center justify-space-between">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" disabled="@loading" ButtonType="ButtonType.Submit">
+                                         @if (loading)
+                                        {
+                                            <span class="spinner-border spinner-border-sm mr-1"></span>
+                                            Task.Delay(5000);
+                                            loading = false;
+                                        }
+                                        Login
+                                    </MudButton>
+                                    <MudProgressCircular Color="Color.Primary" Indeterminate="loading" />
+                                </div>
+                            </MudForm>
+                        </MudPaper>
+                    </MudItem>*@
+                    @*<MudItem xs="12" sm="5">
+                        <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText>
+                                                @foreach (var error in errors)
+                                            {
+                                <MudText Color="@Color.Error">@error</MudText>
+                                            }
+                        </MudPaper>
+                    </MudItem>*@
+                </MudGrid>
             </div>
         </div>
     </NotAuthorized>
 </AuthorizeView>
 
 
+
 @code {
     LoginDTO loginModel = new();
     LoginResponse loginResponse = new();
     private bool loading;
-
+    string[] errors={};
     async Task DoLogin()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
         try
         {
@@ -74,13 +108,13 @@
             
             if (loginResponse.statusCode != 0)
             {
-                AlertService.Success("Login successful");
+                //AlertService.Success("Login successful");
                 _navMgr.NavigateTo("/", true);
             }
         }
         catch(Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

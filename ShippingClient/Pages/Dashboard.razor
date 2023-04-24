@@ -1,12 +1,5 @@
 ﻿@page "/"
-@inject NavigationManager _navMgr;
-@inject IAuthenticationService _authService;
-@using Microsoft.AspNetCore.Authorization;
-@using Microsoft.AspNetCore.SignalR.Client;
-@using ShippingClient.Services.Contracts;
-@inject IJSRuntime JSRuntime;
-
-@inject HubConnection hubConnection;
+@inject Socket socket
 <PageTitle>Shipment App</PageTitle>
 
 <AuthorizeView>
@@ -71,60 +64,15 @@
         }
     </NotAuthorized>
 </AuthorizeView>
-@*<AuthorizeView Roles="deliverBoy">
-    <Authorized>
-        <h1>Hello Welcome Back </h1>
-        <h2><b>@context.User.Identity?.Name</b></h2>
-
-        @if (!IsConnected)
-        {
-            <div class="input-group">
-                <button class="btn btn-primary form-control-append" @onclick="Connect">
-                    Connect
-                </button>
-            </div>
-        }
-        else
-        {
-            <div class="input-group">
-                <div>
-                    <p>@messages</p>
-                </div>
-                @*<input @bind-value="message"
-            @bind-value:event="oninput"
-            @onkeyup="HandleInput"
-            class="form-control">
-            <button class="btn btn-primary form-group-append"
-            @onclick="Send"
-            disabled="@(!IsConnected)">
-            Send
-            </button>*@
-            @*</div>
-        }
-
-    </Authorized>
-    <NotAuthorized>
-        <p>You are not authorized</p>
-        @if (true)
-        {
-            _navMgr.NavigateTo("/login");
-        }
-    </NotAuthorized>
-</AuthorizeView>*@
-@*@code {
-    protected override void OnInitialized()
-    {
-        Console.WriteLine("hello rakesh");
-        // redirect to home if already logged in
-        if (_authService.GetToken() != null)
-        {
-            _navMgr.NavigateTo("/login", true);
-        }
-    }
-}*@
-
 
 @code {
+    public string baseUrl = "https://localhost:7147/";
+    //public string baseUrl = "http://192.180.0.192:5656/"*/
+    private static HubConnection? hubConnection;
+    private string messages = string.Empty;
+
+    ElementReference TextAreaRef;
+
     protected override void OnInitialized()
     {
         // redirect to home if already logged in
@@ -132,20 +80,49 @@
         {
             _navMgr.NavigateTo("/login", true);
         }
-        Connect();
+        HubConnection hub = socket.GetHubConnection();
+        if (hub == null)
+        {
+            socket.Connect();
+        }
+        hub = socket.GetHubConnection();
+        Console.WriteLine("helo from hub var" + hub);
+        //Connect();
     }
-    //private HubConnection? hubConnection;
-    private string messages = string.Empty;
-    //private string username = string.Empty;
-    //private string message = string.Empty;
-    ElementReference TextAreaRef;
 
-    private async Task Connect()
-    {
-        //hubConnection = new HubConnectionBuilder()
-        //    .WithUrl(_navMgr.ToAbsoluteUri($"/shippingHub"))
-        //    .Build();
 
+
+    //private async Task Connect()
+    //{
+    //    if (hubConnection == null)
+    //    {
+    //        hubConnection = new HubConnectionBuilder()
+    //        .WithUrl(_navMgr.ToAbsoluteUri($"{baseUrl}shippingHub"), options =>
+    //        {
+    //            options.SkipNegotiation = true;
+    //            options.Transports = HttpTransportType.WebSockets;
+    //            options.SkipNegotiation = true;
+    //            //options.AccessTokenProvider = () => Task.FromResult(_authProvider.GetAuthenticationStateAsync);
+    //            options.AccessTokenProvider = async () =>
+    //            {
+    //                //AuthenticationStateProvider authState = authProvider;
+    //                return await _localStorage.GetItemAsync<string>("accessToken");
+    //            };
+    //        })
+    //        .Build();
+    //        try
+    //        {
+    //            await hubConnection.StartAsync();
+    //            Console.WriteLine("Connection started");
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Console.WriteLine("Error while starting connection: " + ex);
+    //        }
+        
+    //    }
+        
+            
         //hubConnection.On<string, string>("GetThatMessageDude", (user, message) =>
         //{
         //    var msg = $"{(string.IsNullOrEmpty(user) ? "" : user + ": ")}{message}";
@@ -153,24 +130,22 @@
         //    JSRuntime.InvokeVoidAsync("scrollToBottom", TextAreaRef);
         //    StateHasChanged();
         //});
-        hubConnection.On("UserConnected", () =>
-        {
-            messages = "UserConnected";
-            StateHasChanged();
-            
-        });
-        hubConnection.On("message", (string a) =>
-        {
-            messages = a;
-            StateHasChanged();
+        
+        
+       // hubConnection.On("message", (string a) =>
+       // {
+       //     messages = a;
+       //     Console.WriteLine("msg fxn");
+       //     StateHasChanged();
 
-        });
+       // });
 
-        await hubConnection.StartAsync();
-        await hubConnection.SendAsync("HelloFromUser", "hello all");
+       //// await hubConnection.StartAsync();
+       // Console.WriteLine("connected socket adf");
+       // await hubConnection.SendAsync("HelloFromUser", "hello all");
     }
 
-    //private async Task Send()
+    @*//private async Task Send()
     //{
     //    if (hubConnection != null)
     //    {
@@ -197,3 +172,4 @@
     //    }
     //}
 }
+*@

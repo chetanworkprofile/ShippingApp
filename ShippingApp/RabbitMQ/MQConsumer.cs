@@ -49,13 +49,15 @@ namespace ShippingApp.RabbitMQ
                 NotifyDriver driver = JsonSerializer.Deserialize<NotifyDriver>(message)!;
                 if (driver != null)
                 {
-                    EmailDriver(driver);
-                    //var response = shipmentService!.AddShipment(shipment!);
-                    string driverConnId = GetConnectionIdByUser(driver.driverId.ToString());
-                    Console.WriteLine(driver);
-                    Console.WriteLine(driverConnId);
-                    await _hubContext.Clients.Clients(driverConnId).SendAsync("driverGetsShipment",driver);
-                    
+                    foreach(var id in driver.driverIds)
+                    {
+                        EmailDriver(id);
+                        //var response = shipmentService!.AddShipment(shipment!);
+                        string driverConnId = GetConnectionIdByUser(id.ToString());
+                        Console.WriteLine(driver);
+                        Console.WriteLine(driverConnId);
+                        await _hubContext.Clients.Clients(driverConnId).SendAsync("refresh", driver);
+                    }
                     //var res = _hubContext.SendShipmentForDelivery(driver.shipmentId.ToString(), driver.driverId.ToString());
                 }
             };
@@ -64,10 +66,10 @@ namespace ShippingApp.RabbitMQ
             Console.ReadLine();
         }
 
-        public void EmailDriver(NotifyDriver notify)
+        public void EmailDriver(Guid driverId)
         {
-            User driver = _shippingDbContext.Users.Find(notify.driverId);
-            SendEmailModel model = new SendEmailModel(driver.email,"New Shipment Alloted to you",$"You have been alloted a new shipment Id {notify.shipmentId}");
+            User driver = _shippingDbContext.Users.Find(driverId);
+            SendEmailModel model = new SendEmailModel(driver.email,"New Shipment ",$"New Shipment is listed in your location, please check out");
             _producer.SendEmail(model);
         }
 

@@ -1,10 +1,5 @@
 ﻿@page "/addProductType"
-@using ShippingClient.Models;
-@using ShippingClient.Services.Contracts;
-@inject IAPIService _apiService;
-@inject NavigationManager _navMgr;
-@inject IAlertService AlertService;
-@using Microsoft.AspNetCore.Authorization;
+
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -78,7 +73,7 @@
     async Task DoAddProductType()
     {
         // reset alerts on submit
-        AlertService.Clear();
+        //AlertService.Clear();
         loading = true;
         productTypeModel.isFragile = isFragileCheck;
         try
@@ -87,13 +82,13 @@
             addProductTypeResponse = await _apiService.AddProductType(productTypeModel);
             if (addProductTypeResponse.statusCode != 0)
             {
-                AlertService.Success("Product Type Added successfully", keepAfterRouteChange: true);
+                //AlertService.Success("Product Type Added successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

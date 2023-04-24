@@ -3,6 +3,9 @@
 @inject NavigationManager _navMgr;
 @inject IAuthenticationService _authService;
 <div class="page">
+    <MudThemeProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
     <AuthorizeView>
         <div class="sidebar">
             <NavMenu />
@@ -22,5 +25,5 @@
 </div>
 
 @code {
-    
+   
 }
