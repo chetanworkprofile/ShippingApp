@@ -56,7 +56,7 @@ namespace ShippingApp.RabbitMQ
                         string driverConnId = GetConnectionIdByUser(id.ToString());
                         Console.WriteLine(driver);
                         Console.WriteLine(driverConnId);
-                        await _hubContext.Clients.Clients(driverConnId).SendAsync("refresh", driver);
+                        await _hubContext.Clients.Clients(driverConnId).SendAsync("refresh");
                     }
                     //var res = _hubContext.SendShipmentForDelivery(driver.shipmentId.ToString(), driver.driverId.ToString());
                 }

@@ -13,7 +13,7 @@
                     <p><em>Loading...</em></p>
                 }
                 else{
-                    <EditForm Model="shipmentModel" OnSubmit="DoCreateShipment">
+                    <EditForm Model="shipmentModel" OnValidSubmit="DoCreateShipment">
                     <DataAnnotationsValidator />
                     <div class="row">
                         <div class="col-md-4">
@@ -22,8 +22,8 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@ProductTypeClicked">
-                                <option value="">-- Select ProductType --</option>
+                            <select class="form-control" onchange="@ProductTypeClicked" required>
+                                <option value="" disabled selected>-- Select ProductType --</option>
                                 @foreach (var product in productTypeList)
                                 {
                                     <option value="@product.productTypeId">@product.type</option>
@@ -38,8 +38,8 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@ContainerTypeClicked">
-                                <option value="">-- Select ContainerType --</option>
+                            <select class="form-control" onchange="@ContainerTypeClicked" required>
+                                <option value="" disabled selected>-- Select ContainerType --</option>
                                 @if (containerTypeList != null)
                                 {
                                     @foreach (var container in containerTypeList)
@@ -58,15 +58,18 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@OriginClicked">
-                                <option value="">-- Select Origin --</option>
+                            <select class="form-control" onchange="@OriginClicked" required>
+                                <option value="" disabled selected>-- Select Origin --</option>
                                 @foreach (var origin in checkpointsList)
                                 {
-                                    if (origin.checkpointId == destination)
+                                    @*if (origin.checkpointId == destination)
                                     {
-                                        continue;
+                                        <option value="@origin.checkpointId" disabled>@origin.checkpointName</option>
                                     }
-                                    <option value="@origin.checkpointId">@origin.checkpointName</option>
+                                    else*@
+                                    {
+                                        <option value="@origin.checkpointId">@origin.checkpointName</option>    
+                                    }
                                 }
                             </select>
                         </div>
@@ -78,15 +81,18 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@DestinationClicked">
-                                <option value="">-- Select Destination --</option>
+                            <select class="form-control" onchange="@DestinationClicked" required>
+                                <option value="" disabled selected>-- Select Destination --</option>
                                     @foreach (var dest in checkpointsList)
                                     {
-                                        if(dest.checkpointId == origin)
+                                        @*if (dest.checkpointId == origin)
                                         {
-                                            continue;
+                                            <option value="@dest.checkpointId" disabled>@dest.checkpointName</option>
                                         }
-                                        <option value="@dest.checkpointId">@dest.checkpointName</option>
+                                        else*@
+                                        {
+                                            <option value="@dest.checkpointId">@dest.checkpointName</option>
+                                        }
                                     }
                             </select>
                         </div>
@@ -141,10 +147,13 @@
     List<ProductType> productTypeList = new List<ProductType>();
     List<ContainerType> containerTypeList = new List<ContainerType>();
     List<Checkpoints> checkpointsList = new List<Checkpoints>();
+    //List<Checkpoints> originList = new List<Checkpoints>();
+    //List<Checkpoints> destList = new List<Checkpoints>();
+
     Guid productTypeId;
     Guid containerTypeId;
-    Guid origin;
-    Guid destination;
+    Guid origin = Guid.Empty;
+    Guid destination = Guid.Empty;
     decimal weight;
     string notes = string.Empty;
     protected override async void OnInitialized()
@@ -152,7 +161,7 @@
         HubConnection hub = socket.GetHubConnection();
         if (hub == null)
         {
-            socket.Connect();
+            await socket.Connect();
         }
         hub = socket.GetHubConnection();
         Console.WriteLine("create ship hub var" + hub);
@@ -162,6 +171,8 @@
         productTypeList = productTypes.data;
         containerTypeList = containerTypes.data;
         checkpointsList = checkpoints.data;
+        //originList = checkpointsList;
+        //destList = checkpointsList;
         StateHasChanged();
     }
     async Task DoCreateShipment()
@@ -175,6 +186,12 @@
         shipmentModel.containerTypeId = containerTypeId;
         try
         {
+            if (origin == destination)
+            {
+                createShipmentResponse.message = "Origin and Destination can't be same";
+                loading = false;
+                return;
+            }
             createShipmentResponse.message = "Wait....";
             createShipmentResponse = await _apiService.CreateShipment(shipmentModel);
             if (createShipmentResponse.statusCode != 0)
@@ -193,15 +210,18 @@
     void OriginClicked(ChangeEventArgs originEvent)
     {
         //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(originEvent.Value!.ToString()!)).FirstOrDefault();
-        //checkpointsList.Remove(temp);
-        origin = new Guid(originEvent.Value!.ToString()!);
+        //destList = checkpointsList;
+        //destList.Remove(temp);
+        origin = new Guid(originEvent.Value.ToString());
         this.StateHasChanged();
     }
     void DestinationClicked(ChangeEventArgs destEvent)
     {
         //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(destEvent.Value!.ToString()!)).FirstOrDefault();
-        //checkpointsList.Remove(temp);
-        destination = new Guid(destEvent.Value!.ToString()!);
+        //originList = checkpointsList;
+        //originList.Remove(temp);
+        Console.WriteLine(destEvent.Value);
+        destination = new Guid(destEvent.Value.ToString());
         this.StateHasChanged();
     }
     void ProductTypeClicked(ChangeEventArgs productTypeEvent)

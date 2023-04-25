@@ -15,3 +15,26 @@
     </NotFound>
 </Router>
 
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection hub = socket.GetHubConnection();
+        if (hub == null)
+        {
+            await socket.Connect();
+        }
+        hub = socket.GetHubConnection();
+        Console.WriteLine("helo from hub var" + hub);
+
+        hub.On("UserConnected", () =>
+            {
+                Console.WriteLine("user fxn");
+            });
+        hub.On("refresh", () =>
+        {
+            _navMgr.NavigateTo("/driverGetNotification");
+            Console.WriteLine("refresh fxn");
+        });
+    }
+
+}

@@ -7,7 +7,7 @@ namespace ShippingClient.Models
         public Guid productTypeId { get; set; }
         public Guid containerTypeId { get; set; }
         [Required]
-        [Range(0,100000)]
+        [Range(0,25000)]
         public decimal? shipmentWeight { get; set; }
         public Guid origin { get; set; }
         public Guid destination { get; set; }

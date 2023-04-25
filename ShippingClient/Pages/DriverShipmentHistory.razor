@@ -13,49 +13,33 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            @*<th>customerId</th>*@
+                            <th>S.No</th>
+                            <th>shipmentId</th>
                             <th>Product Type</th>
                             <th>Container Type</th>
-                            <th>Shipment Price</th>
                             <th>Shipment Weight</th>
-                            <th>Origin</th>
-                            <th>Destination</th>
-                            <th>Order Date</th>
-                            <th>Notes</th>
-                            <th>Status</th>
-                            <th>Current Location</th>
-                            <th>Action</th>
-                            <th>Action</th>
+                            <th>Is Accepted</th>
+                            <th>Is Active</th>
+                            <th>Available Location</th>
+                            <th>Next Location</th>
                         </tr>
                     </thead>
-                    @if (shipmentList != null && shipmentList.Count > 0)
+                    @if (shipments != null && shipments.Count > 0)
                     {
-                        @foreach (var shipment in shipmentList)
+                        @foreach (var shipment in shipments)
                         {
                             <tbody>
                                 <tr>
+                                    <td>@(sno++)</td>
                                     <td>@shipment.shipmentId</td>
                                     <td>@shipment.productType</td>
-                                    <td>@shipment.cointainerType</td>
-                                    <td>@shipment.shipmentPrice</td>
+                                    <td>@shipment.containerType</td>
                                     <td>@shipment.shipmentWeight</td>
-                                    <td>@shipment.origin</td>
-                                    <td>@shipment.destination</td>
-                                    <td>@shipment.dateOfOrder</td>
-                                    <td>@shipment.notes</td>
-                                    <td>@shipment.shipmentStatus</td>
-                                    <td>@shipment.currentLocation</td>
-                                    <td>
-                                        <button @onclick="() => ShowStatus(shipment.shipmentId)" class="btn btn-primary">
-                                            Show Status
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button @onclick="() => ShowRoute(shipment.shipmentId)" class="btn btn-primary">
-                                            Get Route
-                                        </button>
-                                    </td>
+                                    <td>@shipment.isAccepted</td>
+                                    <td>@shipment.isActive</td>
+                                    <td>@shipment.checkpoint1Id</td>
+                                    <td>@shipment.checkpoint2Id</td>
+                                    
                                 </tr>
                             </tbody>
                         }
@@ -79,53 +63,35 @@
 
 
 @code {
-    GetShipmentsCutomerResponse shipmentsResponse = new();
-    List<GetListOfShipments> shipmentList = new();
+    List<AvailableShipmentsDriver> shipments = new();
     //List<GetShipmentsConverted> shipmentListConverted = new();
-    private bool loading;
-
+    public int sno = 1;
 
     protected override async Task OnInitializedAsync()
     {
         await GetShipmentsTypesList();
-        StateHasChanged();
+        //StateHasChanged();
+        sno = 1;
     }
 
-    public object ShowStatus(Guid id)
-    {
-        _navMgr.NavigateTo($"/tracking/{id}");
-        return 0;
-    }
 
-    public object ShowRoute(Guid id)
-    {
-        _navMgr.NavigateTo($"/bestRoute/{id}");
-        return 0;
-    }
 
     async Task GetShipmentsTypesList()
     {
         // reset alerts on submit
         //AlertService.Clear();
-        loading = true;
 
         try
         {
-            GetYourselfResponse temp = await _apiService.GetYourself();
-            Guid tempId = temp.data.userId;
-            shipmentsResponse = await _apiService.GetShipmentHistoryDriver();
-            shipmentList = shipmentsResponse.data;
-            if (shipmentsResponse.statusCode != 0)
-            {
-                //AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
-                //_navMgr.NavigateTo("/shipmentHistory");
-            }
+            //GetYourselfResponse temp = await _apiService.GetYourself();
+            //Guid tempId = temp.data.userId;
+            shipments = await _apiService.GetShipmentHistoryDriver();
+            sno = 1;
             StateHasChanged();
         }
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
-            loading = false;
             StateHasChanged();
         }
     }

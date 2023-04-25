@@ -232,6 +232,43 @@ namespace ShippingApp.Controllers
             return StatusCode(statusCode, res);
         }
 
+        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [Route("/api/v1/get/availableShipments")]
+        public ActionResult GetAvailableShipments(Guid checkpointId)
+        {
+            _logger.LogInformation("Getting available Shipments");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetAvailableShipments(checkpointId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
+        [HttpPost, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [Route("/api/v1/get/acceptShipment")]
+        public ActionResult AcceptShipment(AcceptShipment acceptShipment)
+        {
+            _logger.LogInformation("Getting available Shipments");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.AcceptShipment(acceptShipment, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
         //public ActionResult GetCheckpoints(Guid? containerTypeId = null, string? searchString = null)
         //post containertype
         //post producttype

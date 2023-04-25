@@ -115,7 +115,10 @@ namespace ShippingApp.Hubs
             }
         }
 
-
+        public async Task RefreshAll()
+        {
+            await Clients.All.SendAsync("refreshList");
+        }
         //this functin will be called when s3 allocates driver to shipment and calls
         /*public async Task SendShipmentForDelivery(string shipmentId, string driverId)
         {

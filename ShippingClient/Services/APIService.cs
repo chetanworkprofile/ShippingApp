@@ -88,6 +88,23 @@ namespace ShippingClient.Services
             }
         }
 
+        public async Task<List<DriverId>> GetDrivers(Guid driverId)
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/drivers?driverId={driverId}");
+                var obj = JsonSerializer.Serialize(response.data);
+                var drivers = JsonSerializer.Deserialize<List<DriverId>>(obj);
+                return drivers!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
         public async Task<CreateShipmentResponse> CreateShipment(CreateShipment model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
@@ -368,14 +385,15 @@ namespace ShippingClient.Services
             }
         }
 
-        public async Task<GetShipmentsCutomerResponse> GetShipmentHistoryDriver()
+        public async Task<List<AvailableShipmentsDriver>> GetShipmentHistoryDriver()
         {
             try
             {
-                GetShipmentsCutomerResponse? shipments;
-
-                shipments = await _httpClient.GetFromJsonAsync<GetShipmentsCutomerResponse>($"{baseUrl}api/v1/get/driver/shipmentHistory");
-                return shipments!;
+                AvailableShipmentsDriver? shipments;
+                var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/driver/shipmentHistory");
+                var obj = JsonSerializer.Serialize(response.data);
+                var history = JsonSerializer.Deserialize<List<AvailableShipmentsDriver>>(obj);
+                return history!;
             }
             catch (Exception ex)
             {
@@ -406,6 +424,45 @@ namespace ShippingClient.Services
                 throw;
             }
             return checkpoints;
+        }
+
+        public async Task<List<AvailableShipmentsDriver>> GetAvailableShipments(Guid checkpointId)
+        {
+            try
+            {
+                AvailableShipmentsDriver? shipments;
+                var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/availableShipments?checkpointId={checkpointId}");
+                var obj = JsonSerializer.Serialize(response.data);
+                var drivers = JsonSerializer.Deserialize<List<AvailableShipmentsDriver>>(obj);
+                return drivers!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<GlobalResponse> AcceptShipment(AcceptShipment model)
+        {
+            string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/get/acceptShipment");
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var result = await _httpClient.SendAsync(requestMessage);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
+            }
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+
+            return resultContent!;
+
         }
     }
 }

@@ -66,14 +66,12 @@
 </AuthorizeView>
 
 @code {
-    public string baseUrl = "https://localhost:7147/";
+    //public string baseUrl = "https://localhost:7147/";
     //public string baseUrl = "http://192.180.0.192:5656/"*/
     private static HubConnection? hubConnection;
     private string messages = string.Empty;
 
-    ElementReference TextAreaRef;
-
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
         // redirect to home if already logged in
         if (_authService.GetToken() != null)
@@ -83,7 +81,7 @@
         HubConnection hub = socket.GetHubConnection();
         if (hub == null)
         {
-            socket.Connect();
+            await socket.Connect();
         }
         hub = socket.GetHubConnection();
         Console.WriteLine("helo from hub var" + hub);

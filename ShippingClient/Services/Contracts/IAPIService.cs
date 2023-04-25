@@ -21,7 +21,10 @@ namespace ShippingClient.Services.Contracts
         public Task<ContainerType> GetContainerTypeSingle(Guid id);
         public Task<Checkpoints> GetCheckpointTypeSingle(Guid id);
         public Task<ShipmentHistory> GetShipmentHistory(Guid shipmentId);
-        public Task<GetShipmentsCutomerResponse> GetShipmentHistoryDriver();
+        public Task<List<AvailableShipmentsDriver>> GetShipmentHistoryDriver();
         public Task<List<CheckpointModel>> GetShortRoute(Guid shipmentId);
+        public Task<List<DriverId>> GetDrivers(Guid driverId);
+        public Task<List<AvailableShipmentsDriver>> GetAvailableShipments(Guid checkpointId);
+        public Task<GlobalResponse> AcceptShipment(AcceptShipment model);
     }
 }

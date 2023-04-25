@@ -1,4 +1,5 @@
-﻿@page "/driverGetShipments"
+﻿@page "/driverGetNotification"
+@using System.Security.Claims;
 
 @attribute [Authorize(Roles = "deliveryBoy,admin")]
 <PageTitle>Shipment App</PageTitle>
@@ -7,46 +8,41 @@
     <Authorized>
         <div class="row">
             <div class="col-md-6">
-                <h3>Shipment History</h3>
+                <h3>Shipments Available</h3>
                 @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            @*<th>customerId</th>*@
+                            <th>S.No</th>
+                            <th>shipmentId</th>
                             <th>Product Type</th>
                             <th>Container Type</th>
-                            <th>Shipment Price</th>
                             <th>Shipment Weight</th>
-                            <th>Origin</th>
-                            <th>Destination</th>
-                            <th>Order Date</th>
-                            <th>Notes</th>
-                            <th>Status</th>
-                            <th>Current Location</th>
+                            <th>Is Accepted</th>
+                            <th>Is Active</th>
+                            <th>Available Location</th>
+                            <th>Next Location</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    @*@if (shipmentList != null && shipmentList.Count > 0)
+                    @if (shipments != null && shipments.Count > 0)
                     {
-                        @foreach (var shipment in shipmentList)
+                        @foreach (var shipment in shipments)
                         {
                             <tbody>
                                 <tr>
+                                    <td>@(sno++)</td>
                                     <td>@shipment.shipmentId</td>
                                     <td>@shipment.productType</td>
-                                    <td>@shipment.cointainerType</td>
-                                    <td>@shipment.shipmentPrice</td>
+                                    <td>@shipment.containerType</td>
                                     <td>@shipment.shipmentWeight</td>
-                                    <td>@shipment.origin</td>
-                                    <td>@shipment.destination</td>
-                                    <td>@shipment.dateOfOrder</td>
-                                    <td>@shipment.notes</td>
-                                    <td>@shipment.shipmentStatus</td>
-                                    <td>@shipment.currentLocation</td>
+                                    <td>@shipment.isAccepted</td>
+                                    <td>@shipment.isActive</td>
+                                    <td>@shipment.checkpoint1Id</td>
+                                    <td>@shipment.checkpoint2Id</td>
                                     <td>
-                                        <button @onclick="() => ShowStatus(shipment.shipmentId)" class="btn btn-primary">
-                                            Show Status
+                                        <button @onclick="() => TakeShipment(shipment.mapId)" class="btn btn-primary">
+                                            Get Shipment
                                         </button>
                                     </td>
                                 </tr>
@@ -56,7 +52,7 @@
                     else
                     {
                         <p><em>No Record found</em></p>
-                    }*@
+                    }
                 </table>
             </div>
         </div>
@@ -72,43 +68,72 @@
 
 
 @code {
-    //GetShipmentsCutomerResponse shipmentsResponse = new();
-    //List<GetListOfShipments> shipmentList = new();
-    private static HubConnection? hubConnection;
-    //List<GetShipmentsConverted> shipmentListConverted = new();
     private bool loading;
-
+    List<AvailableShipmentsDriver> shipments = new();
+    Guid driverId;
+    int sno = 1;
+    AcceptShipment acceptShipment = new();
+    HubConnection hub;
 
     protected override async Task OnInitializedAsync()
     {
-        //await GetShipmentsTypesList();
-        //StateHasChanged();
+        hub = socket.GetHubConnection();
+        if (hub == null)
+        {
+            await socket.Connect();
+        }
+        hub = socket.GetHubConnection();
+        SocketFunctions();
+        sno = 1;
+        GetShipmentsNotification();
+        StateHasChanged();
     }
+    public void SocketFunctions()
+    {
+        hub.On("refresh", () =>
+        {
+            GetShipmentsNotification();
+            Console.WriteLine("refresh fxn");
+            StateHasChanged();
 
-    //async Task GetShipmentsTypesList()
-    //{
-    //    // reset alerts on submit
-    //    AlertService.Clear();
-    //    loading = true;
+        });
+        hub.On("refreshList", () =>
+            {
+                GetShipmentsNotification();
+                Console.WriteLine("refresh list fxn");
+                StateHasChanged();
+            });
+    }
+    public async Task<object> TakeShipment(Guid id)
+    {
+        acceptShipment.driverId = driverId;
+        acceptShipment.isAccepted = true;
+        acceptShipment.mapId = id;
+        var driverIdResponse = await _apiService.AcceptShipment(acceptShipment);
+        //_navMgr.NavigateTo($"/tracking/{id}");
+        await hub.SendAsync("RefreshAll");
+        return 0;
+    }
+    async Task GetShipmentsNotification()
+    {
+        // reset alerts on submit
+        //AlertService.Clear();
+        //loading = true;
 
-    //    try
-    //    {
-    //        GetYourselfResponse temp = await _apiService.GetYourself();
-    //        Guid tempId = temp.data.userId;
-    //        shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
-    //        shipmentList = shipmentsResponse.data;
-    //        if (shipmentsResponse.statusCode != 0)
-    //        {
-    //            AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
-    //            //_navMgr.NavigateTo("/shipmentHistory");
-    //        }
-    //        StateHasChanged();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        AlertService.Error(ex.Message);
-    //        loading = false;
-    //        StateHasChanged();
-    //    }
-    //}
+        try
+        {
+            GetYourselfResponse temp = await _apiService.GetYourself();
+            driverId = temp.data.userId;
+            var driverIdResponse = await _apiService.GetDrivers(driverId);
+            Guid checkpoint = driverIdResponse.FirstOrDefault().checkpointLocation;
+            shipments = await _apiService.GetAvailableShipments(checkpoint);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            //AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
 }

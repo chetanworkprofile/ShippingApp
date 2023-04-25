@@ -99,6 +99,26 @@ namespace ShippingApp.Services
             }
         }
 
+        public string GetAvailableShipments(Guid checkpointId, out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS2);//WebApi 2 project URL
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                StringBuilder appendUrl = new StringBuilder($"api/Driver/GetShippers?checkpointLocation={checkpointId}");
+
+                var res = client.GetAsync(appendUrl.ToString()).Result;
+
+                var data = res.Content.ReadAsStringAsync().Result;
+
+                //response = new Response(200, "Shipments list fetched", data, true);
+                code = (int)res.StatusCode;
+                return data;
+            }
+        }
+
         public string GetBestRoute(Guid? shipmentId, out int code)
         {
             using (var client = new HttpClient())
@@ -124,11 +144,11 @@ namespace ShippingApp.Services
             Guid driverGuid = new Guid(driverId);
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(baseUrlS1);//WebApi 1 project URL
+                client.BaseAddress = new Uri(baseUrlS2);//WebApi 1 project URL
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                StringBuilder appendUrl = new StringBuilder($"api/shipment/getDriverShipment?driverId={driverGuid}");
+                StringBuilder appendUrl = new StringBuilder($"api/Driver/GetShippers?driverId={driverGuid}");
                 
                 var res = client.GetAsync(appendUrl.ToString()).Result;
 
@@ -284,6 +304,25 @@ namespace ShippingApp.Services
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 StringContent content = new StringContent(JsonConvert.SerializeObject(inp), Encoding.UTF8, "application/json");
                 var response = client.PostAsync("api/ProductType/Add", content).Result;
+                /*if (response.IsSuccessStatusCode)
+                {
+                    return response.Content.ReadAsStringAsync().Result;
+                    //objAuthor = response.Content.ReadAsAsync<Author>().Result;
+                }*/
+                code = (int)response.StatusCode;
+                return response.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public string AcceptShipment(AcceptShipment inp, out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS2);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent content = new StringContent(JsonConvert.SerializeObject(inp), Encoding.UTF8, "application/json");
+                var response = client.PutAsync("api/Driver/AcceptShipment", content).Result;
                 /*if (response.IsSuccessStatusCode)
                 {
                     return response.Content.ReadAsStringAsync().Result;

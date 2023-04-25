@@ -12,7 +12,7 @@ namespace ShippingClient.Pages
         private readonly ILocalStorageService _localStorage;
 
         public string baseUrl = "https://localhost:7147/";
-        //public string baseUrl = "http://192.180.0.192:5656/"*/
+        //public string baseUrl = "http://192.180.0.192:5656/";
         public Socket(NavigationManager NavigationManager, ILocalStorageService localStorage)
         {
             _navMgr = NavigationManager;
@@ -53,14 +53,6 @@ namespace ShippingClient.Pages
         public HubConnection GetHubConnection()
         {
             return hubConnection;
-        }
-
-        public void OnFunctions()
-        {
-            hubConnection.On("UserConnected", () =>
-            {
-               Console.WriteLine("user fxn");
-            });
         }
     }
 }
