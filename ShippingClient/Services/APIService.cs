@@ -24,8 +24,8 @@ namespace ShippingClient.Services
         {
             this._httpClient = httpClient;
             this._localStorage = localStorage;
-            baseUrl = "https://localhost:7147/";
-            //baseUrl = "http://192.180.0.192:5656/";
+            //baseUrl = "https://localhost:7147/";
+            baseUrl = "http://192.180.0.192:5656/";
         }
 
         public async Task<GetProductsResponse> GetProductTypes(string? search=null)
