@@ -1,6 +1,6 @@
 ﻿@page "/login"
 @using System.Text.RegularExpressions
-@using System.ComponentModel.DataAnnotations
+
 <PageTitle>Shipment App</PageTitle>
 
 <AuthorizeView>
@@ -46,7 +46,7 @@
                         </button>
                     </div>*@
                         <MudCard>
-                            <MudForm Model="loginModel" ReadOnly="false" @ref="form">
+                            <MudForm Model="loginModel" ReadOnly="false" @ref="form" @onkeydown="@HandleKeyDown">
                                 <MudCardContent>
                                     <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!" @bind-Value=loginModel.email
                                                   Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
@@ -57,7 +57,7 @@
                                 </MudCardContent>
                                 <MudCardActions>
                                     <div class="d-flex align-center justify-space-between">
-                                    <MudButton tabindex="0" Variant="Variant.Filled" Color="Color.Primary" Class="align-content-center m-lg-2" disabled="@loading" OnClick="DoLogin">
+                                    <MudButton tabindex="0"  Variant="Variant.Filled" Color="Color.Primary" Class="align-content-center m-lg-2" disabled="@loading" OnClick="DoLogin">
                                              @if (loading)
                                             {
                                                 Task.Delay(5000);
@@ -67,25 +67,17 @@
                                         </MudButton>
                                         <MudProgressCircular Color="Color.Primary" Indeterminate="loading" />
                                     </div>
+                                <div class="d-flex align-center">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Default" Class="align-content-center m-lg-2" disabled="@loading" Href="/forgetPassword">Forget Password</MudButton>
+                                </div>
                                 </MudCardActions>
                             </MudForm>
                         <MudCardContent>                        
-                        @*<MudAlert Severity="Severity.Success">The reactor is running at optimum temperature</MudAlert>*@
-                    
-                    <p>Don't have a account?</p><NavLink href="/register" class="btn btn-link">Register</NavLink>
-                    <NavLink href="/forgetPassword" class="btn btn-link">Forget Password</NavLink>
+                    <div class="row"><p>Don't have a account?</p></div>
+                    <div class="d-flex align-center"><MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="align-content-center m-lg-2" disabled="@loading" Href="/register">Register</MudButton></div>
                     </MudCardContent>
                     </MudCard>
                 </EditForm>
-                    @*<MudItem xs="12" sm="5">
-                        <MudPaper Class="pa-4 mud-height-full">
-                <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Length})")</MudText>
-                                                @foreach (var error in errors)
-                                            {
-                                <MudText Color="@Color.Error">@error</MudText>
-                                            }
-                        </MudPaper>
-                    </MudItem>*@
             </div>
         </div>
     </NotAuthorized>
@@ -99,33 +91,44 @@
     LoginResponse loginResponse = new();
     [Inject] ISnackbar Snackbar { get; set; }
     private bool loading;
-    string[] errors={};
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+        if (e.Key == "Enter")
+        {
+            await DoLogin();
+        }
+    }
+
     async Task DoLogin()
     {
         await form.Validate();
 
-        if (!form.IsValid)
+        if (!(form.IsValid))
         {
-            //Snackbar.Add("Submited!");
             Snackbar.Add("Please Fill All fields", Severity.Error);
+            return;
         }
         // reset alerts on submit
-        //AlertService.Clear();
+        Snackbar.Clear();
         loading = true;
         try
         {
             //loginResponse.message = "Wait....";
             loginResponse = await _authService.Login(loginModel);
-            Snackbar.Add(loginResponse.message, Severity.Info);
+            Snackbar.Add(loginResponse.message, Severity.Normal);
             if (loginResponse.statusCode != 0)
             {
-                //AlertService.Success("Login successful");
+                Snackbar.Add(loginResponse.message, Severity.Success);
+                await Task.Delay(1000);
                 _navMgr.NavigateTo("/", true);
             }
         }
         catch(Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }

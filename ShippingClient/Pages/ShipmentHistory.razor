@@ -6,8 +6,8 @@
 
 <h3>shipmentId @shipmentId</h3>
 <AuthorizeView>
-    <Authorized>
-        <table class="table">
+    <Authorized Context="auth">
+        @*<table class="table">
             <thead>
                 <tr>
                     <th> </th>
@@ -30,7 +30,25 @@
                     </tr>
                 }
             </tbody>
-        </table>
+        </table>*@
+        
+        <MudTable Items="@list" Hover="true" Loading="@loading" FixedHeader="true"  Height="400px">
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Current Location</MudTh>
+                <MudTh>Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel=""><i class="oi oi-location"></i></MudTd>
+                <MudTd DataLabel="Status">@context.shipmentStatus</MudTd>
+                <MudTd DataLabel="Current Location">@context.currentLocation</MudTd>
+                <MudTd DataLabel="Date">@context.lastUpdated</MudTd>
+            </RowTemplate>
+            @*<PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+            </PagerContent>*@
+        </MudTable>
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>
@@ -47,6 +65,7 @@
     [Parameter]
     public string? Id { get; set; }
     Guid shipmentId;
+    private bool loading = true;
     protected override async void OnParametersSet()
     {
         if (Id != null)
@@ -55,6 +74,7 @@
             Console.WriteLine(shipmentId);
             res = await _apiService.GetShipmentHistory(shipmentId);
             list = res.data;
+            loading = false;
         }
         else
         {

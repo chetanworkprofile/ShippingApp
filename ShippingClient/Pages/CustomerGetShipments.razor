@@ -4,16 +4,15 @@
 <PageTitle>Shipment App</PageTitle>
 
 <AuthorizeView>
-    <Authorized>
+    <Authorized Context="Auth">
         <div class="row">
-            <div class="col-md-6">
+            <div>
                 <h3>Shipment History</h3>
                 @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
-                <table class="table table-striped">
+                @*<table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Id</th>
-                            @*<th>customerId</th>*@
                             <th>Product Type</th>
                             <th>Container Type</th>
                             <th>Shipment Price</th>
@@ -57,7 +56,37 @@
                     {
                         <p><em>No Record found</em></p>
                     }
-                </table>
+                </table>*@
+                <MudTable Loading="@loading" Items="@shipmentList" Hover="true" >
+                    <HeaderContent>
+                        <MudTh>Id</MudTh>
+                        <MudTh>Product Type</MudTh>
+                        <MudTh>Container Type</MudTh>
+                        <MudTh>Shipment Price</MudTh>
+                        <MudTh>Shipment Weight</MudTh>
+                        <MudTh>Origin</MudTh>
+                        <MudTh>Destination</MudTh>
+                        <MudTh>Order Date</MudTh>
+                        <MudTh>Notes</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Current Location</MudTh>
+                        <MudTh>Action</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Id">@context.shipmentId</MudTd>
+                        <MudTd DataLabel="Product Type">@context.productType</MudTd>
+                        <MudTd DataLabel="Container Type">@context.cointainerType</MudTd>
+                        <MudTd DataLabel="Shipment Price">@context.shipmentPrice</MudTd>
+                        <MudTd DataLabel="Shipment Weight">@context.shipmentWeight</MudTd>
+                        <MudTd DataLabel="Origin">@context.origin</MudTd>
+                        <MudTd DataLabel="Destination">@context.destination</MudTd>
+                        <MudTd DataLabel="Order Date">@context.dateOfOrder</MudTd>
+                        <MudTd DataLabel="Notes">@context.notes</MudTd>
+                        <MudTd DataLabel="Status">@context.shipmentStatus</MudTd>
+                        <MudTd DataLabel="Current Location">@context.currentLocation</MudTd>
+                        <MudTd DataLabel="Action"><MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="align-content-center m-lg-2" disabled="@loading" @onclick="() => ShowStatus(context.shipmentId)">Get Status</MudButton></MudTd>
+                    </RowTemplate>
+                </MudTable>
             </div>
         </div>
     </Authorized>
@@ -74,9 +103,9 @@
 @code {
     GetShipmentsCutomerResponse shipmentsResponse = new();
     List<GetListOfShipments> shipmentList = new();
+    [Inject] ISnackbar Snackbar { get; set; }
     //List<GetShipmentsConverted> shipmentListConverted = new();
     private bool loading;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -89,7 +118,6 @@
         _navMgr.NavigateTo($"/tracking/{id}");
         return 0;
     }
-
 
     async Task GetShipmentsTypesList()
     {
@@ -105,6 +133,8 @@
             shipmentList = shipmentsResponse.data;
             if (shipmentsResponse.statusCode != 0)
             {
+                loading = false;
+                Snackbar.Add(shipmentsResponse.message, Severity.Success);
                 //AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
             }

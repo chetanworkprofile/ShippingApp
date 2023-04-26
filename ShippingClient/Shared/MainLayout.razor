@@ -7,21 +7,28 @@
     <MudDialogProvider />
     <MudSnackbarProvider />
     <AuthorizeView>
-        <div class="sidebar">
-            <NavMenu />
-        </div>
+        <Authorized>
+            <MudLayout>
+                <Drawer/>
+                <MudMainContent Class="pt-16 px-16">
+                    <main>
+                        <article class="content">
+                            @Body
+                        </article>
+                    </main>
+                </MudMainContent>
+            </MudLayout>
+        </Authorized>
+        <NotAuthorized>
+            <main>
+                <article class="content">
+                    @Body
+                </article>
+            </main>
+        </NotAuthorized>
+        
     </AuthorizeView>
-
-    <main>
-        <AuthorizeView>
-            @*<div class="top-row px-4">
-                <a href=logout>Logout</a>
-            </div>*@
-        </AuthorizeView>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    
 </div>
 
 @code {

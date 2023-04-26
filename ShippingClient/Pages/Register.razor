@@ -1,8 +1,10 @@
 ﻿@page "/register"
+@using System.ComponentModel.DataAnnotations;
+@using System.Text.RegularExpressions;
 
 <PageTitle>Shipment App</PageTitle>
 
-<style type="text/css">
+@*<style type="text/css">
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
 -webkit-appearance: none;
@@ -10,7 +12,7 @@ input[type=number]::-webkit-outer-spin-button {
 appearance: none;
 margin: 0; 
 }
-</style>
+</style>*@
 
 <AuthorizeView>
     <Authorized>
@@ -22,11 +24,11 @@ margin: 0;
         }
     </Authorized>
     <NotAuthorized Context="auth">
-        <div class="card">
+        <div class="card col-sm-8" style="margin: 10% auto; justify-content:center">
             <h4 class="card-header">Register</h4>
             <div class="card-body">
                 <EditForm Model="@registerModel" OnValidSubmit="DoRegister">
-                    <DataAnnotationsValidator />
+                    @*<DataAnnotationsValidator />
                      <div class="form-group">
                        <label for="firstName">First Name</label>
                         <InputText id="firstName" class="form-control" @bind-Value="registerModel.firstName" />
@@ -77,9 +79,50 @@ margin: 0;
                             loading = false;
                         }
                         <button type="submit" class="btn btn-primary">Register</button>
-                    </div>
+                    </div>*@
+                    <MudCard>
+                        <MudForm Model="registerModel" ReadOnly="false" @ref="form" @onkeydown="@HandleKeyDown">
+                            <MudCardContent>
+                                <MudTextField T="string" Label="First Name" Required="true" @bind-Value="registerModel.firstName" 
+                                              ValidationMessage For="@(()=>registerModel.firstName)"
+                                              RequiredError="First Name is required!" />
+                                <MudTextField T="string" Label="Last Name" Required="true" @bind-Value="registerModel.lastName" 
+                                              ValidationMessage For="@(()=>registerModel.lastName)"
+                                              RequiredError="Last Name is required!" />
+                                <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!" @bind-Value=registerModel.email
+                                              Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+                                <MudTextField T="string" Label="Password" @bind-Value=registerModel.password
+                                              InputType="InputType.Password" HelperText="Choose a strong password"
+                                              ValidationMessage For="@(()=>registerModel.password)" Required="true"
+                                              RequiredError="Password is required!" />
+                                <MudTextField Label="Confirm Password" HelperText="Repeat the password" Required="true"
+                                              @bind-Value="confirmPassword" InputType="InputType.Password" RequiredError="Confirm password is required!"/>
+                                <MudNumericField Label="ContactNo" HideSpinButtons="true" HelperText="Enter your contact no." Required="true" @bind-Value="registerModel.contactno"
+                                                  RequiredError="Contact no is required!"></MudNumericField>
+                                <MudTextField @bind-Value="registerModel.address"
+                                              Immediate="true" Required="true" RequiredError="Address is required!"
+                                              Label="Address" />
+                            </MudCardContent>
+                            <MudCardActions>
+                                <div class="d-flex align-center justify-space-between">
+                                    <MudButton tabindex="0" Variant="Variant.Filled" Color="Color.Primary" Class="align-content-center m-lg-2" disabled="@loading" OnClick="DoRegister">
+                                        @if (loading)
+                                        {
+                                            Task.Delay(5000);
+                                            loading = false;
+                                        }
+                                        Register
+                                    </MudButton>
+                                    <MudProgressCircular Color="Color.Primary" Indeterminate="loading" />
+                                </div>
+                            </MudCardActions>
+                        </MudForm>
+                        <MudCardContent>
+                            <div class="row"><p>Already have a account?</p></div>
+                            <div class="d-flex align-center"><MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="align-content-center m-lg-2" disabled="@loading" Href="/login">Login</MudButton></div>
+                        </MudCardContent>
+                    </MudCard>
                 </EditForm>
-                <p>Already have a account?</p><NavLink href="/login" class="btn btn-link">Login</NavLink>
             </div>
         </div>
     </NotAuthorized>
@@ -87,31 +130,54 @@ margin: 0;
 
 
 @code {
+    MudForm? form;
     RegisterUser registerModel = new RegisterUser();
     LoginResponse registerResponse = new();
     string confirmPassword = string.Empty;
     private bool loading;
+    [Inject] ISnackbar Snackbar { get; set; }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await DoRegister();
+        }
+    }
     async Task DoRegister()
     {
+        await form.Validate();
+        if (!(form.IsValid))
+        {
+            Snackbar.Add("Please Fill All fields", Severity.Error);
+            return;
+        }
+        Snackbar.Clear();
         try
         {
             loading = true;
             if (confirmPassword != registerModel.password)
             {
-                registerResponse.message = "Password and Confirm Password does not match...";
+                //registerResponse.message = "Password and Confirm Password does not match...";
+                Snackbar.Add("Password and confirm password does not match..", Severity.Normal);
                 loading = false;
                 return;
             }
-            registerResponse.message = "Wait....";
+            //registerResponse.message = "Wait....";
             registerResponse = await _authService.Register(registerModel);
+            Snackbar.Add(registerResponse.message, Severity.Normal);
             if (registerResponse.statusCode != 0)
-                _navMgr.NavigateTo("/");
+            {
+                Snackbar.Add(registerResponse.message, Severity.Success);
+                _navMgr.NavigateTo("/", true);
+            }
         }
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
-            //StateHasChanged();
+            StateHasChanged();
         }
     }
 }
