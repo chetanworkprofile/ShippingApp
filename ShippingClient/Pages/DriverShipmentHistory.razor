@@ -65,6 +65,7 @@
                             <MudTh>Weight</MudTh>
                             <MudTh>Available At</MudTh>
                             <MudTh>Next Location</MudTh>
+                            <MudTh>DateTime</MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="ShipmentId" Class="@((context.isActive? "isactivetrue" : "isactivefalse"))">@context.shipmentId</MudTd>
@@ -73,6 +74,7 @@
                         <MudTd DataLabel="Weight" Class="@((context.isActive? "isactivetrue" : "isactivefalse"))">@context.shipmentWeight</MudTd>
                         <MudTd DataLabel="Available At" Class="@((context.isActive? "isactivetrue" : "isactivefalse"))">@context.checkpoint1Id</MudTd>
                         <MudTd DataLabel="Next Location" Class="@((context.isActive? "isactivetrue" : "isactivefalse"))">@context.checkpoint2Id</MudTd>
+                        <MudTd DataLabel="DateTime" Class="@((context.isActive? "isactivetrue" : "isactivefalse"))">@context.time</MudTd>
                     </RowTemplate>
                 </MudTable>
             </div>
@@ -108,6 +110,7 @@
             //GetYourselfResponse temp = await _apiService.GetYourself();
             //Guid tempId = temp.data.userId;
             shipments = await _apiService.GetShipmentHistoryDriver();
+            shipments = shipments.OrderByDescending(s => s.time).ToList();
             shipments = shipments.OrderByDescending(s => s.isActive).ToList();
             loading = false;
             StateHasChanged();
@@ -115,6 +118,7 @@
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             StateHasChanged();
         }
     }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -98,6 +99,9 @@ builder.Services.AddScoped<IMQConsumer, MQConsumer>();
 
 //add background hosted service
 builder.Services.AddHostedService<BackgroundServiceConsumer>();
+
+//authorization middleware
+//builder.Services.AddTransient<IAuthorizationMiddlewareResultHandler, AuthorizationMiddlewareResultHandlerService>();
 
 var app = builder.Build();
 

@@ -117,7 +117,7 @@
             }
             addManagerResponse.message = "Wait....";
             addManagerResponse = await _apiService.AddManager(managerModel);
-            if (addManagerResponse.statusCode != 0)
+            if (addManagerResponse.statusCode == 200)
             {
                 //AlertService.Success("Manager Added successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");

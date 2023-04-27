@@ -5,24 +5,20 @@
 
 <AuthorizeView>
     <Authorized Context="auth">
-        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+       @* <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">*@
             <h4 class="card-header">Add New Container Type</h4>
             <div class="card-body">
                 <EditForm Model="containerTypeModel" OnSubmit="DoAddContainerType">
                     <DataAnnotationsValidator />
                     <div class="form-group">
                         <label for="name">Container Type Name</label>
-                        <InputText name="name" class="form-control" @bind-Value="containerTypeModel.containerName" />
-                        <ValidationMessage For="@(()=>containerTypeModel.containerName)" />
+                        <InputText name="name" class="form-control"  @bind-Value="containerTypeModel.containerName"/>
+                        <ValidationMessage For="@(()=>containerTypeModel.containerName)"/>
                     </div>
                     <div class="form-group">
                         <label for="price">Price (per kg)</label>
                         <InputNumber id="price" class="form-control" @bind-Value="containerTypeModel.price" />
                         <ValidationMessage For="@(()=>containerTypeModel.price)" />
-                    </div>
-
-                    <div class="my-2">
-                        @addContainerTypeResponse.message
                     </div>
 
                     <div class="my-2">
@@ -38,7 +34,7 @@
                     </div>
                 </EditForm>
             </div>
-        </div>
+        @*</div>*@
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>
@@ -54,30 +50,41 @@
     Models.AddContainerType containerTypeModel = new();
     AddContainerTypeResponse addContainerTypeResponse = new();
     private bool loading;
+    [Inject] ISnackbar Snackbar { get; set; }
 
-    //protected override async void OnInitialized()
-    //{
-    //    StateHasChanged();
-    //}
+    
     async Task DoAddContainerType()
     {
         // reset alerts on submit
-        //AlertService.Clear();
         loading = true;
-        
+
         try
         {
-            addContainerTypeResponse.message = "Wait....";
+            //addContainerTypeResponse.message = "Wait....";
             addContainerTypeResponse = await _apiService.AddContainerType(containerTypeModel);
-            if (addContainerTypeResponse.statusCode != 0)
+            if (addContainerTypeResponse.statusCode == 200)
             {
-                //AlertService.Success("Container Type Added successfully", keepAfterRouteChange: true);
+                Snackbar.Add("Container Type Added Successfully", Severity.Success, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Done;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
                 //_navMgr.NavigateTo("/shipmentHistory");
+            }
+            else
+            {
+                Snackbar.Add(addContainerTypeResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
             }
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }

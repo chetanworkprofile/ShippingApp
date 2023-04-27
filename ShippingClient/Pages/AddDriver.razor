@@ -83,9 +83,9 @@
                                name="isAvailable" @onchange="@(() => isAvailable = false)" />
                         <label>No</label>
                     </div>
-                    <div class="my-2">
+                    @*<div class="my-2">
                         @addDriverResponse.message
-                    </div>
+                    </div>*@
 
                     <div class="my-2">
                         <button disabled="@loading" type="submit" class="btn btn-primary">
@@ -119,6 +119,7 @@
     private bool isAvailable = true;
     string confirmPassword = string.Empty;
     Guid checkPoint;
+    [Inject] ISnackbar Snackbar { get; set; }
 
     List<Checkpoints> checkpointsList = new List<Checkpoints>();
 
@@ -144,21 +145,43 @@
         {
             if (confirmPassword != driverModel.password)
             {
-                addDriverResponse.message = "Password and Confirm Password does not match...";
+                //addDriverResponse.message = "Password and Confirm Password does not match...";
+                Snackbar.Add("Password and Confirme Password does not match..", Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
                 loading = false;
                 return;
             }
-            addDriverResponse.message = "Wait....";
+            //addDriverResponse.message = "Wait....";
             addDriverResponse = await _apiService.AddDriver(driverModel);
-            if (addDriverResponse.statusCode != 0)
+            if (addDriverResponse.statusCode == 200)
             {
                 //AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
+                Snackbar.Add("Driver Added Successfully", Severity.Success, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Done;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
                 //_navMgr.NavigateTo("/shipmentHistory");
+            }
+            else
+            {
+                Snackbar.Add(addDriverResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
             }
         }
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }

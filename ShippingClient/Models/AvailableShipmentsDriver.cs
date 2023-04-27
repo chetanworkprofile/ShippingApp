@@ -11,5 +11,6 @@
         public bool isActive { get; set; }
         public string checkpoint1Id { get; set; } = string.Empty;
         public string checkpoint2Id { get; set; } = string.Empty;
+        public DateTime time { get; set; }
     }
 }

@@ -50,7 +50,7 @@
         if (Id != null)
         {
             shipmentId = new Guid(Id);
-            Console.WriteLine(shipmentId);
+            //Console.WriteLine(shipmentId);
             list = await _apiService.GetShortRoute(shipmentId);
         }
         else

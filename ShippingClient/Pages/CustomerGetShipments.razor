@@ -131,18 +131,28 @@
             Guid tempId = temp.data.userId;
             shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
             shipmentList = shipmentsResponse.data;
-            if (shipmentsResponse.statusCode != 0)
+            if (shipmentsResponse.statusCode == 200)
             {
                 loading = false;
-                Snackbar.Add(shipmentsResponse.message, Severity.Success);
+                //Snackbar.Add(shipmentsResponse.message, Severity.Success);
                 //AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
+            }
+            else
+            {
+                Snackbar.Add(shipmentsResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
             }
             StateHasChanged();
         }
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }

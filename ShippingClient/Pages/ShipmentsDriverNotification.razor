@@ -130,20 +130,42 @@
     }
     public async Task<object> TakeShipment(Guid id)
     {
-        acceptShipment.driverId = driverId;
-        acceptShipment.isAccepted = true;
-        acceptShipment.mapId = id;
-        GlobalResponse driverIdResponse = await _apiService.AcceptShipment(acceptShipment);
-        
-        if (driverIdResponse.statusCode == 200)
+        try
         {
-            Snackbar.Add(driverIdResponse.message, Severity.Success);
-            //await Task.Delay(1000);
-            //_navMgr.NavigateTo("/", true);
+            acceptShipment.driverId = driverId;
+            acceptShipment.isAccepted = true;
+            acceptShipment.mapId = id;
+            GlobalResponse driverIdResponse = await _apiService.AcceptShipment(acceptShipment);
+
+            if (driverIdResponse.statusCode == 200)
+            {
+                Snackbar.Add(driverIdResponse.message, Severity.Success, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Done;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
+                //await Task.Delay(1000);
+                //_navMgr.NavigateTo("/", true);
+            }
+            else
+            {
+                Snackbar.Add(driverIdResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
+            }
+            //_navMgr.NavigateTo($"/tracking/{id}");
+            await hub.SendAsync("RefreshAll");
         }
-        Snackbar.Add(driverIdResponse.message, Severity.Normal);
-        //_navMgr.NavigateTo($"/tracking/{id}");
-        await hub.SendAsync("RefreshAll");
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            loading = false;
+            StateHasChanged();
+        }
         return 0;
     }
     async Task GetShipmentsNotification()

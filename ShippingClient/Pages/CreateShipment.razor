@@ -109,9 +109,9 @@
                         <ValidationMessage For="@(()=>shipmentModel.notes)" />
                     </div>
 
-                    <div class="my-2">
+                    @*<div class="my-2">
                         @createShipmentResponse.message
-                    </div>
+                    </div>*@
 
                     <div class="my-2">
                         <button disabled="@loading" type="submit" class="btn btn-primary">
@@ -143,7 +143,7 @@
     Models.CreateShipment shipmentModel = new();
     CreateShipmentResponse createShipmentResponse = new();
     private bool loading;
-
+    [Inject] ISnackbar Snackbar { get; set; }
     List<ProductType> productTypeList = new List<ProductType>();
     List<ContainerType> containerTypeList = new List<ContainerType>();
     List<Checkpoints> checkpointsList = new List<Checkpoints>();
@@ -188,21 +188,38 @@
         {
             if (origin == destination)
             {
-                createShipmentResponse.message = "Origin and Destination can't be same";
+                //createShipmentResponse.message = "Origin and Destination can't be same";
+                Snackbar.Add("Origin and Destination can't be same", Severity.Error);
                 loading = false;
                 return;
             }
-            createShipmentResponse.message = "Wait....";
+            //createShipmentResponse.message = "Wait....";
             createShipmentResponse = await _apiService.CreateShipment(shipmentModel);
-            if (createShipmentResponse.statusCode != 0)
+            if (createShipmentResponse.statusCode == 200)
             {
                 //AlertService.Success("Shipment Queued successfully", keepAfterRouteChange: true);
-                //_navMgr.NavigateTo("/shipmentHistory");
+                Snackbar.Add("Shipment Queued Successfully", Severity.Success, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Done;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
+                _navMgr.NavigateTo("/customerGetShipments");
+            }
+            else
+            {
+                Snackbar.Add(createShipmentResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
             }
         }
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }
@@ -236,13 +253,5 @@
         containerTypeId = new Guid(containerTypeEvent.Value.ToString());
         this.StateHasChanged();
     }
-    //protected async void CountryClicked(UIChangeEventArgs countryEvent)
-    //{    
-    //    cityList.Clear();
-    //    cityName = string.Empty;
-    //    countryId = countryEvent.Value.ToString();
-    //    countryName = countryList.FirstOrDefault(s => s.CountryId == countryId).CountryName;
-    //    cityList = await Http.GetJsonAsync<List<Cities>>("api/Countries/GetCities/" + countryId);
-    //    this.StateHasChanged();
-    //}
+    
 }

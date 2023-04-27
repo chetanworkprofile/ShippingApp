@@ -28,9 +28,9 @@
                         </div>
                     </div>
 
-                    <div class="my-2">
+                    @*<div class="my-2">
                         @updateResponse.message
-                    </div>
+                    </div>*@
 
                     <div class="my-2">
                         <button disabled="@loading" type="submit" class="btn btn-primary">
@@ -60,6 +60,7 @@
 @code {
     //Models.AddProductType productTypeModel = new();
     UpdateDriverLocationResponse updateResponse = new();
+    [Inject] ISnackbar Snackbar { get; set; }
     private bool loading;
 
     public class Point{
@@ -87,17 +88,33 @@
 
         try
         {
-            updateResponse.message = "Wait....";
+            //updateResponse.message = "Wait....";
             updateResponse = await _apiService.UpdateDriverLocation(point.checkpoint);
-            if (updateResponse.statusCode != 0)
+            if (updateResponse.statusCode == 200)
             {
                 //AlertService.Success("Driver location updated successfully", keepAfterRouteChange: true);
+                Snackbar.Add(updateResponse.message, Severity.Success, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Done;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
                 //_navMgr.NavigateTo("/shipmentHistory");
+            }
+            else
+            {
+                Snackbar.Add(updateResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
             }
         }
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }

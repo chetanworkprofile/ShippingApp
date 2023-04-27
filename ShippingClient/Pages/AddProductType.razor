@@ -5,7 +5,7 @@
 
 <AuthorizeView>
     <Authorized Context="auth">
-        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
+       @* <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">*@
             <h4 class="card-header">Add New Product Type</h4>
             <div class="card-body">
                 <EditForm Model="productTypeModel" OnSubmit="DoAddProductType">
@@ -31,11 +31,6 @@
                         <label>No</label>
                     </div>
                     
-
-                    <div class="my-2">
-                        @addProductTypeResponse.message
-                    </div>
-
                     <div class="my-2">
                         <button disabled="@loading" type="submit" class="btn btn-primary">
                             @if (loading)
@@ -49,7 +44,7 @@
                     </div>
                 </EditForm>
             </div>
-        </div>
+       @* </div>*@
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>
@@ -66,29 +61,41 @@
     AddProductTypeResponse addProductTypeResponse = new();
     private bool loading;
     private bool isFragileCheck = true;
-    //protected override async void OnInitialized()
-    //{
-    //    StateHasChanged();
-    //}
+    [Inject] ISnackbar Snackbar { get; set; }
+    
     async Task DoAddProductType()
     {
-        // reset alerts on submit
-        //AlertService.Clear();
         loading = true;
         productTypeModel.isFragile = isFragileCheck;
         try
         {
-            addProductTypeResponse.message = "Wait....";
+            //addProductTypeResponse.message = "Wait....";
             addProductTypeResponse = await _apiService.AddProductType(productTypeModel);
-            if (addProductTypeResponse.statusCode != 0)
+            if (addProductTypeResponse.statusCode == 200)
             {
                 //AlertService.Success("Product Type Added successfully", keepAfterRouteChange: true);
+                Snackbar.Add("Product Type Added Successfully", Severity.Success, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Done;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
                 //_navMgr.NavigateTo("/shipmentHistory");
+            }
+            else
+            {
+                Snackbar.Add(addProductTypeResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
             }
         }
         catch (Exception ex)
         {
             //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }

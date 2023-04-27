@@ -230,7 +230,7 @@ namespace ShippingApp.Services
             }
             if (r.otp != user.verificationOTP)//(user == null)
             {
-                response2 = new ResponseWithoutData(400, "Invalid verification Value/Otp", false);
+                response2 = new ResponseWithoutData(400, "Invalid OTP", false);
                 code = 400;
                 return response2;
             }

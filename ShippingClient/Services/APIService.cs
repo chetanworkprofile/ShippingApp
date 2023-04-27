@@ -9,6 +9,7 @@ using System.Text;
 using static System.Net.WebRequestMethods;
 using System.Reflection;
 using System.Net;
+using Microsoft.AspNetCore.Components;
 
 namespace ShippingClient.Services
 {
@@ -17,15 +18,15 @@ namespace ShippingClient.Services
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
         private readonly string baseUrl;
-        private string? token { get; set; } = null;
+        [Inject] private NavigationManager navigationManager { get; set; }
 
         public APIService(HttpClient httpClient,
             ILocalStorageService localStorage)
         {
             this._httpClient = httpClient;
             this._localStorage = localStorage;
-            //baseUrl = "https://localhost:7147/";
-            baseUrl = "http://192.180.0.192:5656/";
+            baseUrl = "https://localhost:7147/";
+            //baseUrl = "http://192.180.0.192:5656/";
         }
 
         public async Task<GetProductsResponse> GetProductTypes(string? search=null)
@@ -93,6 +94,7 @@ namespace ShippingClient.Services
             try
             {
                 var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/drivers?driverId={driverId}");
+                
                 var obj = JsonSerializer.Serialize(response.data);
                 var drivers = JsonSerializer.Deserialize<List<DriverId>>(obj);
                 return drivers!;
@@ -463,6 +465,11 @@ namespace ShippingClient.Services
 
             return resultContent!;
 
+        }
+
+        public async Task DoLogout()
+        {
+            navigationManager.NavigateTo("/logout");
         }
     }
 }
