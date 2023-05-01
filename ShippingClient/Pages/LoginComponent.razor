@@ -16,7 +16,7 @@
         <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
             <h4 class="card-header">Login</h4>
             <div class="card-body">
-                <EditForm Model="@loginModel" OnValidSubmit="DoLogin">
+                <EditForm Model="@loginModel" OnValidSubmit="DoLogin" @onkeydown="@HandleKeyDown">
                     <DataAnnotationsValidator />
                     @*<div class="form-group">
                         <label for="email">Email</label>
@@ -46,7 +46,7 @@
                         </button>
                     </div>*@
                         <MudCard>
-                        <MudForm Model="loginModel" ReadOnly="false" @ref="form" @onkeydown="@HandleKeyDown">
+                        <MudForm Model="loginModel" @ref=form ReadOnly="false">
                                 <MudCardContent>
                                     <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!" @bind-Value=loginModel.email
                                                   Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
@@ -57,7 +57,7 @@
                                 </MudCardContent>
                                 <MudCardActions>
                                     <div class="d-flex align-center justify-space-between">
-                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="align-content-center m-lg-2" disabled="@loading" OnClick="DoLogin">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="align-content-center m-lg-2" disabled="@loading" @onkeydown="@HandleKeyDown" OnClick="DoLogin">
                                              @if (loading)
                                             {
                                                 Task.Delay(5000);
@@ -111,7 +111,7 @@
             Snackbar.Add("Please Fill All fields", Severity.Error);
             return;
         }
-        // reset alerts on submit
+        //reset alerts on submit
         Snackbar.Clear();
         loading = true;
         try

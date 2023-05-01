@@ -5,45 +5,46 @@
 
 <AuthorizeView>
     <Authorized Context="auth">
-        <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
-            <h4 class="card-header">Add New Checkpoint</h4>
-            <div class="card-body">
-                <EditForm Model="checkpointModel" OnSubmit="DoAddProductType">
-                    <DataAnnotationsValidator />
-                    <div class="form-group">
-                        <label for="type">Name</label>
-                        <InputText name="type" class="form-control" @bind-Value="checkpointModel.checkpointName" />
-                        <ValidationMessage For="@(()=>checkpointModel.checkpointName)" />
-                    </div>
-                    <div class="form-group">
+        <div class="container-fluid">
+            <div id='map' style="min-width: 60vw; min-height: 50vh; max-width: 80vw; max-height: 80vh;">
+            </div>
+            <div class="card col-sm-6" style="margin: 2% auto; justify-content:center">
+                <h4 class="card-header">Add New Checkpoint</h4>
+                <div class="card-body">
+                    <EditForm Model="checkpointModel" OnSubmit="DoAddCheckpoint">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label for="type">Name</label>
+                            <InputText name="type" class="form-control" @bind-Value="checkpointModel.checkpointName" />
+                            <ValidationMessage For="@(()=>checkpointModel.checkpointName)" />
+                        </div>
+                        @*<div class="form-group">
                         <label for="price">Latitude</label>
                         <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.latitude" />
                         <ValidationMessage For="@(()=>checkpointModel.latitude)" />
-                    </div>
-                    <div class="form-group">
+                        </div>
+                        <div class="form-group">
                         <label for="price">Longitude</label>
                         <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.longitude" />
                         <ValidationMessage For="@(()=>checkpointModel.longitude)" />
-                    </div>
-                    
-
-
-                    @*<div class="my-2">
+                        </div>
+                        <div class="my-2">
                         @addResponse.message
-                    </div>*@
+                        </div>*@
 
-                    <div class="my-2">
-                        <button disabled="@loading" type="submit" class="btn btn-primary">
-                            @if (loading)
-                            {
-                                <span class="spinner-border spinner-border-sm mr-1"></span>
-                                Task.Delay(5000);
-                                loading = false;
-                            }
-                            Add
-                        </button>
-                    </div>
-                </EditForm>
+                        <div class="my-2">
+                            <button disabled="@loading" type="submit" class="btn btn-primary">
+                                @if (loading)
+                                {
+                                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                                    Task.Delay(5000);
+                                    loading = false;
+                                }
+                                Add
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
             </div>
         </div>
     </Authorized>
@@ -58,16 +59,27 @@
 
 
 @code {
-    Models.AddCheckpoint checkpointModel = new();
+    public static Models.AddCheckpoint checkpointModel = new Models.AddCheckpoint();
     ResponseModel addResponse = new();
     [Inject] ISnackbar Snackbar { get; set; }
     private bool loading;
 
-    //protected override async void OnInitialized()
-    //{
-    //    StateHasChanged();
-    //}
-    async Task DoAddProductType()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var d = await jsRuntime.InvokeAsync<object>("initialize", null);
+            //Console.WriteLine(d + "hoo");
+        }
+    }
+    [JSInvokable]
+    public static void AddCoordinates(float a, float b)
+    {
+        //Console.WriteLine(a + " " + b);
+        checkpointModel.latitude = a;
+        checkpointModel.longitude = b;
+    }
+    async Task DoAddCheckpoint()
     {
         // reset alerts on submit
         //AlertService.Clear();
@@ -77,6 +89,11 @@
         {
             //addResponse.message = "Wait....";
             addResponse = await _apiService.AddCheckpoint(checkpointModel);
+            if (addResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (addResponse.statusCode == 200)
             {
                 //AlertService.Success("Checkpoint Added successfully", keepAfterRouteChange: true);

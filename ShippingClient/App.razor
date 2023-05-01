@@ -4,19 +4,28 @@
             <Authorizing>
                 <text>We are authorizing the user ...</text>
             </Authorizing>
+            <NotAuthorized>
+                <p>You are not authorized</p>
+                @if (true)
+                {
+                    _navMgr.NavigateTo("/login");
+                }
+            </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
+        <p role="alert" class="alert-danger">Sorry, there's nothing at this address.</p>
+        @*<LayoutView Layout="@typeof(MainLayout)">
             <p role="alert" class="alert-danger">Sorry, there's nothing at this address.</p>
-        </LayoutView>
+        </LayoutView>*@
     </NotFound>
 </Router>
 
 @code{
     [Inject] ISnackbar Snackbar { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         HubConnection hub = socket.GetHubConnection();

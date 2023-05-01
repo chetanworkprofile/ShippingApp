@@ -1,0 +1,26 @@
+﻿@page "/map"
+
+<PageTitle>Shipment App</PageTitle>
+<h3>maps</h3>
+<div id='map' style='width: 1000px; height: 600px;'>
+</div>
+
+@code {
+    //private async Task InitializeMap()
+    //{
+    //    await jsRuntime.InvokeVoidAsync("initialize", null);
+    //}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var d = await jsRuntime.InvokeAsync<object>("initialize", null);
+            Console.WriteLine(d + "hoo");
+        }
+    }
+    [JSInvokable]
+    public static void SayHello(float a, float b)
+    {
+        Console.WriteLine(a + " " + b);
+    }
+}

@@ -23,6 +23,18 @@
     bool preserveOpenState = false;
     Breakpoint breakpoint = Breakpoint.Lg;
     DrawerClipMode clipMode = DrawerClipMode.Never;
+    GetYourselfResponse response = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        response = await _apiService.GetYourself();
+        if (response.statusCode == 401)
+        {
+            _navMgr.NavigateTo("/logout");
+            return;
+        }
+        return;
+    }
 
     void ToggleDrawer()
     {

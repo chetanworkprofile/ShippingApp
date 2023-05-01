@@ -101,7 +101,7 @@ builder.Services.AddScoped<IMQConsumer, MQConsumer>();
 builder.Services.AddHostedService<BackgroundServiceConsumer>();
 
 //authorization middleware
-//builder.Services.AddTransient<IAuthorizationMiddlewareResultHandler, AuthorizationMiddlewareResultHandlerService>();
+builder.Services.AddTransient<IAuthorizationMiddlewareResultHandler, AuthorizationMiddlewareResultHandlerService>();
 
 var app = builder.Build();
 

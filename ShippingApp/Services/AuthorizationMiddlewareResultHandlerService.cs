@@ -21,6 +21,11 @@ namespace ShippingApp.Services
                 await context.Response.WriteAsJsonAsync(new ResponseWithoutData(403, "Unauthorized: You don't have permission to access this resource", false));
                 return;
             }
+            else
+            {
+                await next(context);
+                return;
+            }
         }
     }
 }

@@ -62,6 +62,11 @@
         {
             //addContainerTypeResponse.message = "Wait....";
             addContainerTypeResponse = await _apiService.AddContainerType(containerTypeModel);
+            if (addContainerTypeResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (addContainerTypeResponse.statusCode == 200)
             {
                 Snackbar.Add("Container Type Added Successfully", Severity.Success, config =>

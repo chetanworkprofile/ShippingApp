@@ -81,7 +81,7 @@ margin: 0;
                         <button type="submit" class="btn btn-primary">Register</button>
                     </div>*@
                     <MudCard>
-                        <MudForm Model="registerModel" ReadOnly="false" @ref="form" @onkeydown="@HandleKeyDown">
+                        <MudForm Model="registerModel" @ref=form ReadOnly="false" @onkeydown="@HandleKeyDown">
                             <MudCardContent>
                                 <MudTextField T="string" Label="First Name" Required="true" @bind-Value="registerModel.firstName" 
                                               ValidationMessage For="@(()=>registerModel.firstName)"
