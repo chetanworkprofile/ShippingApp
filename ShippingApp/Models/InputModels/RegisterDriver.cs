@@ -6,7 +6,7 @@
         public string lastName { get; set; } = "Lastname";
         public string email { get; set; } = "email@chatapp.com";
         public long contactno { get; set; } = 9999999999;
-        public string password { get; set; } = "fgh@98gh!#cf$5";
+        public string url { get; set; }
         public string address { get; set; } = string.Empty;
         public Guid checkpointLocation { get; set; } 
         public bool isAvailable { get; set; } = true;

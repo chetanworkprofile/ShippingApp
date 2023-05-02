@@ -247,6 +247,26 @@ namespace ShippingApp.Services
             return result;
         }
 
+        public Object SetPassVerify(DriverSetPass r, string userId, out int code)
+        {
+
+            Guid id = new Guid(userId);
+            var user = DbContext.Users.Find(id);
+
+            if (user == null)               //check if email exists in database
+            {
+                response2 = new ResponseWithoutData(404, "User not found", false);
+                code = 404;
+                return response2;
+            }
+            
+            user.verifiedAt = DateTime.UtcNow;
+            result = ResetPassword(r.password, id, out code);
+            user.otpUsableTill = DateTime.Now;
+            DbContext.SaveChanges();
+            return result;
+        }
+
         internal Object ResetPassword(string password, Guid id, out int code)
         {
             var user = DbContext.Users.Find(id);

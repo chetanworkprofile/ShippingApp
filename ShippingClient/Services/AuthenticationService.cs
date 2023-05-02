@@ -109,6 +109,11 @@ namespace ShippingClient.Services
 
         }
 
+        public async Task DriverSetPassword(string token)
+        {
+            await _localStorage.SetItemAsync("resetToken", token);
+        }
+
         public async Task<LoginResponse> ResetPassword(ResetPasswordModel model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("resetToken");
@@ -135,9 +140,35 @@ namespace ShippingClient.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resetResponseContent.data.token);
             }
             return resetResponseContent;
-
         }
+        public async Task<LoginResponse> DriverSetPassword(DriverSetPassModel model)
+        {
+            string savedToken = await _localStorage.GetItemAsync<string>("resetToken");
 
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}" +
+                $"api/v1/driver/setPassword");
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var resetResult = await _httpClient.SendAsync(requestMessage);
+
+            Console.WriteLine("res" + resetResult);
+            if (!resetResult.IsSuccessStatusCode)
+            {
+                var errorResetResponseContent = await resetResult.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                return new LoginResponse { statusCode = 0, message = errorResetResponseContent.message };
+            }
+            var resetResponseContent = await resetResult.Content.ReadFromJsonAsync<LoginResponse>();
+            if (resetResponseContent != null)
+            {
+                await _localStorage.RemoveItemAsync("resetToken");
+                await _localStorage.SetItemAsync("accessToken", resetResponseContent.data.token);
+                token = resetResponseContent.data.token;
+                ((auth.AuthProvider)_authStateProvider).NotifyUserAuthentication(resetResponseContent.data.token);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resetResponseContent.data.token);
+            }
+            return resetResponseContent;
+        }
         public async Task<LoginResponse> ChangePassword(ChangePasswordModel model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");

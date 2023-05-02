@@ -1,5 +1,6 @@
-﻿function initialize() {
-    mapboxgl.accessToken = 'pk.eyJ1Ijoiam9vc2hpIiwiYSI6ImNsaDRjeTBiazBqeG0zZ281enNzOXR4cjcifQ.eLxwYoRL5rhHhQxjv9mZkg';
+﻿mapboxgl.accessToken = 'pk.eyJ1Ijoiam9vc2hpIiwiYSI6ImNsaDRjeTBiazBqeG0zZ281enNzOXR4cjcifQ.eLxwYoRL5rhHhQxjv9mZkg';
+
+function initialize() {
     const map = new mapboxgl.Map({
         container: document.getElementById("map"), // container ID
         style: 'mapbox://styles/mapbox/streets-v12', // style URL
@@ -31,3 +32,10 @@
         DotNet.invokeMethodAsync('ShippingClient', 'AddCoordinates', latitude, longitude);
     });
 }
+
+/*function init2() {
+    //https://api.mapbox.com/directions/v5/mapbox/driving/-74.070358%2C40.920717%3B-73.406231%2C41.140664%3B-73.842321%2C40.878819%3B-73.839923%2C40.974825?alternatives=true&geometries=geojson&language=en&overview=simplified&steps=true&access_token=YOUR_MAPBOX_ACCESS_TOKEN
+    const v = https://api.mapbox.com/directions/v5/mapbox/driving/-74.070358%2C40.920717%3B-73.406231%2C41.140664?alternatives=true&geometries=geojson&language=en&overview=simplified&steps=true&access_token=pk.eyJ1Ijoiam9vc2hpIiwiYSI6ImNsaDRjeTBiazBqeG0zZ281enNzOXR4cjcifQ.eLxwYoRL5rhHhQxjv9mZkg;
+    const map = new mapboxgl.v;
+}
+*/

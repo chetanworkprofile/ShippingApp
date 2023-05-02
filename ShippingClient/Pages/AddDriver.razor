@@ -18,7 +18,7 @@
         <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
             <h4 class="card-header">Add New Driver</h4>
             <div class="card-body">
-                <EditForm Model="driverModel" OnSubmit="DoAddDriver">
+                <EditForm Model="driverModel" OnValidSubmit="DoAddDriver">
                     <DataAnnotationsValidator />
                      <div class="form-group">
                        <label for="firstName">First Name</label>
@@ -37,7 +37,7 @@
                         <ValidationMessage For="@(()=>driverModel.email)" />
                     </div>
 
-                    <div class="form-group">
+                    @*<div class="form-group">
                         <label for="password">Password</label>
                         <InputText id="password" type="password" class="form-control" @bind-Value="driverModel.password" />
                         <ValidationMessage For="@(()=>driverModel.password)" />
@@ -45,7 +45,7 @@
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password</label>
                         <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
-                    </div>
+                    </div>*@
                     <div class="form-group">
                         <label for="contact">Contact No.</label>
                         <InputNumber id="contact" class="form-control" @bind-Value="driverModel.contactno" />
@@ -117,7 +117,7 @@
     AddDriverResponse addDriverResponse = new();
     private bool loading;
     private bool isAvailable = true;
-    string confirmPassword = string.Empty;
+    //string confirmPassword = string.Empty;
     Guid checkPoint;
     [Inject] ISnackbar Snackbar { get; set; }
 
@@ -127,6 +127,8 @@
     {
         GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
         checkpointsList = checkpoints.data;
+        driverModel.url = string.Empty;
+        driverModel.url = "driverSetPassword";
         StateHasChanged();
     }
     void CheckpointClicked(ChangeEventArgs originEvent)
@@ -143,18 +145,18 @@
         driverModel.isAvailable = isAvailable;
         try
         {
-            if (confirmPassword != driverModel.password)
-            {
-                //addDriverResponse.message = "Password and Confirm Password does not match...";
-                Snackbar.Add("Password and Confirme Password does not match..", Severity.Error, config =>
-                {
-                    config.Icon = Icons.Material.Filled.Error;
-                    config.IconColor = Color.Warning;
-                    config.IconSize = Size.Small;
-                });
-                loading = false;
-                return;
-            }
+            //if (confirmPassword != driverModel.password)
+            //{
+            //    //addDriverResponse.message = "Password and Confirm Password does not match...";
+            //    Snackbar.Add("Password and Confirme Password does not match..", Severity.Error, config =>
+            //    {
+            //        config.Icon = Icons.Material.Filled.Error;
+            //        config.IconColor = Color.Warning;
+            //        config.IconSize = Size.Small;
+            //    });
+            //    loading = false;
+            //    return;
+            //}
             //addDriverResponse.message = "Wait....";
             addDriverResponse = await _apiService.AddDriver(driverModel);
             if (addDriverResponse.statusCode == 200)

@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.WebRequestMethods;
 
 
 namespace ShippingApp.Services
@@ -377,13 +378,13 @@ namespace ShippingApp.Services
                     code = 400;
                     return response2;
                 }
-                string regexPatternPassword = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
+                /*string regexPatternPassword = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
                 if (!Regex.IsMatch(inpUser.password, regexPatternPassword))
                 {
                     response2 = new ResponseWithoutData(400, "Please Enter Valid Password. Must contain atleast one uppercase letter, one lowercase letter, one number and one special chararcter and must be atleast 8 characters long", false);
                     code = 400;
                     return response2;
-                }
+                }*/
                 string regexPatternPhone = "^[6-9]\\d{9}$";
                 if (!Regex.IsMatch(inpUser.contactno.ToString(), regexPatternPhone))
                 {
@@ -392,8 +393,18 @@ namespace ShippingApp.Services
                     return response2;
                 }
                 
+                var user = new User(Guid.NewGuid(), inpUser.firstName, inpUser.lastName, inpUser.email, inpUser.contactno, inpUser.address, _secondaryAuthService.CreatePasswordHash("Qwy@163$%^&FbGFrtYu"), "pathToPic", "deliveryBoy", "token");
+                // generate token used for reseting password can't user this token to login
+                var tokenUser = new CreateToken(user.userId, user.firstName, user.email, "resetpassword");
+                string returntoken = _secondaryAuthService.CreateToken(tokenUser);
+
+                string subject = "Mail Verification by Shipping Logistics Management System.Please Verify your account";
+                string body = "Please verify your email.You are added as a new Delivery person in our system .Please Create your password by clicking on this link " + $"{inpUser.url}?access_token={returntoken}";
+                //send mail function used to send mail 
+                //response2 = _secondaryAuthService.SendEmail(email, otp);
+                response2 = _messagePublisher.SendEmail(new SendEmailModel(inpUser.email, subject, body));
                 
-                var user = new User(Guid.NewGuid(), inpUser.firstName, inpUser.lastName, inpUser.email, inpUser.contactno, inpUser.address, _secondaryAuthService.CreatePasswordHash(inpUser.password), "pathToPic", "deliveryBoy", "token");
+
                 SendAddDriver sendToApi = new SendAddDriver(user.userId, inpUser.checkpointLocation, inpUser.isAvailable);
                 using (var client = new HttpClient())
                 {

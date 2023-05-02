@@ -18,6 +18,7 @@ namespace ShippingClient.Services
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
         private readonly string baseUrl;
+        private readonly string frontUrl;
         [Inject] private NavigationManager navigationManager { get; set; }
 
         public APIService(HttpClient httpClient,
@@ -25,6 +26,7 @@ namespace ShippingClient.Services
         {
             this._httpClient = httpClient;
             this._localStorage = localStorage;
+            frontUrl = "https://localhost:7004/";
             baseUrl = "https://localhost:7147/";
             //baseUrl = "http://192.180.0.192:5656/";
         }
@@ -196,6 +198,11 @@ namespace ShippingClient.Services
         }
         public async Task<AddDriverResponse> AddDriver(AddDriver model)
         {
+            var temp = model.url;
+            Console.WriteLine("modelurl"+model.url);
+            model.url = $"{frontUrl}{model.url}/";
+            Console.WriteLine("after"+model.url);
+
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/add/driver");
@@ -203,13 +210,14 @@ namespace ShippingClient.Services
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
 
             var result = await _httpClient.SendAsync(requestMessage);
-
+            model.url = temp;
             if (!result.IsSuccessStatusCode)
             {
                 var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
                 return new AddDriverResponse { statusCode = 0, message = errorResponseContent!.message };
             }
             var resultContent = await result.Content.ReadFromJsonAsync<AddDriverResponse>();
+            
             
             return resultContent!;
 

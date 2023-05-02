@@ -122,6 +122,26 @@ namespace ShippingApp.Controllers
             }
         }
 
+        [HttpPost, Authorize(Roles = "resetpassword")]
+        [Route("/api/v1/driver/setPassword")]
+        public ActionResult<User> DriverSetPassword(DriverSetPass r)
+        {
+            _logger.LogInformation("setting password attempt");
+            try
+            {
+                string? userId = User.FindFirstValue(ClaimTypes.Sid);                  //extracting userid from token
+                int statusCode = 0;
+                result = authService.SetPassVerify(r, userId, out statusCode);
+                return StatusCode(statusCode, result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
         [HttpPost, Authorize(Roles = "client, deliveryBoy, manager, admin")]
         [Route("/api/v1/changePassword")]
         public ActionResult<User> ChangePassword(ChangePasswordModel r)
