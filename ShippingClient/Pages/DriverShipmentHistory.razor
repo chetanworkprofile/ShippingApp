@@ -17,7 +17,11 @@
     <Authorized Context="Auth">
         <div class="row">
             <div>
-                <h3>Shipment History</h3>
+                <div class="row justify-content-end" style="margin: 10px;">
+                    <h3 class="col-8 justify-content-start">Shipment History</h3>
+                    @*<MudButton Class="col-4" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Medium" OnClick="@TrackOpen" />*@
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="col-4" OnClick="@TrackOpen">Track</MudButton>
+                </div>
                 @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
                @* <table class="table table-striped">
                     <thead>
@@ -79,6 +83,12 @@
                 </MudTable>
             </div>
         </div>
+        <MudPopover Open="@_isOpen" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+            <div class="d-flex flex-column">
+                <MudText>You currently have No shipment assigned</MudText>
+                <MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+            </div>
+        </MudPopover>
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>
@@ -92,7 +102,7 @@
 
 @code {
     List<AvailableShipmentsDriver> shipments = new();
-
+    public bool _isOpen = false;
     private bool loading = true;
     [Inject] ISnackbar Snackbar { get; set; }
     protected override async Task OnInitializedAsync()
@@ -100,8 +110,6 @@
         await GetShipmentsTypesList();
         //StateHasChanged();
     }
-
-
 
     async Task GetShipmentsTypesList()
     {
@@ -121,5 +129,25 @@
             Snackbar.Add(ex.Message, Severity.Error);
             StateHasChanged();
         }
+    }
+    public void TrackOpen()
+    {
+        if (shipments.Any(s => s.isActive == true))
+        {
+            string origin = shipments.FirstOrDefault()!.checkpoint1Id;
+            string destination = shipments.FirstOrDefault()!.checkpoint2Id;
+            _navMgr.NavigateTo($"/trackingForDriver?origin={origin}&destination={destination}");
+        }
+        else
+        {
+            
+        }
+    }
+    public void ToggleOpen()
+    {
+        if (_isOpen)
+            _isOpen = false;
+        else
+            _isOpen = true;
     }
 }

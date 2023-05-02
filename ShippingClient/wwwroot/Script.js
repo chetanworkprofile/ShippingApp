@@ -1,5 +1,5 @@
 ﻿mapboxgl.accessToken = 'pk.eyJ1Ijoiam9vc2hpIiwiYSI6ImNsaDRjeTBiazBqeG0zZ281enNzOXR4cjcifQ.eLxwYoRL5rhHhQxjv9mZkg';
-
+//for checkpoints
 function initialize() {
     const map = new mapboxgl.Map({
         container: document.getElementById("map"), // container ID
@@ -39,3 +39,27 @@ function initialize() {
     const map = new mapboxgl.v;
 }
 */
+
+function mapinit2(_origin1, _origin2, _destination1, _destination2) {
+    const map = new mapboxgl.Map({
+        container: document.getElementById("map"), // container ID
+        style: 'mapbox://styles/mapbox/streets-v12', // style URL
+        center: [_origin1, _origin2], // starting position [lng, lat]
+        zoom: 3, // starting zoom
+    });
+    var directions = new MapboxDirections({
+        accessToken: mapboxgl.accessToken,
+    });
+    
+    var origin = [_origin1, _origin2];
+    var destination = [_destination1, _destination2];
+
+    console.log(origin + " " + destination)
+
+    directions.setOrigin(origin);
+    directions.setDestination(destination);
+    map.addControl(
+        directions,
+        'top-left'
+    );
+}

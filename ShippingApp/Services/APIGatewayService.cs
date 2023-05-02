@@ -161,7 +161,7 @@ namespace ShippingApp.Services
             }
         }
 
-        public string GetCheckpoints(Guid? checkpointId, out int code)
+        public string GetCheckpoints(Guid? checkpointId,string? checkpointName, out int code)
         {
             using (var client = new HttpClient())
             {
@@ -173,6 +173,11 @@ namespace ShippingApp.Services
                 if (checkpointId != null)
                 {
                     appendUrl.Append("&checkpointId=" + checkpointId + "");
+
+                }
+                if (checkpointName != null)
+                {
+                    appendUrl.Append("&checkpointName=" + checkpointName + "");
 
                 }
                 var res = client.GetAsync(appendUrl.ToString()).Result;
@@ -293,6 +298,25 @@ namespace ShippingApp.Services
                 response = new Response(200, "Drivers list fetched", listOfDrivers, true);
                 code = 200;
                 return response;
+            }
+        }
+
+        public string GetCost(AddShipment inp, out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent content = new StringContent(JsonConvert.SerializeObject(inp), Encoding.UTF8, "application/json");
+                var response = client.PostAsync("api/shipment/getCost", content).Result;
+                /*if (response.IsSuccessStatusCode)
+                {
+                    return response.Content.ReadAsStringAsync().Result;
+                    //objAuthor = response.Content.ReadAsAsync<Author>().Result;
+                }*/
+                code = (int)response.StatusCode;
+                return response.Content.ReadAsStringAsync().Result;
             }
         }
 

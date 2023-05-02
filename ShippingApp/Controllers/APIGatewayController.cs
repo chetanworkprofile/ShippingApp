@@ -168,13 +168,13 @@ namespace ShippingApp.Controllers
 
         [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
         [Route("/api/v1/get/checkpoints")]
-        public ActionResult GetCheckpoints(Guid? checkpointId = null)
+        public ActionResult GetCheckpoints(Guid? checkpointId = null,string? checkpointName = null)
         {
             _logger.LogInformation("Getting list of checkpoints");
             try
             {
                 int statusCode = 0;
-                var res = _apiGatewayService.GetCheckpoints(checkpointId, out statusCode);
+                var res = _apiGatewayService.GetCheckpoints(checkpointId,checkpointName, out statusCode);
                 return StatusCode(statusCode, res);
             }
             catch (Exception ex)
@@ -191,6 +191,15 @@ namespace ShippingApp.Controllers
         {
             int statusCode = 0;
             var res = _apiGatewayService.AddProductType(inpPtype, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
+        [HttpPost, Authorize(Roles = "admin,client,manager,deliveryBoy")]
+        [Route("/api/v1/getCost")]
+        public ActionResult GetCost(AddShipment inpDetails)
+        {
+            int statusCode = 0;
+            var res = _apiGatewayService.GetCost(inpDetails, out statusCode);
             return StatusCode(statusCode, res);
         }
 

@@ -1,6 +1,7 @@
 ﻿@page "/createShipment"
 
 @using Microsoft.AspNetCore.Authorization;
+@using System.Text.Json;
 @attribute [Authorize(Roles = "admin,client,manager")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -13,7 +14,7 @@
                     <p><em>Loading...</em></p>
                 }
                 else{
-                    <EditForm Model="shipmentModel" OnValidSubmit="DoCreateShipment">
+                    <EditForm Model="shipmentModel" OnValidSubmit="ToggleOpen">
                     <DataAnnotationsValidator />
                     <div class="row">
                         <div class="col-md-4">
@@ -109,25 +110,59 @@
                         <ValidationMessage For="@(()=>shipmentModel.notes)" />
                     </div>
 
-                    @*<div class="my-2">
-                        @createShipmentResponse.message
-                    </div>*@
-
                     <div class="my-2">
-                        <button disabled="@loading" type="submit" class="btn btn-primary">
-                            @if (loading)
+                        @*<button disabled="@loading" type="submit" class="btn btn-primary">*@
+                        <button type="submit" class="btn btn-primary">
+                            @*@if (loading)
                             {
                                 <span class="spinner-border spinner-border-sm mr-1"></span>
                                 Task.Delay(5000);
                                 loading = false;
-                            }
-                            Create
+                            }*@
+                            Next
                         </button>
                     </div>
                 </EditForm>
                 }
             </div>
         </div>
+        <MudPopover Open="@_isOpen" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+            <div class="container d-flex flex-column">
+                <MudPaper Width="40vw" Height="40vh" Class="col-6" Square="true">
+                    <MudList>
+                        <MudListItem>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>Weight</div>
+                            <div>@shipmentModel.shipmentWeight</div>
+                            </div>
+                        </MudListItem>
+                        <MudListItem>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>Cost</div>
+                                <div>@((int)cost)</div>
+                            </div>
+                        </MudListItem>
+                        <MudListItem>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>GST(18% of cost)</div>
+                                <div>@((int)(0.18*cost))</div>
+                            </div>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudListItem>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>Total Cost</div>
+                                <div>@((int)(1.18*cost))</div>
+                            </div>
+                        </MudListItem>
+                    </MudList>
+                </MudPaper>
+                <MudButton  type="submit" Variant="Variant.Filled" Color="Color.Default" Class="align-content-center m-lg-2" OnClick="DoCreateShipment">
+                    Confirm
+                </MudButton>
+                <MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+            </div>
+        </MudPopover>
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>
@@ -156,6 +191,31 @@
     Guid destination = Guid.Empty;
     decimal weight;
     string notes = string.Empty;
+    public bool _isOpen;
+
+    public float cost = 0;
+
+    public async Task Calculate()
+    {
+        loading = true;
+        shipmentModel.origin = origin;
+        shipmentModel.destination = destination;
+        shipmentModel.productTypeId = productTypeId;
+        shipmentModel.containerTypeId = containerTypeId;
+        GlobalResponse response = await _apiService.GetCost(shipmentModel);
+        cost = JsonSerializer.Deserialize<float>(JsonSerializer.Serialize(response.data));
+        StateHasChanged();
+    }
+
+    public async void ToggleOpen()
+    {
+        Calculate();
+        if (_isOpen)
+            _isOpen = false;
+        else
+            _isOpen = true;
+    }
+
     protected override async void OnInitialized()
     {
         HubConnection hub = socket.GetHubConnection();
@@ -164,7 +224,7 @@
             await socket.Connect();
         }
         hub = socket.GetHubConnection();
-        Console.WriteLine("create ship hub var" + hub);
+        //Console.WriteLine("create ship hub var" + hub);
         GetProductsResponse productTypes = await _apiService.GetProductTypes();
         GetContainerTypesResponse containerTypes = await _apiService.GetContainerTypes();
         GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
@@ -253,5 +313,4 @@
         containerTypeId = new Guid(containerTypeEvent.Value.ToString());
         this.StateHasChanged();
     }
-    
 }

@@ -90,6 +90,20 @@ namespace ShippingClient.Services
                 throw;
             }
         }
+        public async Task<GetCheckpointsResponse> GetCheckpointsByName(string name)
+        {
+            try
+            {
+                var checkpoints = await _httpClient.GetFromJsonAsync<GetCheckpointsResponse>($"{baseUrl}api/v1/get/checkpoints?checkpointName={name}");
+                return checkpoints!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
 
         public async Task<List<DriverId>> GetDrivers(Guid driverId)
         {
@@ -152,7 +166,26 @@ namespace ShippingClient.Services
             var resultContent = await result.Content.ReadFromJsonAsync<AddProductTypeResponse>();
             
             return resultContent!;
+        }
 
+        public async Task<GlobalResponse> GetCost(CreateShipment model)
+        {
+            string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/getCost");
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+            var result = await _httpClient.SendAsync(requestMessage);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorResponseContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+                return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
+            }
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+
+            return resultContent!;
         }
 
         public async Task<ResponseModel> AddCheckpoint(AddCheckpoint model)
@@ -173,7 +206,6 @@ namespace ShippingClient.Services
             var resultContent = await result.Content.ReadFromJsonAsync<ResponseModel>();
 
             return resultContent!;
-
         }
 
         public async Task<AddContainerTypeResponse> AddContainerType(AddContainerType model)
