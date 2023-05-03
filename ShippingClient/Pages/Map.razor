@@ -1,28 +1,32 @@
 ﻿@page "/map"
 
-<PageTitle>Shipment App</PageTitle>
-<h3>maps</h3>
-<div id='map' style='width: 1000px; height: 600px;'>
-</div>
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div style="margin: 10% auto; width: 80vw; height: 80vh; justify-content:center">
+            <h4>Track On Map</h4>
+            <div>
+                <div id='map' style='width: 1000px; height: 600px;'>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
 
 @code {
-    //private async Task InitializeMap()
-    //{
-    //    await jsRuntime.InvokeVoidAsync("initialize", null);
-    //}
-    //double[,] coords = { { 74.87469, 31.63174 }, { 77.1025, 28.7041 } };
-    double[] origin = { 74.87469, 31.63174 };
-    double[] destination = { 77.1025, 28.7041 };
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var d = await jsRuntime.InvokeAsync<object>("mapinit2", origin, destination);
+            var d = await jsRuntime.InvokeAsync<object>("funcInit", null);
+            Console.WriteLine("function called");
         }
     }
-    //[JSInvokable]
-    //public static void SayHello(float a, float b)
-    //{
-    //    Console.WriteLine(a + " " + b);
-    //}
 }

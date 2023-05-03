@@ -64,6 +64,6 @@
         destinationcc1 = checkDestination.longitude;
         destinationcc2 = checkDestination.latitude;
         Console.WriteLine("origin: " + origincc1 + origincc2 + " dest: " + destinationcc1 + destinationcc2);
-        var d = await jsRuntime.InvokeAsync<object>("mapinit2", origincc1, origincc2, destinationcc1, destinationcc2);
+        var d = await jsRuntime.InvokeAsync<object>("trackOnOriginDest", origincc1, origincc2, destinationcc1, destinationcc2);
     }
 }

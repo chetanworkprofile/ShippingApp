@@ -33,15 +33,62 @@ function initialize() {
     });
 }
 
-/*function init2() {
-    //https://api.mapbox.com/directions/v5/mapbox/driving/-74.070358%2C40.920717%3B-73.406231%2C41.140664%3B-73.842321%2C40.878819%3B-73.839923%2C40.974825?alternatives=true&geometries=geojson&language=en&overview=simplified&steps=true&access_token=YOUR_MAPBOX_ACCESS_TOKEN
-    const v = https://api.mapbox.com/directions/v5/mapbox/driving/-74.070358%2C40.920717%3B-73.406231%2C41.140664?alternatives=true&geometries=geojson&language=en&overview=simplified&steps=true&access_token=pk.eyJ1Ijoiam9vc2hpIiwiYSI6ImNsaDRjeTBiazBqeG0zZ281enNzOXR4cjcifQ.eLxwYoRL5rhHhQxjv9mZkg;
-    const map = new mapboxgl.v;
-}
-*/
+// for driver to do location tracking
+function trackOnOriginDest(_origin1, _origin2, _destination1, _destination2) {
+    const start = [_origin1, _origin2];
+    const end = [_destination1, _destination2];
 
-function mapinit2(_origin1, _origin2, _destination1, _destination2) {
     const map = new mapboxgl.Map({
+        container: document.getElementById("map"), // container ID
+        style: 'mapbox://styles/mapbox/streets-v12', // style URL
+        center: start, // starting position [lng, lat]
+        zoom: 6, // starting zoom
+    });
+
+    var url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            var route = data.routes[0].geometry;
+            map.on('load', () => {
+
+                var marker = new mapboxgl.Marker({
+                    color: "#3887be",
+                    draggable: false
+                }).setLngLat(start)
+                    .addTo(map);
+
+                var marker2 = new mapboxgl.Marker({
+                    color: "#f30",
+                    draggable: false
+                }).setLngLat(end)
+                    .addTo(map);
+
+                map.addSource('route', {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': route
+                    }
+                });
+                map.addLayer({
+                    'id': 'route',
+                    'type': 'line',
+                    'source': 'route',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#4D58B2',
+                        'line-width': 6
+                    }
+                });
+            });
+        });
+    /*const map = new mapboxgl.Map({
         container: document.getElementById("map"), // container ID
         style: 'mapbox://styles/mapbox/streets-v12', // style URL
         center: [_origin1, _origin2], // starting position [lng, lat]
@@ -61,5 +108,68 @@ function mapinit2(_origin1, _origin2, _destination1, _destination2) {
     map.addControl(
         directions,
         'top-left'
-    );
+    )*/;
+}
+
+
+
+function funcInit() {
+    const start = [-122.662323, 45.523751];
+    const end = [-120.662323, 46.023751];
+
+    const map = new mapboxgl.Map({
+        container: document.getElementById("map"), // container ID
+        style: 'mapbox://styles/mapbox/streets-v12', // style URL
+        center: start, // starting position [lng, lat]
+        zoom: 6, // starting zoom
+    });
+    
+    
+    var url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            var route = data.routes[0].geometry;
+
+
+    map.on('load', () => {
+        
+        var marker = new mapboxgl.Marker({
+            color: "#3887be",
+            draggable: false
+        }).setLngLat(start)
+            .addTo(map);
+
+        var marker2 = new mapboxgl.Marker({
+            color: "#f30",
+            draggable: false
+        }).setLngLat(end)
+            .addTo(map);
+
+        map.addSource('route', {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'properties': {},
+                'geometry': route
+            }
+        });
+        map.addLayer({
+            'id': 'route',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#4D58B2',
+                'line-width': 6
+            }
+        });
+    });
+    });
+
 }
