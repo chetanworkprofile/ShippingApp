@@ -27,7 +27,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpGet, Authorize(Roles = "admin,client,manager,deliveryBoy")]
+        [HttpGet, Authorize(Roles = "admin,client,deliveryBoy")]
         [Route("/api/v1/user/getYourself")]
         public IActionResult GetYourself()                  // api for user to get data of himself for proifile details
         {
@@ -48,7 +48,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpPut, Authorize(Roles = "admin,client,manager,deliveryBoy")]
+        [HttpPut, Authorize(Roles = "admin,client,deliveryBoy")]
         [Route("/api/v1/user/update")]
         public IActionResult UpdateUser(UpdateUser u)
         {
@@ -70,7 +70,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpDelete, Authorize(Roles = "client,manager,deliveryBoy")]
+        [HttpDelete, Authorize(Roles = "client,deliveryBoy")]
         [Route("/api/v1/user/delete")]
         public IActionResult DeleteUser(DeleteUser user)
         {

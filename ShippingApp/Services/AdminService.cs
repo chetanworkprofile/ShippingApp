@@ -28,7 +28,7 @@ namespace ShippingApp.Services
             _secondaryAuthService = new SecondaryAuthService(configuration);
         }
 
-        public Object CreateManager(RegisterUser inpUser, out int code)
+        /*public Object CreateManager(RegisterUser inpUser, out int code)
         {
             var DbUsers = DbContext.Users;
             bool existingUser = DbUsers.Where(u => u.email == inpUser.email).Any();
@@ -83,7 +83,7 @@ namespace ShippingApp.Services
                 code = 400;
                 return response2;
             }
-        }
+        }*/
 
         public Object GetUsers(string userId, string userType, string token, Guid? UserId, string? searchString, string? Email, long contactNo, string OrderBy, int SortOrder, int RecordsPerPage, int PageNumber, out int code)          // sort order   ===   e1 for ascending   -1 for descending
         {

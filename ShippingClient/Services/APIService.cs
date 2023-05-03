@@ -31,18 +31,23 @@ namespace ShippingClient.Services
             //baseUrl = "http://192.180.0.192:5656/";
         }
 
-        public async Task<GetProductsResponse> GetProductTypes(string? search=null)
+        public async Task<GlobalResponse> GetProductTypes(string? search = null, Guid? productTypeId = null)
         {
             try
             {
-                GetProductsResponse? productTypes;
+                GlobalResponse? productTypes;
+                if (productTypeId != null)
+                {
+                    productTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/productTypes?productTypeId={productTypeId}");
+                    
+                }
                 if (search != null)
                 {
-                    productTypes = await _httpClient.GetFromJsonAsync<GetProductsResponse>($"{baseUrl}api/v1/get/productTypes?searchString={search}");
+                    productTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/productTypes?searchString={search}");
                 }
                 else
                 {
-                    productTypes = await _httpClient.GetFromJsonAsync<GetProductsResponse>($"{baseUrl}api/v1/get/productTypes");
+                    productTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/productTypes");
                 }
                 return productTypes!;
             }
@@ -54,11 +59,15 @@ namespace ShippingClient.Services
             }
         }
 
-        public async Task<GetContainerTypesResponse> GetContainerTypes(string? search = null)
+        public async Task<GetContainerTypesResponse> GetContainerTypes(string? search = null, Guid? containerTypeId = null)
         {
             try
             {
                 GetContainerTypesResponse? containerTypes;
+                if (containerTypeId != null)
+                {
+                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"{baseUrl}api/v1/get/containerTypes?containerTypeId={containerTypeId}");
+                }
                 if (search != null)
                 {
                     containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"{baseUrl}api/v1/get/containerTypes?searchString={search}");
@@ -255,7 +264,7 @@ namespace ShippingClient.Services
 
         }
         
-        public async Task<LoginResponse> AddManager(AddManager model)
+        /*public async Task<LoginResponse> AddManager(AddManager model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
 
@@ -274,7 +283,7 @@ namespace ShippingClient.Services
             
             return resultContent!;
 
-        }
+        }*/
 
         public async Task<GetUsersResponse> GetUsers(int pageNumber = 1,string? search = null)
         {
@@ -505,6 +514,35 @@ namespace ShippingClient.Services
 
             return resultContent!;
 
+        }
+
+        public async Task<GlobalResponse> UpdateProductTypes(UpdateProductType model)
+        {
+            try
+            {
+                string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"{baseUrl}api/v1/update/productType");
+                requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+                var result = await _httpClient.SendAsync(requestMessage);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                    return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
+                }
+                var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+
+                return resultContent!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
         public async Task DoLogout()

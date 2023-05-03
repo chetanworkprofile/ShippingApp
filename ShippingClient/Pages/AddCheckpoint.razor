@@ -18,20 +18,6 @@
                             <InputText name="type" class="form-control" @bind-Value="checkpointModel.checkpointName" />
                             <ValidationMessage For="@(()=>checkpointModel.checkpointName)" />
                         </div>
-                        @*<div class="form-group">
-                        <label for="price">Latitude</label>
-                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.latitude" />
-                        <ValidationMessage For="@(()=>checkpointModel.latitude)" />
-                        </div>
-                        <div class="form-group">
-                        <label for="price">Longitude</label>
-                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.longitude" />
-                        <ValidationMessage For="@(()=>checkpointModel.longitude)" />
-                        </div>
-                        <div class="my-2">
-                        @addResponse.message
-                        </div>*@
-
                         <div class="my-2">
                             <button disabled="@loading" type="submit" class="btn btn-primary">
                                 @if (loading)
@@ -124,3 +110,26 @@
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+                @*<div class="form-group">
+                        <label for="price">Latitude</label>
+                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.latitude" />
+                        <ValidationMessage For="@(()=>checkpointModel.latitude)" />
+                        </div>
+                        <div class="form-group">
+                        <label for="price">Longitude</label>
+                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.longitude" />
+                        <ValidationMessage For="@(()=>checkpointModel.longitude)" />
+                        </div>
+                        <div class="my-2">
+                        @addResponse.message
+                        </div>*@

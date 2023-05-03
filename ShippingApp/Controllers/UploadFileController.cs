@@ -24,7 +24,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpPost, DisableRequestSizeLimit, Authorize(Roles = "client, deliveryBoy, manager, admin")]
+        [HttpPost, DisableRequestSizeLimit, Authorize(Roles = "client, deliveryBoy, admin")]
         [Route("/api/v1/uploadProfilePic")]
         public IActionResult ProfilePicUploadAsync(IFormFile file)                //[FromForm] FileUpload File
         {

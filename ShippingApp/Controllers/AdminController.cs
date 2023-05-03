@@ -23,7 +23,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpPost, Authorize(Roles = "admin")]
+        /*[HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/admin/addManager")]
         public IActionResult RegisterManager([FromBody] RegisterUser inpUser)             //register user function uses authService to create a new user in db
         {
@@ -40,7 +40,7 @@ namespace ShippingApp.Controllers
                 response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
                 return StatusCode(500, response2);
             }
-        }
+        }*/
 
         [HttpDelete, Authorize(Roles = "admin")]
         [Route("/api/v1/admin/removeUser")]

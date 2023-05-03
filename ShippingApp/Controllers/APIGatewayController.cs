@@ -1,19 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Xml.Linq;
 using ShippingApp.Models.OutputModels;
-using System.Text;
 using ShippingApp.Services;
 using ShippingApp.Data;
-using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
 using ShippingApp.RabbitMQ;
 using ShippingApp.Models.InputModels;
 using ShippingApp.Models;
 using Microsoft.AspNetCore.Authorization;
-using System.Data;
+
 
 namespace ShippingApp.Controllers
 {
@@ -31,7 +26,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/shipments")]
         public ActionResult GetShipments(Guid? shipmentId=null,Guid? customerId = null,Guid? productTypeId = null,Guid? containerTypeId = null)
         {
@@ -50,7 +45,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/shipmentHistory")]
         public ActionResult GetShipmentHistory(Guid? shipmentId = null)
         {
@@ -69,7 +64,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/bestRoute")]
         public ActionResult GetBestRoute(Guid? shipmentId = null)
         {
@@ -88,7 +83,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/driver/shipmentHistory")]
         public ActionResult GetShipmentHistoryDriver()
         {
@@ -109,7 +104,7 @@ namespace ShippingApp.Controllers
         }
 
         //[HttpGet, Authorize(Roles = "client, manager, admin")]
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/productTypes")]
         public ActionResult GetProductTypes(Guid? productTypeId = null, string? searchString = null)
         {
@@ -128,7 +123,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/containerTypes")]
         public ActionResult GetContainerTypes(Guid? containerTypeId = null, string? searchString = null)
         {
@@ -147,7 +142,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin")]
         [Route("/api/v1/get/drivers")]
         public ActionResult GetDrivers(Guid? driverId = null, string? searchString = null, string? location = null)
         {
@@ -166,7 +161,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/checkpoints")]
         public ActionResult GetCheckpoints(Guid? checkpointId = null,string? checkpointName = null)
         {
@@ -221,7 +216,7 @@ namespace ShippingApp.Controllers
             return StatusCode(statusCode, res);
         }
 
-        [HttpPost, Authorize(Roles = "manager, admin")]
+        [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/add/driver")]
         public ActionResult AddDeliveryPerson(RegisterDriver inpUser)
         {
@@ -241,7 +236,7 @@ namespace ShippingApp.Controllers
             return StatusCode(statusCode, res);
         }
 
-        [HttpGet, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/availableShipments")]
         public ActionResult GetAvailableShipments(Guid checkpointId)
         {
@@ -260,7 +255,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpPost, Authorize(Roles = "client, manager, admin, deliveryBoy")]
+        [HttpPost, Authorize(Roles = "deliveryBoy")]
         [Route("/api/v1/get/acceptShipment")]
         public ActionResult AcceptShipment(AcceptShipment acceptShipment)
         {
@@ -278,10 +273,28 @@ namespace ShippingApp.Controllers
                 return StatusCode(500, response2);
             }
         }
-        //public ActionResult GetCheckpoints(Guid? containerTypeId = null, string? searchString = null)
-        //post containertype
-        //post producttype
-        //post checkpoint
+
+        [HttpPut, Authorize(Roles = "admin")]
+        [Route("/api/v1/update/productType")]
+        public ActionResult UpdateProductType(UpdateProductType model)
+        {
+            int statusCode = 0;
+            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string? userId = User.FindFirstValue(ClaimTypes.Sid);
+            var res = _apiGatewayService.UpdateProductType(userId, token, model, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
+        [HttpPut, Authorize(Roles = "admin")]
+        [Route("/api/v1/update/containerType")]
+        public ActionResult UpdateContainerType(UpdateContainerType model)
+        {
+            int statusCode = 0;
+            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string? userId = User.FindFirstValue(ClaimTypes.Sid);
+            var res = _apiGatewayService.UpdateContainerType(userId, token, model, out statusCode);
+            return StatusCode(statusCode, res);
+        }
 
     }
 }

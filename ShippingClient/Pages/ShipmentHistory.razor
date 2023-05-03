@@ -4,33 +4,16 @@
 @attribute [Authorize(Roles = "client,admin,deliveryBoy")]
 <PageTitle>Shipment App</PageTitle>
 
-<h3>shipmentId @shipmentId</h3>
 <AuthorizeView>
     <Authorized Context="auth">
-        @*<table class="table">
-            <thead>
-                <tr>
-                    <th> </th>
-                    <th>Status</th>
-                    <th>Current Location</th>
-                    <th>Date</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var status in list)
-                {
-                    <tr>
-                        <td>
-                            <i class="oi oi-location"></i>
-                        </td>
-                        <td>@status.shipmentStatus</td>
-                        <td>@status.currentLocation</td>
-                        <td>@status.lastUpdated</td>
-                    </tr>
-                }
-            </tbody>
-        </table>*@
+        <div style="margin: 1% auto; width: 75vw; height: 75vh; justify-content:center">
+            <h4>Track On Map</h4>
+            <div>
+                <div id='map' style='width: 1000px; height: 600px;'>
+                </div>
+            </div>
+            <h4 style="margin: auto;">Shipment Id : @shipmentId</h4>
+        </div>
         
         <MudTable Items="@list" Hover="true" Loading="@loading" FixedHeader="true"  Height="400px">
             <HeaderContent>
@@ -45,9 +28,7 @@
                 <MudTd DataLabel="Current Location">@context.currentLocation</MudTd>
                 <MudTd DataLabel="Date">@context.lastUpdated</MudTd>
             </RowTemplate>
-            @*<PagerContent>
-                <MudTablePager PageSizeOptions="new int[]{50, 100}" />
-            </PagerContent>*@
+            
         </MudTable>
     </Authorized>
     <NotAuthorized>
@@ -66,15 +47,33 @@
     public string? Id { get; set; }
     Guid shipmentId;
     private bool loading = true;
+    List<CheckpointModel> routeList = new();
+    int countOfChecksInRoute = 0;
+    List<float> latitudes = new();
+    List<float> longitudes = new();
+
     protected override async void OnParametersSet()
     {
         if (Id != null)
         {
             shipmentId = new Guid(Id);
             Console.WriteLine(shipmentId);
+            routeList = await _apiService.GetShortRoute(shipmentId);
+            countOfChecksInRoute = routeList.Count();
+            fillArrays(countOfChecksInRoute);
             res = await _apiService.GetShipmentHistory(shipmentId);
             list = res.data;
             loading = false;
+            ShipmentStatusModel shipmentStatus = list.FirstOrDefault();
+            Checkpoints shipmentCheckpoint = new();
+            if (shipmentStatus!.currentLocation != "At Origin")
+            {
+                var temp = await _apiService.GetCheckpointsByName(shipmentStatus.currentLocation);
+                shipmentCheckpoint = temp.data.FirstOrDefault();
+            }
+
+            var d = await jsRuntime.InvokeAsync<object>("shipmentHistory", latitudes,longitudes,countOfChecksInRoute,shipmentStatus.shipmentStatus,shipmentCheckpoint.longitude,shipmentCheckpoint.latitude);
+            //var d = await jsRuntime.InvokeAsync<object>("initialize", null);
         }
         else
         {
@@ -82,7 +81,16 @@
         }
         StateHasChanged();
     }
-    
+
+    public void fillArrays(int num)
+    {
+        for(int i = 0; i < num; i++)
+        {
+            latitudes.Add(routeList[i].latitude);
+            longitudes.Add(routeList[i].longitude);
+        }
+    }
+
     public Models.ShipmentHistory res = new();
     List<ShipmentStatusModel> list = new();
     

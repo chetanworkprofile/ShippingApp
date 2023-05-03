@@ -23,5 +23,7 @@ namespace ShippingApp.Services
         public string GetCheckpoints(Guid? checkpointId,string? checkpointName, out int code);
         public object UpdateDriverLocation(string userId, string token, Guid checkPointId, out int code);
         public string AcceptShipment(AcceptShipment inp, out int code);
+        public object UpdateProductType(string userId, string token, UpdateProductType model, out int code);
+        public object UpdateContainerType(string userId, string token, UpdateContainerType model, out int code);
     }
 }

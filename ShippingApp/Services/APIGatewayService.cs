@@ -75,7 +75,6 @@ namespace ShippingApp.Services
             }
         }
 
-
         public string GetShipmentHistory(Guid? shipmentId, out int code)
         {
             using (var client = new HttpClient())
@@ -494,6 +493,50 @@ namespace ShippingApp.Services
                 StringContent content = new StringContent(JsonConvert.SerializeObject(updateDriver), Encoding.UTF8, "application/json");
                 var apiResponse = client.PutAsync("api/Driver/Update", content).Result;
 
+                code = (int)apiResponse.StatusCode;
+                return apiResponse.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public object UpdateProductType(string userId, string token, UpdateProductType model, out int code)
+        {
+            Guid driverId = new Guid(userId);
+            var userLoggedIn = DbContext.Users.Find(driverId);
+            if (token != userLoggedIn.token)
+            {
+                response = new Response(401, "Invalid/expired token. Login First", "", false);
+                code = 401;
+                return response;
+            }
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS2);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                var apiResponse = client.PutAsync("api/ProductType/Update", content).Result;
+                code = (int)apiResponse.StatusCode;
+                return apiResponse.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public object UpdateContainerType(string userId, string token, UpdateContainerType model, out int code)
+        {
+            Guid driverId = new Guid(userId);
+            var userLoggedIn = DbContext.Users.Find(driverId);
+            if (token != userLoggedIn.token)
+            {
+                response = new Response(401, "Invalid/expired token. Login First", "", false);
+                code = 401;
+                return response;
+            }
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS2);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                var apiResponse = client.PutAsync("api/ContainerType/Update", content).Result;
                 code = (int)apiResponse.StatusCode;
                 return apiResponse.Content.ReadAsStringAsync().Result;
             }

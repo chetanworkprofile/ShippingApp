@@ -32,7 +32,7 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        [HttpPost, Authorize(Roles = "client, manager")]
+        [HttpPost, Authorize(Roles = "client, admin")]
         [Route("/api/v1/createShipment")]
         public IActionResult CreateNewShipment(AddShipment inpShipment)
         {

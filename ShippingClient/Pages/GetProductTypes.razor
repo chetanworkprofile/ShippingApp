@@ -1,4 +1,5 @@
 ﻿@page "/getProductTypes"
+@using System.Text.Json;
 
 
 @attribute [Authorize(Roles = "admin")]
@@ -49,7 +50,7 @@
 
 
 @code {
-    GetProductsResponse productTypesResponse = new();
+    GlobalResponse productTypesResponse = new();
     List<ProductType> productTypeList = new();
     string searchString = string.Empty;
     private bool loading;
@@ -82,7 +83,9 @@
         {
             productTypesResponse = await _apiService.GetProductTypes(search);
             loading = false;
-            productTypeList = productTypesResponse.data;
+            var obj = JsonSerializer.Serialize(productTypesResponse.data);
+            productTypeList = JsonSerializer.Deserialize<List<ProductType>>(obj);
+
             if (productTypesResponse.statusCode == 200)
             {
                 //AlertService.Success("Product Types list fetched successfully", keepAfterRouteChange: true);
