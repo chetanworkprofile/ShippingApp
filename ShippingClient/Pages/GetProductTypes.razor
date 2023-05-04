@@ -11,7 +11,7 @@
             <div>
                 <div class="row justify-content-end" style="margin: 10px;">
                     <h3 class="col-8 justify-content-start">Product Types List</h3>
-                    <MudFab Class="col-4" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Medium" OnClick="@ToggleOpen" />
+                    <MudFab Class="col-4" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Medium" OnClick="@ToggleOpenAdd" />
                 </div>
                 <input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />
                 
@@ -21,21 +21,40 @@
                             <MudTh>Type</MudTh>
                             <MudTh>Price(per kg)</MudTh>
                             <MudTh>Is Fragile</MudTh>
+                            <MudTh>Action</MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Id">@context.productTypeId</MudTd>
                         <MudTd DataLabel="Type">@context.type</MudTd>
                         <MudTd DataLabel="Price">@context.price</MudTd>
                         <MudTd DataLabel="Is Fragile">@context.isFragile</MudTd>
+                        <MudTd Class="col-3">
+                            @*<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleOpenUpdate" />*@
+                            <MudFab Class="col-1" Color="Color.Default" StartIcon="@Icons.Material.Filled.Edit" OnClick="() => Update(context.productTypeId)" />
+
+                            <MudFab Class="col-1" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="() => ToggleOpenDelete(context.productTypeId)" />
+                        </MudTd>
                     </RowTemplate>
                 </MudTable>
                 </div>
             </div>
-        <MudPopover Open="@_isOpen" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpenAdd" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column">
                 <AddProductType />
-                @*<MudText>Content of the popover can be anything.</MudText>*@
-                <MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+                <MudButton OnClick="@ToggleOpenAdd" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+            </div>
+        </MudPopover>
+        <MudPopover Open="@_isOpenUpdate" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+            <div class="d-flex flex-column">
+                <UpdateProductType Id=@tempId.ToString() />
+                <MudButton OnClick="@ToggleOpenUpdate" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+            </div>
+        </MudPopover>
+        <MudPopover Open="@_isOpenDelete" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+            <div class="d-flex flex-column row">
+                <MudText>Are You Sure you want to Delete this ?</MudText>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Class="ml-auto" Color="Color.Error" OnClick="@Delete">Delete</MudButton>
+                <MudButton Variant="Variant.Filled" OnClick="() => ToggleOpenDelete(Guid.Empty)" Class="ml-auto" Color="Color.Default">Close</MudButton>
             </div>
         </MudPopover>
     </Authorized>
@@ -54,15 +73,48 @@
     List<ProductType> productTypeList = new();
     string searchString = string.Empty;
     private bool loading;
-    public bool _isOpen;
+    public bool _isOpenAdd;
+    public bool _isOpenUpdate;
+    public bool _isOpenDelete;
 
-    public void ToggleOpen()
+    Guid tempId = Guid.Empty;
+
+    public async Task Update(Guid id)
     {
-        if (_isOpen)
-            _isOpen = false;
-        else
-            _isOpen = true;
+        tempId = id;
+        await ToggleOpenUpdate();
     }
+
+    public async Task ToggleOpenAdd()
+    {
+        if (_isOpenAdd)
+        {
+            _isOpenAdd = false;
+            await GetProductTypesList();
+        }
+        else
+            _isOpenAdd = true;
+    }
+
+    public async Task ToggleOpenUpdate()
+    {
+        if (_isOpenUpdate)
+        {
+            _isOpenUpdate = false;
+            await GetProductTypesList();
+        }
+        else
+            _isOpenUpdate = true;
+    }
+    public void ToggleOpenDelete(Guid id)
+    {
+        tempId = id;
+        if (_isOpenDelete)
+            _isOpenDelete = false;
+        else
+            _isOpenDelete = true;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await GetProductTypesList();
@@ -72,6 +124,14 @@
     protected async Task Search()
     {
         await GetProductTypesList(searchString);
+        StateHasChanged();
+    }
+
+    protected async Task Delete()
+    {
+        await _apiService.RemoveProductType(tempId);
+        await GetProductTypesList();
+        ToggleOpenDelete(Guid.Empty);
         StateHasChanged();
     }
 
@@ -86,11 +146,6 @@
             var obj = JsonSerializer.Serialize(productTypesResponse.data);
             productTypeList = JsonSerializer.Deserialize<List<ProductType>>(obj);
 
-            if (productTypesResponse.statusCode == 200)
-            {
-                //AlertService.Success("Product Types list fetched successfully", keepAfterRouteChange: true);
-                //_navMgr.NavigateTo("/shipmentHistory");
-            }
             StateHasChanged();
         }
         catch (Exception ex)
