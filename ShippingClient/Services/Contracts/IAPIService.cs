@@ -29,6 +29,8 @@ namespace ShippingClient.Services.Contracts
         public Task<List<AvailableShipmentsDriver>> GetAvailableShipments(Guid checkpointId);
         public Task<GlobalResponse> UpdateProductTypes(UpdateProductType model);
         public Task<GlobalResponse> UpdateContainerTypes(UpdateContainerType model);
+        public Task<GlobalResponse> RemoveProductType(Guid productTypeId);
+        public Task<GlobalResponse> RemoveContainerType(Guid containerTypeId);
         public Task<GlobalResponse> AcceptShipment(AcceptShipment model);
     }
 }

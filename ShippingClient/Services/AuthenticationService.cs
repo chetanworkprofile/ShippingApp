@@ -50,12 +50,10 @@ namespace ShippingClient.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResponseContent.data.token);
             }
             return loginResponseContent;
-
         }
 
         public async Task<LoginResponse> Register(RegisterUser model)
         {
-
             var registerResult = await _httpClient.PostAsJsonAsync($"{baseUrl}api/v1/user/register", model);
             if (!registerResult.IsSuccessStatusCode)
             {
@@ -71,7 +69,6 @@ namespace ShippingClient.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", registerResponseContent.data.token);
             }
             return registerResponseContent;
-
         }
 
         public async Task Logout()
@@ -80,7 +77,6 @@ namespace ShippingClient.Services
             token = null;
             ((auth.AuthProvider)_authStateProvider).NotifyUserLogout();
             _httpClient.DefaultRequestHeaders.Authorization = null;
-
         }
 
         public string GetToken()
@@ -90,7 +86,6 @@ namespace ShippingClient.Services
 
         public async Task<LoginResponse> ForgetPassword(string email)
         {
-
             var forgetResult = await _httpClient.PostAsJsonAsync($"{baseUrl}api/v1/forgetPassword?Email={email}","");
             if (!forgetResult.IsSuccessStatusCode)
             {
@@ -106,7 +101,6 @@ namespace ShippingClient.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", forgetResponseContent.data.token);
             }
             return forgetResponseContent;
-
         }
 
         public async Task DriverSetPassword(string token)
@@ -194,8 +188,6 @@ namespace ShippingClient.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resetResponseContent.data.token);
             }
             return resetResponseContent;
-
         }
-
     }
 }

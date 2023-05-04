@@ -296,5 +296,27 @@ namespace ShippingApp.Controllers
             return StatusCode(statusCode, res);
         }
 
+        [HttpDelete, Authorize(Roles = "admin")]
+        [Route("/api/v1/remove/containerType")]
+        public ActionResult RemoveContainerType(Guid containerTypeId)
+        {
+            int statusCode = 0;
+            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string? userId = User.FindFirstValue(ClaimTypes.Sid);
+            var res = _apiGatewayService.RemoveContainerType(userId, token, containerTypeId, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
+        [HttpDelete, Authorize(Roles = "admin")]
+        [Route("/api/v1/remove/productType")]
+        public ActionResult RemoveProductType(Guid productTypeId)
+        {
+            int statusCode = 0;
+            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string? userId = User.FindFirstValue(ClaimTypes.Sid);
+            var res = _apiGatewayService.RemoveProductType(userId, token, productTypeId, out statusCode);
+            return StatusCode(statusCode, res);
+        }
+
     }
 }

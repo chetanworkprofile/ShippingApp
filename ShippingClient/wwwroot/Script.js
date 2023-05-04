@@ -103,7 +103,7 @@ function trackOnOriginDest(_origin1, _origin2, _destination1, _destination2) {
         });
 }
 
-
+//function to create map for client to track shipment 
 function shipmentHistory(lats, longis, count, shipmentStatus, shipmentLongitude, shipmentLatitude) {
     console.log(`${shipmentStatus} ${shipmentLongitude} ${shipmentLatitude}`);
     const start = [longis[0], lats[0]];

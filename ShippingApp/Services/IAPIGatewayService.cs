@@ -25,5 +25,7 @@ namespace ShippingApp.Services
         public string AcceptShipment(AcceptShipment inp, out int code);
         public object UpdateProductType(string userId, string token, UpdateProductType model, out int code);
         public object UpdateContainerType(string userId, string token, UpdateContainerType model, out int code);
+        public object RemoveProductType(string userId, string token, Guid productTypeId, out int code);
+        public object RemoveContainerType(string userId, string token, Guid containerTypeId, out int code);
     }
 }

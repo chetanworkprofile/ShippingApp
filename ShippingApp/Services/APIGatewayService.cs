@@ -309,11 +309,6 @@ namespace ShippingApp.Services
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 StringContent content = new StringContent(JsonConvert.SerializeObject(inp), Encoding.UTF8, "application/json");
                 var response = client.PostAsync("api/shipment/getCost", content).Result;
-                /*if (response.IsSuccessStatusCode)
-                {
-                    return response.Content.ReadAsStringAsync().Result;
-                    //objAuthor = response.Content.ReadAsAsync<Author>().Result;
-                }*/
                 code = (int)response.StatusCode;
                 return response.Content.ReadAsStringAsync().Result;
             }
@@ -537,6 +532,50 @@ namespace ShippingApp.Services
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 StringContent content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
                 var apiResponse = client.PutAsync("api/ContainerType/Update", content).Result;
+                code = (int)apiResponse.StatusCode;
+                return apiResponse.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public object RemoveProductType(string userId, string token, Guid productTypeId, out int code)
+        {
+            Guid driverId = new Guid(userId);
+            var userLoggedIn = DbContext.Users.Find(driverId);
+            if (token != userLoggedIn.token)
+            {
+                response = new Response(401, "Invalid/expired token. Login First", "", false);
+                code = 401;
+                return response;
+            }
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS2);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var apiResponse = client.DeleteAsync($"api/ProductType/Remove?productTypeId={productTypeId}").Result;
+                code = (int)apiResponse.StatusCode;
+                return apiResponse.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public object RemoveContainerType(string userId, string token, Guid containerTypeId, out int code)
+        {
+            Guid driverId = new Guid(userId);
+            var userLoggedIn = DbContext.Users.Find(driverId);
+            if (token != userLoggedIn.token)
+            {
+                response = new Response(401, "Invalid/expired token. Login First", "", false);
+                code = 401;
+                return response;
+            }
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS2);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var apiResponse = client.DeleteAsync($"api/ContainerType/Remove?containerTypeId={containerTypeId}").Result;
                 code = (int)apiResponse.StatusCode;
                 return apiResponse.Content.ReadAsStringAsync().Result;
             }

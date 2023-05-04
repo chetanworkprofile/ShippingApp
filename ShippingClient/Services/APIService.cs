@@ -573,6 +573,38 @@ namespace ShippingClient.Services
             }
         }
 
+        public async Task<GlobalResponse> RemoveProductType(Guid productTypeId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/remove/productType?productTypeId={productTypeId}");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<GlobalResponse> RemoveContainerType(Guid containerTypeId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/remove/containerType?containerTypeId={containerTypeId}");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
         public async Task DoLogout()
         {
             navigationManager.NavigateTo("/logout");
