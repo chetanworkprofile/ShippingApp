@@ -1,4 +1,4 @@
-﻿@page "/bestRoute"
+﻿@*@page "/bestRoute"
 @page "/bestRoute/{Id}"
 
 @attribute [Authorize(Roles = "client,admin,deliveryBoy")]
@@ -61,5 +61,5 @@
     }
 
     List<CheckpointModel> list = new();
-
 }
+*@

@@ -9,51 +9,6 @@
         <div class="row">
             <div>
                 <h3>Shipments Available</h3>
-                @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
-                @*<table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>S.No</th>
-                            <th>shipmentId</th>
-                            <th>Product Type</th>
-                            <th>Container Type</th>
-                            <th>Shipment Weight</th>
-                            <th>Is Accepted</th>
-                            <th>Is Active</th>
-                            <th>Available Location</th>
-                            <th>Next Location</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    @if (shipments != null && shipments.Count > 0)
-                    {
-                        @foreach (var shipment in shipments)
-                        {
-                            <tbody>
-                                <tr>
-                                    <td>@(sno++)</td>
-                                    <td>@shipment.shipmentId</td>
-                                    <td>@shipment.productType</td>
-                                    <td>@shipment.containerType</td>
-                                    <td>@shipment.shipmentWeight</td>
-                                    <td>@shipment.isAccepted</td>
-                                    <td>@shipment.isActive</td>
-                                    <td>@shipment.checkpoint1Id</td>
-                                    <td>@shipment.checkpoint2Id</td>
-                                    <td>
-                                        <button @onclick="() => TakeShipment(shipment.mapId)" class="btn btn-primary">
-                                            Get Shipment
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        }
-                    }
-                    else
-                    {
-                        <p><em>No Record found</em></p>
-                    }
-                </table>*@
                 <MudTable Loading="@loading" Items="@shipments" Hover="true">
                     <HeaderContent>
                         <MudTh>Product Type</MudTh>
@@ -188,3 +143,56 @@
         }
     }
 }
+
+
+
+
+
+
+
+
+            @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
+                @*<table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>shipmentId</th>
+                            <th>Product Type</th>
+                            <th>Container Type</th>
+                            <th>Shipment Weight</th>
+                            <th>Is Accepted</th>
+                            <th>Is Active</th>
+                            <th>Available Location</th>
+                            <th>Next Location</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    @if (shipments != null && shipments.Count > 0)
+                    {
+                        @foreach (var shipment in shipments)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>@(sno++)</td>
+                                    <td>@shipment.shipmentId</td>
+                                    <td>@shipment.productType</td>
+                                    <td>@shipment.containerType</td>
+                                    <td>@shipment.shipmentWeight</td>
+                                    <td>@shipment.isAccepted</td>
+                                    <td>@shipment.isActive</td>
+                                    <td>@shipment.checkpoint1Id</td>
+                                    <td>@shipment.checkpoint2Id</td>
+                                    <td>
+                                        <button @onclick="() => TakeShipment(shipment.mapId)" class="btn btn-primary">
+                                            Get Shipment
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        }
+                    }
+                    else
+                    {
+                        <p><em>No Record found</em></p>
+                    }
+                </table>*@

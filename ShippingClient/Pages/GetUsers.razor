@@ -11,35 +11,6 @@
             <div>
 
             <input type="text" class="form-control" placeholder="search by name" @bind="searchText" @bind:event="oninput" @onkeyup="async ()=>await Search()" />
-                @*@if (list != null && list.Count > 0)
-                {
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Contact No.</th>
-                                <th>Role</th>
-                                <th>Address</th>
-                               
-                            </tr>
-                        </thead>
-                        @foreach (var person in list)
-                        {
-                            <tbody>
-                                <tr>
-                                    <td>@person.userId</td>
-                                    <td>@person.firstName @person.lastName</td>
-                                    <td>@person.email</td>
-                                    <td>@person.contactNo</td>
-                                    <td>@person.userRole</td>
-                                    <td>@person.address</td>
-                                  
-                                </tr>
-                            </tbody>
-                        }
-                    </table>*@
                 <MudTable Loading="@loading" Items="@list" Hover="true">
                     <HeaderContent>
                         <MudTh>Id</MudTh>
@@ -90,25 +61,6 @@
                             }
                         </ul>
                     </nav>
-        @*}
-        else
-        {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Contact No.</th>
-                        <th>Role</th>
-                        <th>Address</th>
-                    </tr>
-                </thead>
-            </table>
-            <div class="my-2">
-                @result.message
-            </div>}*@
-        
         </div>
     </div>
     </Authorized>
@@ -181,3 +133,70 @@
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                @*@if (list != null && list.Count > 0)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Contact No.</th>
+                                <th>Role</th>
+                                <th>Address</th>
+
+                            </tr>
+                        </thead>
+                        @foreach (var person in list)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>@person.userId</td>
+                                    <td>@person.firstName @person.lastName</td>
+                                    <td>@person.email</td>
+                                    <td>@person.contactNo</td>
+                                    <td>@person.userRole</td>
+                                    <td>@person.address</td>
+
+                                </tr>
+                            </tbody>
+                        }
+                    </table>*@
+
+                                    @*}
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact No.</th>
+                        <th>Role</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="my-2">
+                @result.message
+            </div>}*@

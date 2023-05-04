@@ -8,6 +8,113 @@
         <div class="row">
             <div>
                 <h3>Shipment History</h3>
+                <MudTable Loading="@loading" Items="@shipmentList" Hover="true" >
+                    <HeaderContent>
+                        <MudTh>Id</MudTh>
+                        <MudTh>Product Type</MudTh>
+                        <MudTh>Container Type</MudTh>
+                        <MudTh>Shipment Price</MudTh>
+                        <MudTh>Shipment Weight</MudTh>
+                        <MudTh>Origin</MudTh>
+                        <MudTh>Destination</MudTh>
+                        <MudTh>Order Date</MudTh>
+                        <MudTh>Notes</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Current Location</MudTh>
+                        <MudTh>Action</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Id">@context.shipmentId</MudTd>
+                        <MudTd DataLabel="Product Type">@context.productType</MudTd>
+                        <MudTd DataLabel="Container Type">@context.cointainerType</MudTd>
+                        <MudTd DataLabel="Shipment Price">@context.shipmentPrice</MudTd>
+                        <MudTd DataLabel="Shipment Weight">@context.shipmentWeight</MudTd>
+                        <MudTd DataLabel="Origin">@context.origin</MudTd>
+                        <MudTd DataLabel="Destination">@context.destination</MudTd>
+                        <MudTd DataLabel="Order Date">@context.dateOfOrder</MudTd>
+                        <MudTd DataLabel="Notes">@context.notes</MudTd>
+                        <MudTd DataLabel="Status">@context.shipmentStatus</MudTd>
+                        <MudTd DataLabel="Current Location">@context.currentLocation</MudTd>
+                        <MudTd DataLabel="Action"><MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="align-content-center m-lg-2" disabled="@loading" @onclick="() => ShowStatus(context.shipmentId)">Get Status</MudButton></MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    GetShipmentsCutomerResponse shipmentsResponse = new();
+    List<GetListOfShipments> shipmentList = new();
+    [Inject] ISnackbar Snackbar { get; set; }
+    //List<GetShipmentsConverted> shipmentListConverted = new();
+
+    private bool loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetShipmentsTypesList();
+        StateHasChanged();
+    }
+
+    public object ShowStatus(Guid id)
+    {
+        _navMgr.NavigateTo($"/tracking/{id}");
+        return 0;
+    }
+
+    async Task GetShipmentsTypesList()
+    {
+        loading = true;
+
+        try
+        {
+            GetYourselfResponse temp = await _apiService.GetYourself();
+            Guid tempId = temp.data.userId;
+            shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
+            shipmentList = shipmentsResponse.data;
+            if (shipmentsResponse.statusCode == 200)
+            {
+                loading = false;
+                //Snackbar.Add(shipmentsResponse.message, Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add(shipmentsResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            //AlertService.Error(ex.Message);
+            Snackbar.Add(ex.Message, Severity.Error);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
                 @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
                 @*<table class="table table-striped">
                     <thead>
@@ -57,104 +164,3 @@
                         <p><em>No Record found</em></p>
                     }
                 </table>*@
-                <MudTable Loading="@loading" Items="@shipmentList" Hover="true" >
-                    <HeaderContent>
-                        <MudTh>Id</MudTh>
-                        <MudTh>Product Type</MudTh>
-                        <MudTh>Container Type</MudTh>
-                        <MudTh>Shipment Price</MudTh>
-                        <MudTh>Shipment Weight</MudTh>
-                        <MudTh>Origin</MudTh>
-                        <MudTh>Destination</MudTh>
-                        <MudTh>Order Date</MudTh>
-                        <MudTh>Notes</MudTh>
-                        <MudTh>Status</MudTh>
-                        <MudTh>Current Location</MudTh>
-                        <MudTh>Action</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Id">@context.shipmentId</MudTd>
-                        <MudTd DataLabel="Product Type">@context.productType</MudTd>
-                        <MudTd DataLabel="Container Type">@context.cointainerType</MudTd>
-                        <MudTd DataLabel="Shipment Price">@context.shipmentPrice</MudTd>
-                        <MudTd DataLabel="Shipment Weight">@context.shipmentWeight</MudTd>
-                        <MudTd DataLabel="Origin">@context.origin</MudTd>
-                        <MudTd DataLabel="Destination">@context.destination</MudTd>
-                        <MudTd DataLabel="Order Date">@context.dateOfOrder</MudTd>
-                        <MudTd DataLabel="Notes">@context.notes</MudTd>
-                        <MudTd DataLabel="Status">@context.shipmentStatus</MudTd>
-                        <MudTd DataLabel="Current Location">@context.currentLocation</MudTd>
-                        <MudTd DataLabel="Action"><MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="align-content-center m-lg-2" disabled="@loading" @onclick="() => ShowStatus(context.shipmentId)">Get Status</MudButton></MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </div>
-        </div>
-    </Authorized>
-    <NotAuthorized>
-        <p>You are not authorized</p>
-        @if (true)
-        {
-            _navMgr.NavigateTo("/login");
-        }
-    </NotAuthorized>
-</AuthorizeView>
-
-
-@code {
-    GetShipmentsCutomerResponse shipmentsResponse = new();
-    List<GetListOfShipments> shipmentList = new();
-    [Inject] ISnackbar Snackbar { get; set; }
-    //List<GetShipmentsConverted> shipmentListConverted = new();
-    private bool loading;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await GetShipmentsTypesList();
-        StateHasChanged();
-    }
-
-    public object ShowStatus(Guid id)
-    {
-        _navMgr.NavigateTo($"/tracking/{id}");
-        return 0;
-    }
-
-    async Task GetShipmentsTypesList()
-    {
-        // reset alerts on submit
-        //AlertService.Clear();
-        loading = true;
-
-        try
-        {
-            GetYourselfResponse temp = await _apiService.GetYourself();
-            Guid tempId = temp.data.userId;
-            shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
-            shipmentList = shipmentsResponse.data;
-            if (shipmentsResponse.statusCode == 200)
-            {
-                loading = false;
-                //Snackbar.Add(shipmentsResponse.message, Severity.Success);
-                //AlertService.Success("Shipments list fetched successfully", keepAfterRouteChange: true);
-                //_navMgr.NavigateTo("/shipmentHistory");
-            }
-            else
-            {
-                Snackbar.Add(shipmentsResponse.message, Severity.Error, config =>
-                {
-                    config.Icon = Icons.Material.Filled.Error;
-                    config.IconColor = Color.Warning;
-                    config.IconSize = Size.Small;
-                });
-            }
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            //AlertService.Error(ex.Message);
-            Snackbar.Add(ex.Message, Severity.Error);
-            loading = false;
-            StateHasChanged();
-        }
-    }
-}

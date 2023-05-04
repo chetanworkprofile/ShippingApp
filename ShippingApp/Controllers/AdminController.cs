@@ -23,25 +23,6 @@ namespace ShippingApp.Controllers
             _logger = logger;
         }
 
-        /*[HttpPost, Authorize(Roles = "admin")]
-        [Route("/api/v1/admin/addManager")]
-        public IActionResult RegisterManager([FromBody] RegisterUser inpUser)             //register user function uses authService to create a new user in db
-        {
-            try
-            {
-                _logger.LogInformation("User registration attempt");
-                int statusCode = 0;
-                result = adminService.CreateManager(inpUser, out statusCode);
-                return StatusCode(statusCode, result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Internal server error ", ex.Message);
-                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
-                return StatusCode(500, response2);
-            }
-        }*/
-
         [HttpDelete, Authorize(Roles = "admin")]
         [Route("/api/v1/admin/removeUser")]
         public IActionResult RemoveUser(string userId)             //add chef uses service 
@@ -64,7 +45,6 @@ namespace ShippingApp.Controllers
         }
 
         //getusers api to get list of other users and details
-        //[HttpGet, Authorize(Roles = "admin")]
         [HttpGet, Authorize(Roles = "admin")]
         [Route("/api/v1/admin/get")]
         public IActionResult GetUsers(Guid? UserId = null, string userType = "all", string? searchString = null, string? Email = null, long Phone = -1, String OrderBy = "Id", int SortOrder = 1, int RecordsPerPage = 1000, int PageNumber = 1)          // sort order   ===   e1 for ascending  -1 for descending
@@ -87,3 +67,27 @@ namespace ShippingApp.Controllers
         }
     }
 }
+
+
+
+
+
+
+/*[HttpPost, Authorize(Roles = "admin")]
+       [Route("/api/v1/admin/addManager")]
+       public IActionResult RegisterManager([FromBody] RegisterUser inpUser)             //register user function uses authService to create a new user in db
+       {
+           try
+           {
+               _logger.LogInformation("User registration attempt");
+               int statusCode = 0;
+               result = adminService.CreateManager(inpUser, out statusCode);
+               return StatusCode(statusCode, result);
+           }
+           catch (Exception ex)
+           {
+               _logger.LogError("Internal server error ", ex.Message);
+               response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+               return StatusCode(500, response2);
+           }
+       }*/

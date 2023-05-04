@@ -18,33 +18,6 @@
             <div class="card-body">
                 <EditForm Model="@loginModel" OnValidSubmit="DoLogin" @onkeydown="@HandleKeyDown">
                     <DataAnnotationsValidator />
-                    @*<div class="form-group">
-                        <label for="email">Email</label>
-                       <InputText class="form-control" @bind-Value="loginModel.email"/>
-                       <ValidationMessage For="@(()=>loginModel.email)"/>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Password">Password</label>
-                        <InputText type="password" class="form-control" @bind-Value="loginModel.password" />
-                        <ValidationMessage For="@(()=>loginModel.password)" />
-                    </div>
-
-                    <div class="my-2">
-                        @loginResponse.message
-                    </div>
-
-                    <div class="my-2">
-                        <button disabled="@loading" type="submit" class="btn btn-primary">
-                            @if (loading)
-                            {
-                                <span class="spinner-border spinner-border-sm mr-1"></span>
-                                Task.Delay(5000);
-                                loading = false;
-                            }
-                            Login
-                        </button>
-                    </div>*@
                         <MudCard>
                         <MudForm Model="loginModel" @ref=form ReadOnly="false">
                                 <MudCardContent>
@@ -135,3 +108,37 @@
         }
     }
 }
+
+
+
+
+
+
+
+            @*<div class="form-group">
+                        <label for="email">Email</label>
+                       <InputText class="form-control" @bind-Value="loginModel.email"/>
+                       <ValidationMessage For="@(()=>loginModel.email)"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Password">Password</label>
+                        <InputText type="password" class="form-control" @bind-Value="loginModel.password" />
+                        <ValidationMessage For="@(()=>loginModel.password)" />
+                    </div>
+
+                    <div class="my-2">
+                        @loginResponse.message
+                    </div>
+
+                    <div class="my-2">
+                        <button disabled="@loading" type="submit" class="btn btn-primary">
+                            @if (loading)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                Task.Delay(5000);
+                                loading = false;
+                            }
+                            Login
+                        </button>
+                    </div>*@
