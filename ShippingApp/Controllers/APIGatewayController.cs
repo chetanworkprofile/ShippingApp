@@ -318,5 +318,61 @@ namespace ShippingApp.Controllers
             return StatusCode(statusCode, res);
         }
 
-    }
+		[HttpGet, Authorize(Roles = "admin, deliveryBoy")]
+		[Route("/api/v1/get/driverEarnings")]
+		public ActionResult GetDriverEarnings(Guid driverId)
+		{
+			_logger.LogInformation("Getting driver earnings");
+			try
+			{
+				int statusCode = 0;
+				var res = _apiGatewayService.GetDriverEarnings(driverId, out statusCode);
+				return StatusCode(statusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError("Internal server error ", ex.Message);
+				response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+				return StatusCode(500, response2);
+			}
+		}
+
+		[HttpGet, Authorize(Roles = "admin, deliveryBoy")]
+		[Route("/api/v1/get/driverEarningsByDate")]
+		public ActionResult GetDriverEarningsByDate(Guid driverId, DateTime startDate, DateTime endDate)
+		{
+			_logger.LogInformation("Getting driver earnings by date");
+			try
+			{
+				int statusCode = 0;
+				var res = _apiGatewayService.GetDriverEarningsByDate(driverId,startDate,endDate, out statusCode);
+				return StatusCode(statusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError("Internal server error ", ex.Message);
+				response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+				return StatusCode(500, response2);
+			}
+		}
+
+		[HttpGet, Authorize(Roles = "admin, deliveryBoy")]
+		[Route("/api/v1/get/driverEarningsForChart")]
+		public ActionResult GetDriverEarningsForChart(Guid driverId)
+		{
+			_logger.LogInformation("Getting driver earnings");
+			try
+			{
+				int statusCode = 0;
+				var res = _apiGatewayService.GetDriverEarningsForChart(driverId, out statusCode);
+				return StatusCode(statusCode, res);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError("Internal server error ", ex.Message);
+				response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+				return StatusCode(500, response2);
+			}
+		}
+	}
 }

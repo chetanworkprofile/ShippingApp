@@ -580,5 +580,59 @@ namespace ShippingApp.Services
                 return apiResponse.Content.ReadAsStringAsync().Result;
             }
         }
-    }
+
+		public string GetDriverEarnings(Guid driverId, out int code)
+		{
+			using (var client = new HttpClient())
+			{
+				client.BaseAddress = new Uri(baseUrlS2);//WebApi 2 project URL
+				client.DefaultRequestHeaders.Accept.Clear();
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+				string appendUrl = $"api/Driver/GetDriverEarnings?driverId={driverId}";
+
+				var res = client.GetAsync(appendUrl).Result;
+
+				var data = res.Content.ReadAsStringAsync().Result;
+				code = (int)res.StatusCode;
+				return data;
+			}
+		}
+
+		public string GetDriverEarningsForChart(Guid driverId, out int code)
+		{
+			using (var client = new HttpClient())
+			{
+				client.BaseAddress = new Uri(baseUrlS2);//WebApi 2 project URL
+				client.DefaultRequestHeaders.Accept.Clear();
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+				string appendUrl = $"api/Driver/GetChartEarnings?driverId={driverId}";
+
+				var res = client.GetAsync(appendUrl).Result;
+
+				var data = res.Content.ReadAsStringAsync().Result;
+				code = (int)res.StatusCode;
+				return data;
+			}
+		}
+
+		public string GetDriverEarningsByDate(Guid driverId,DateTime startDate,DateTime endDate, out int code)
+		{
+			using (var client = new HttpClient())
+			{
+				client.BaseAddress = new Uri(baseUrlS2);//WebApi 2 project URL
+				client.DefaultRequestHeaders.Accept.Clear();
+				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+				string appendUrl = $"api/Driver/GetDateEarnings?driverId={driverId}&date1={startDate}&date2={endDate}";
+
+				var res = client.GetAsync(appendUrl).Result;
+
+				var data = res.Content.ReadAsStringAsync().Result;
+				code = (int)res.StatusCode;
+				return data;
+			}
+		}
+	}
 }

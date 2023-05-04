@@ -27,5 +27,9 @@ namespace ShippingApp.Services
         public object UpdateContainerType(string userId, string token, UpdateContainerType model, out int code);
         public object RemoveProductType(string userId, string token, Guid productTypeId, out int code);
         public object RemoveContainerType(string userId, string token, Guid containerTypeId, out int code);
-    }
+        public string GetDriverEarnings(Guid driverId, out int code);
+        public string GetDriverEarningsForChart(Guid driverId, out int code);
+        public string GetDriverEarningsByDate(Guid driverId, DateTime startDate, DateTime endDate, out int code);
+
+	}
 }
