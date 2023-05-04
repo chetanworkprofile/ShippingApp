@@ -32,5 +32,7 @@ namespace ShippingClient.Services.Contracts
         public Task<GlobalResponse> RemoveProductType(Guid productTypeId);
         public Task<GlobalResponse> RemoveContainerType(Guid containerTypeId);
         public Task<GlobalResponse> AcceptShipment(AcceptShipment model);
-    }
+        public Task<GlobalResponse> UpdateUser(UpdateUser model);
+
+	}
 }

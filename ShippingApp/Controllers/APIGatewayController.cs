@@ -142,7 +142,7 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpGet, Authorize(Roles = "client, admin")]
+        [HttpGet, Authorize(Roles = "client, admin ,deliveryBoy")]
         [Route("/api/v1/get/drivers")]
         public ActionResult GetDrivers(Guid? driverId = null, string? searchString = null, string? location = null)
         {
