@@ -224,14 +224,16 @@
             await socket.Connect();
         }
         hub = socket.GetHubConnection();
-        //Console.WriteLine("create ship hub var" + hub);
-        GlobalResponse productTypes = await _apiService.GetProductTypes();
 
+        GlobalResponse productTypes = await _apiService.GetProductTypes();
         var obj = JsonSerializer.Serialize(productTypes.data);
         productTypeList = JsonSerializer.Deserialize<List<ProductType>>(obj);
-        GetContainerTypesResponse containerTypes = await _apiService.GetContainerTypes();
+
+        GlobalResponse containerTypes = await _apiService.GetContainerTypes();
+        obj = JsonSerializer.Serialize(containerTypes.data);
+        containerTypeList = JsonSerializer.Deserialize<List<ContainerType>>(obj);
+
         GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
-        containerTypeList = containerTypes.data;
         checkpointsList = checkpoints.data;
         //originList = checkpointsList;
         //destList = checkpointsList;

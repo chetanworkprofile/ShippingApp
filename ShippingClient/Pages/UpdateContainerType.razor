@@ -1,5 +1,5 @@
-﻿@page "/updateProductType"
-@page "/updateProductType/{Id}"
+﻿@page "/updateContainerType"
+@page "/updateContainerType/{Id}"
 @using System.Text.Json;
 
 @attribute [Authorize(Roles = "admin")]
@@ -8,31 +8,21 @@
 <AuthorizeView>
     <Authorized Context="auth">
        @* <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">*@
-            <h4 class="card-header">Update Product Type</h4>
+            <h4 class="card-header">Update Container Type</h4>
             <div class="card-body">
-                <EditForm Model="productTypeModel" OnSubmit="DoUpdateProductType">
+                <EditForm Model="containerTypeModel" OnSubmit="DoUpdateContainerType">
                     <DataAnnotationsValidator />
                     <div class="form-group">
-                        <label for="type">Type (name)</label>
-                        <InputText name="type" class="form-control" @bind-Value="productTypeModel.type" />
-                        <ValidationMessage For="@(()=>productTypeModel.type)" />
+                        <label for="name">Container Type Name</label>
+                        <InputText name="name" class="form-control"  @bind-Value="containerTypeModel.containerName"/>
+                        <ValidationMessage For="@(()=>containerTypeModel.containerName)"/>
                     </div>
                     <div class="form-group">
                         <label for="price">Price (per kg)</label>
-                        <InputNumber id="price" class="form-control" @bind-Value="productTypeModel.price" />
-                        <ValidationMessage For="@(()=>productTypeModel.price)" />
+                        <InputNumber id="price" class="form-control" @bind-Value="containerTypeModel.price" />
+                        <ValidationMessage For="@(()=>containerTypeModel.price)" />
                     </div>
-                    <div class="form-group">
-                        <label for="isFragile">Is it Fragile?</label>
-                        <input type="radio" checked="@(isFragileCheck == true)"
-                               name="isFragile" @onchange="@(() => isFragileCheck = true)" />
-                        <label>Yes</label>
 
-                        <input type="radio" checked="@(isFragileCheck == false)"
-                               name="isFragile" @onchange="@(() => isFragileCheck = false)" />
-                        <label>No</label>
-                    </div>
-                    
                     <div class="my-2">
                         <button disabled="@loading" type="submit" class="btn btn-primary">
                             @if (loading)
@@ -61,11 +51,9 @@
 @code {
     [Parameter]
     public string? Id { get; set; }
-    Models.UpdateProductType productTypeModel = new();
-    GlobalResponse updateProductTypeResponse = new();
-
+    Models.UpdateContainerType containerTypeModel = new();
+    GlobalResponse updateContainerTypeResponse = new();
     private bool loading;
-    private bool isFragileCheck = true;
 
     [Inject] ISnackbar Snackbar { get; set; }
 
@@ -76,27 +64,23 @@
         if (Id != null)
         {
             Guid idInGuid = new Guid(Id);
-            updateProductTypeResponse = await _apiService.GetProductTypes("", idInGuid);
-            //var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/drivers?driverId={driverId}");
-            var obj = JsonSerializer.Serialize(updateProductTypeResponse.data);
-            productTypeModel = JsonSerializer.Deserialize<List<Models.UpdateProductType>>(obj).FirstOrDefault();
-            isFragileCheck = productTypeModel.isFragile;
+            updateContainerTypeResponse = await _apiService.GetContainerTypes("", idInGuid);
+            var obj = JsonSerializer.Serialize(updateContainerTypeResponse.data);
+            containerTypeModel = JsonSerializer.Deserialize<List<Models.UpdateContainerType>>(obj).FirstOrDefault();
+            Console.WriteLine(containerTypeModel);
             StateHasChanged();
         }
     }
 
-    async Task DoUpdateProductType()
+    async Task DoUpdateContainerType()
     {
         loading = true;
-        productTypeModel.isFragile = isFragileCheck;
         try
         {
-            //addProductTypeResponse.message = "Wait....";
-            updateProductTypeResponse = await _apiService.UpdateProductTypes(productTypeModel);
-            if (updateProductTypeResponse.statusCode == 200)
+            updateContainerTypeResponse = await _apiService.UpdateContainerTypes(containerTypeModel);
+            if (updateContainerTypeResponse.statusCode == 200)
             {
-                //AlertService.Success("Product Type Added successfully", keepAfterRouteChange: true);
-                Snackbar.Add("Product Type Updated Successfully", Severity.Success, config =>
+                Snackbar.Add("Container Type Updated Successfully", Severity.Success, config =>
                 {
                     config.Icon = Icons.Material.Filled.Done;
                     config.IconColor = Color.Warning;
@@ -106,7 +90,7 @@
             }
             else
             {
-                Snackbar.Add(updateProductTypeResponse.message, Severity.Error, config =>
+                Snackbar.Add(updateContainerTypeResponse.message, Severity.Error, config =>
                 {
                     config.Icon = Icons.Material.Filled.Error;
                     config.IconColor = Color.Warning;

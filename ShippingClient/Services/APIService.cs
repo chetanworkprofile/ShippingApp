@@ -41,7 +41,7 @@ namespace ShippingClient.Services
                     productTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/productTypes?productTypeId={productTypeId}");
                     
                 }
-                if (search != null)
+                else if (search != null)
                 {
                     productTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/productTypes?searchString={search}");
                 }
@@ -59,28 +59,27 @@ namespace ShippingClient.Services
             }
         }
 
-        public async Task<GetContainerTypesResponse> GetContainerTypes(string? search = null, Guid? containerTypeId = null)
+        public async Task<GlobalResponse> GetContainerTypes(string? search = null, Guid? containerTypeId = null)
         {
             try
             {
-                GetContainerTypesResponse? containerTypes;
+                GlobalResponse? containerTypes;
                 if (containerTypeId != null)
                 {
-                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"{baseUrl}api/v1/get/containerTypes?containerTypeId={containerTypeId}");
+                    containerTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/containerTypes?containerTypeId={containerTypeId}");
                 }
-                if (search != null)
+                else if (search != null)
                 {
-                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"{baseUrl}api/v1/get/containerTypes?searchString={search}");
+                    containerTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/containerTypes?searchString={search}");
                 }
                 else
                 {
-                    containerTypes = await _httpClient.GetFromJsonAsync<GetContainerTypesResponse>($"{baseUrl}api/v1/get/containerTypes");
+                    containerTypes = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/containerTypes");
                 }
                 return containerTypes!;
             }
             catch (Exception ex)
             {
-                //log exception
                 Console.WriteLine(ex);
                 throw;
             }
@@ -523,6 +522,35 @@ namespace ShippingClient.Services
                 string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"{baseUrl}api/v1/update/productType");
+                requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+                var result = await _httpClient.SendAsync(requestMessage);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                    return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
+                }
+                var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+
+                return resultContent!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<GlobalResponse> UpdateContainerTypes(UpdateContainerType model)
+        {
+            try
+            {
+                string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"{baseUrl}api/v1/update/containerType");
                 requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
 

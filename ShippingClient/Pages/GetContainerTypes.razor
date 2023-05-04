@@ -1,4 +1,5 @@
 ﻿@page "/getContainerTypes"
+@using System.Text.Json;
 
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
@@ -46,7 +47,7 @@
 
 
 @code {
-    GetContainerTypesResponse containerTypesResponse = new();
+    GlobalResponse containerTypesResponse = new();
     List<ContainerType> containerTypeList = new();
     string searchString = string.Empty;
     private bool loading;
@@ -78,7 +79,8 @@
         try
         {
             containerTypesResponse = await _apiService.GetContainerTypes(search);
-            containerTypeList = containerTypesResponse.data;
+            var obj = JsonSerializer.Serialize(containerTypesResponse.data);
+            containerTypeList = JsonSerializer.Deserialize<List<ContainerType>>(obj);
             loading = false;
             
             StateHasChanged();

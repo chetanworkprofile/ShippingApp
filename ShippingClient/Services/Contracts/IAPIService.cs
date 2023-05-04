@@ -6,7 +6,7 @@ namespace ShippingClient.Services.Contracts
     {
         public Task<GlobalResponse> GetProductTypes(string? search = null, Guid? productTypeId = null);
         public Task<ResponseModel> AddCheckpoint(AddCheckpoint model);
-        public Task<GetContainerTypesResponse> GetContainerTypes(string? search = null, Guid? containerTypeId = null);
+        public Task<GlobalResponse> GetContainerTypes(string? search = null, Guid? containerTypeId = null);
         public Task<GetCheckpointsResponse> GetCheckpoints();
         public Task<GetCheckpointsResponse> GetCheckpointsByName(string name);
         public Task<CreateShipmentResponse> CreateShipment(CreateShipment model);
@@ -28,6 +28,7 @@ namespace ShippingClient.Services.Contracts
         public Task<List<DriverId>> GetDrivers(Guid driverId);
         public Task<List<AvailableShipmentsDriver>> GetAvailableShipments(Guid checkpointId);
         public Task<GlobalResponse> UpdateProductTypes(UpdateProductType model);
+        public Task<GlobalResponse> UpdateContainerTypes(UpdateContainerType model);
         public Task<GlobalResponse> AcceptShipment(AcceptShipment model);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace ShippingApp.Models.OutputModels
+﻿namespace ShippingClient.Models
 {
     public class UpdateContainerType
     {
