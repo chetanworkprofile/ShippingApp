@@ -641,8 +641,36 @@ namespace ShippingClient.Services
 				throw;
 			}
 		}
-        //do something of this func never used and is not declared in interface
-		public async Task DoLogout()
+
+		public async Task<GlobalResponse> DeleteUser(DeleteUser model)
+		{
+			try
+			{
+				string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+				var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{baseUrl}api/v1/user/delete");
+				requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+				requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+				var result = await _httpClient.SendAsync(requestMessage);
+
+				if (!result.IsSuccessStatusCode)
+				{
+					var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+					return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
+				}
+				var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+
+				return resultContent!;
+			}
+			catch (Exception ex)
+			{
+				//log exception
+				Console.WriteLine(ex);
+				throw;
+			}
+		}
+		//do something of this func never used and is not declared in interface
+		public void DoLogout()
         {
             navigationManager.NavigateTo("/logout");
         }

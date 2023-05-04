@@ -7,7 +7,7 @@
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Person" Color="Color.Success">@context.User.Identity?.Name</MudButton>
             @*<MudChip Text="pink" Color="Color.Dark" Class="justify-content-center"><h4 style="margin: auto;">@context.User.Identity?.Name</h4></MudChip>*@
             @*<MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit" OnClick="@ToggleOpen"/>*@
-            <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit"><TopPopOver /></MudMenu>
+            <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit"><TopPopOver/></MudMenu>
         </MudAppBar>
         <MudDrawer @bind-Open="@open" ClipMode="clipMode" Breakpoint="@breakpoint" PreserveOpenState="@preserveOpenState" Elevation="1" Variant="@DrawerVariant.Mini">
             <MudNavMenu>
@@ -28,7 +28,7 @@
     protected override async Task OnInitializedAsync()
     {
         response = await _apiService.GetYourself();
-        if (response.statusCode == 401)
+        if (response.statusCode == 401 || response.statusCode == 403 || response.isSuccess==false)
         {
             _navMgr.NavigateTo("/logout");
             return;

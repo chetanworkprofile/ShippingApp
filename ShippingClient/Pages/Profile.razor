@@ -3,27 +3,31 @@
 
 <AuthorizeView>
 	<Authorized Context="auth">
-		<MudPaper Height="100%" Width="100%" Style="background: #594AE2">
+		<MudPaper Height="100%" Width="85vw" Style="background: #594AE2">
 			<MudContainer Fixed="true">
 				<MudGrid Spacing="1">
-					<MudItem xs="12" md="4" lg="4" xl="4">
-						<MudPaper Class="pa-16 ma-4">
-							<div class="d-flex flex-column align-items-center text-center" style=" height: 260px">
+					<MudItem xs="12" md="5" lg="5" xl="5">
+						<MudPaper Class="pa-16 ma-4" Height="90%">
+							<div class="d-flex flex-column align-items-center text-center" style=" height: 100%;">
 								<MudAvatar Color="Color.Surface" Style="height:120px; width: 120px; background:; font-size:3rem">@userModel.firstName.ToList().FirstOrDefault()</MudAvatar>
 								<div class="mt-3">
 									<h4 class="text-secondary mb-1"><b>@userModel.firstName @userModel.lastName</b></h4>
 									<p class="text-secondary mb-1">Role : @userModel.userRole</p>
 									<p class="text-muted font-size-sm">Joined on : @userModel.createdAt</p>
-									<p></p>
-									@*<MudButton Variant="Variant.Filled" Style="background:#EC407A; color:white">Update Profile</MudButton>*@
+									<div class="row">
+										<div class="d-flex justify-content-center">
+											<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PublishedWithChanges" Color="Color.Default" OnClick="@ToggleOpenChange">Change Password</MudButton>
+											<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@ToggleOpenDelete">Delete Account</MudButton>
+										</div>
+									</div>
 								</div>
 							</div>
 						</MudPaper>
 					</MudItem>
-					<MudItem xs="12" md="8" lg="8" xl="8">
-						<MudPaper Class="pa-16 ma-4">
-							<EditForm Model="userModel" class="disabled">
-								<div style=" height: 260px">
+					<MudItem xs="12" md="7" lg="7" xl="7">
+						<MudPaper Class="pa-16 ma-4" Height="90%">
+							<EditForm Model="userModel">
+								<div style="height: 100%;">
 									<div class="row mb-1">
 										<div class="col-sm-3">
 											<h6 class="mt-3">First Name</h6>
@@ -64,21 +68,21 @@
 											<MudTextField @bind-Value="userModel.address" Variant="Variant.Outlined" Disabled="@isDisabled" Margin="Margin.Dense" />
 										</div>
 									</div>
-								<div class="row">
-									<div class="col-sm-3"></div>
-									<div class="col-sm-9 text-secondary">
-										<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@Edit">@buttonText</MudButton>
-										<MudButton Variant="Variant.Filled" Disabled="@(isDisabled || loading)" Color="Color.Success" OnClick="() => Update()">
-												@if (loading)
-												{
-													<span class="spinner-border spinner-border-sm mr-1"></span>
-													Task.Delay(5000);
-													loading = false;
-												}
-												Save Changes
-										</MudButton>
+									<div class="row">
+										<div class="col-sm-3"></div>
+										<div class="col-sm-9 text-secondary">
+											<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@Edit">@buttonText</MudButton>
+											<MudButton Variant="Variant.Filled" Disabled="@(isDisabled || loading)" Color="Color.Success" OnClick="() => Update()">
+													@if (loading)
+													{
+														<span class="spinner-border spinner-border-sm mr-1"></span>
+														Task.Delay(5000);
+														loading = false;
+													}
+													Save Changes
+											</MudButton>
+										</div>
 									</div>
-								</div>
 							</div>
 							</EditForm>
 						</MudPaper>
@@ -86,6 +90,25 @@
 				</MudGrid>
 			</MudContainer>
 		</MudPaper>
+		<MudPopover Open="@_isOpenChange" Style="height: 50vh; width:50vw;" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+            <div class="d-flex flex-column">
+                <ChangePassword/>
+				<MudButton Variant="Variant.Filled" OnClick="@ToggleOpenChange" Class="ml-auto" Style="margin: 1% auto;" Color="Color.Default">Close</MudButton>
+            </div>
+        </MudPopover>
+		<MudPopover Open="@_isOpenDelete" Class="px-6 pt-6" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+			<div class="d-flex flex-column">
+				<MudText>Are You Sure you want to Delete this account ?</MudText>
+				<p><b>Note : </b>You will not be able to access this.</p>
+				<MudTextField T="string" Label="Password" @bind-Value=deleteModel.password
+							  InputType="InputType.Password" HelperText="Enter password to proceed" Required="true"
+							  RequiredError="Password is required!" />
+				<div class="d-flex justify-content-center" style="margin: 2% auto">
+					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Class="mx-2 ml-auto" Style="margin: 1% auto;" Color="Color.Error" OnClick="@Delete">Delete</MudButton>
+					<MudButton Variant="Variant.Filled" OnClick="@ToggleOpenDelete" Class="mx-2 ml-auto" Style="margin:1% auto;" Color="Color.Default">Close</MudButton>					
+				</div>
+			</div>
+		</MudPopover>
 	</Authorized>
 	<NotAuthorized>
 		<p>You are not authorized</p>
@@ -137,6 +160,9 @@
 	//private decimal todaysEarnings = 40.7m;
 	//private decimal growthRate = 12.5m;
 	//public decimal distance = 0;
+
+	public bool _isOpenChange;
+	public bool _isOpenDelete;
 	Models.ResponseUser userModel = new();
 	GetYourselfResponse getUserResponse = new();
 	GlobalResponse globalResponse = new();
@@ -145,12 +171,35 @@
 	public bool isDisabled = true;
 	public string buttonText = "Edit";
 
+	DeleteUser deleteModel = new();
+
 	protected override async Task OnInitializedAsync()
 	{
 		getUserResponse = await _apiService.GetYourself();
 		userModel = getUserResponse.data;
 		StateHasChanged();
 	}
+
+	public void ToggleOpenChange()
+	{
+		if (_isOpenChange)
+		{
+			_isOpenChange = false;
+		}
+		else
+			_isOpenChange = true;
+	}
+
+	public void ToggleOpenDelete()
+	{
+		if (_isOpenDelete)
+		{
+			_isOpenDelete = false;
+		}
+		else
+			_isOpenDelete = true;
+	}
+
 	public void Edit()
 	{
 		if (isDisabled)
@@ -164,6 +213,32 @@
 			buttonText = "Edit";
 		}
 		StateHasChanged();
+	}
+
+	public async Task Delete()
+	{
+		loading = true;
+		globalResponse = await _apiService.DeleteUser(deleteModel);
+		if (globalResponse.statusCode == 200)
+		{
+			Snackbar.Add("User Deleteed successfully", Severity.Success, config =>
+			{
+				config.Icon = Icons.Material.Filled.Done;
+				config.IconColor = Color.Warning;
+				config.IconSize = Size.Small;
+			});
+			_navMgr.NavigateTo("/login");
+		}
+		else
+		{
+			Snackbar.Add(globalResponse.message, Severity.Error, config =>
+			{
+				config.Icon = Icons.Material.Filled.Error;
+				config.IconColor = Color.Warning;
+				config.IconSize = Size.Small;
+			});
+		}
+		loading = false;
 	}
 
 	public async Task Update()
@@ -191,4 +266,5 @@
 		}
 		Edit();
 	}
+
 }

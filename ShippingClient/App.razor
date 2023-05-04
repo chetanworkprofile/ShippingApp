@@ -3,6 +3,7 @@
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
             <Authorizing>
                 <text>We are authorizing the user ...</text>
+                @InitializeFunc()
             </Authorizing>
             <NotAuthorized>
                 <p>You are not authorized</p>
@@ -23,7 +24,7 @@
 @code{
     [Inject] ISnackbar Snackbar { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected async Task InitializeFunc()
     {
         HubConnection hub = socket.GetHubConnection();
         if (hub == null)
@@ -40,7 +41,7 @@
         hub.On("refresh", () =>
         {
             Snackbar.Clear();
-            var body = 
+            var body =
             Snackbar.Add($"<p>New Shipment Added at Your location</p>", Severity.Success, config =>
             {
                 config.Icon = Icons.Material.Filled.DeliveryDining;
