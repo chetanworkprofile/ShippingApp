@@ -2,6 +2,7 @@
 
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.WebUtilities;
+@using System.Text.Json;
 @inject NavigationManager UriHelper
 
 @attribute [Authorize(Roles = "deliveryBoy,admin,client,manager")]
@@ -55,10 +56,14 @@
             destination = param.First();
         }
 
-        GetCheckpointsResponse checkpoints = await _apiService.GetCheckpointsByName(origin);
-        checkOrigin = checkpoints.data.FirstOrDefault();
+        GlobalResponse checkpoints = await _apiService.GetCheckpointsByName(origin);
+        var obj = JsonSerializer.Serialize(checkpoints.data);
+        var checkpointList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
+        checkOrigin = checkpointList.FirstOrDefault();
         checkpoints = await _apiService.GetCheckpointsByName(destination);
-        checkDestination = checkpoints.data.FirstOrDefault();
+        obj = JsonSerializer.Serialize(checkpoints.data);
+        checkpointList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
+        checkDestination = checkpointList.FirstOrDefault();
         origincc1 = checkOrigin.longitude;
         origincc2 = checkOrigin.latitude;
         destinationcc1 = checkDestination.longitude;

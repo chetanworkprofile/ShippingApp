@@ -4,10 +4,10 @@
 
 <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" Href="/">Home</MudNavLink>
 <AuthorizeView Roles="admin">
-    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AddLocation" Href="addCheckpoint">Add Checkpoint Type</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.EditLocation" Href="getCheckpoints">Checkpoints</MudNavLink>
     <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PersonAdd" Href="addDriver">Add Driver</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Checklist" Href="getContainerTypes">Get Containers</MudNavLink>
-    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ProductionQuantityLimits" Href="getProductTypes">Get Products</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Checklist" Href="getContainerTypes">Containers</MudNavLink>
+    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ProductionQuantityLimits" Href="getProductTypes">Products</MudNavLink>
     <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PersonSearch" Href="getUsers">Get Users</MudNavLink>
 </AuthorizeView>
 <AuthorizeView Roles="client">

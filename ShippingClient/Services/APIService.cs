@@ -98,11 +98,19 @@ namespace ShippingClient.Services
                 throw;
             }
         }
-        public async Task<GetCheckpointsResponse> GetCheckpointsByName(string name)
+        public async Task<GlobalResponse> GetCheckpointsByName(string? name=null)
         {
             try
             {
-                var checkpoints = await _httpClient.GetFromJsonAsync<GetCheckpointsResponse>($"{baseUrl}api/v1/get/checkpoints?checkpointName={name}");
+                GlobalResponse checkpoints;
+                if (name != null)
+                {
+                    checkpoints = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/checkpoints?checkpointName={name}");
+                }
+                else
+                {
+                    checkpoints = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/checkpoints");
+                }
                 return checkpoints!;
             }
             catch (Exception ex)

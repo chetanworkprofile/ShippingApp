@@ -1,5 +1,6 @@
 ﻿@page "/tracking"
 @page "/tracking/{Id}"
+@using System.Text.Json;
 
 @attribute [Authorize(Roles = "client,admin,deliveryBoy")]
 <PageTitle>Shipment App</PageTitle>
@@ -69,7 +70,9 @@
             if (shipmentStatus!.currentLocation != "At Origin")
             {
                 var temp = await _apiService.GetCheckpointsByName(shipmentStatus.currentLocation);
-                shipmentCheckpoint = temp.data.FirstOrDefault();
+                var obj = JsonSerializer.Serialize(temp.data);
+                var checkpointList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
+                shipmentCheckpoint = checkpointList.FirstOrDefault();
             }
 
             var d = await jsRuntime.InvokeAsync<object>("shipmentHistory", latitudes,longitudes,countOfChecksInRoute,shipmentStatus.shipmentStatus,shipmentCheckpoint.longitude,shipmentCheckpoint.latitude);

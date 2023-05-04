@@ -1,0 +1,117 @@
+﻿@page "/getCheckpoints"
+@using System.Text.Json;
+
+@attribute [Authorize(Roles = "admin")]
+<PageTitle>Shipment App</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="Auth">
+        <div class="row">
+            <div>
+                <div class="row justify-content-end" style="margin: 10px;">
+                    <h3 class="col-8 justify-content-start">Checkpoints List</h3>
+                    <MudFab Class="col-4" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Medium" OnClick="@ToggleOpenAdd"/>
+                </div>
+                
+                <input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />
+                <MudTable Loading="@loading" Items="@checkpointList" Hover="true">
+                    <HeaderContent>
+                            <MudTh>Id</MudTh>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Latitude</MudTh>
+                            <MudTh>Longitude</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Id">@context.checkpointId</MudTd>
+                        <MudTd>@context.checkpointName</MudTd>
+                        <MudTd>@context.longitude</MudTd>
+                        <MudTd>@context.latitude</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized</p>
+        @if (true)
+        {
+            _navMgr.NavigateTo("/login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    GlobalResponse checkpointsResponse = new();
+    List<Checkpoints> checkpointList = new();
+    string searchString = string.Empty;
+    private bool loading;
+
+    public void ToggleOpenAdd()
+    {
+        _navMgr.NavigateTo("/addCheckpoint");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCheckpointsList();
+        StateHasChanged();
+    }
+
+    protected async Task Search()
+    {
+        await GetCheckpointsList(searchString);
+        StateHasChanged();
+    }
+
+    async Task GetCheckpointsList(string? search=null)
+    {
+        loading = true;
+
+        try
+        {
+            checkpointsResponse = await _apiService.GetCheckpointsByName(search);
+            var obj = JsonSerializer.Serialize(checkpointsResponse.data);
+            checkpointList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
+            loading = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}
+
+
+
+
+
+
+@*<table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Type Name</th>
+                            <th>Price(/kg)</th>
+                        </tr>
+                    </thead>
+                    @if (containerTypeList != null && containerTypeList.Count > 0)
+                    {
+                        @foreach (var containerType in containerTypeList)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>@containerType.containerTypeId</td>
+                                    <td>@containerType.containerName</td>
+                                    <td>@containerType.price</td>
+                                </tr>
+                            </tbody>
+                        }
+                    }
+                    else
+                    {
+                        <p><em>No Record found</em></p>
+                    }
+                </table>*@
