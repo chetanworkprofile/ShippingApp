@@ -14,9 +14,6 @@
             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="ml-2" Href="/login">Login</MudButton>
         </MudAppBar>
     </NotAuthorized>
-    <Authorized>
-        
-    </Authorized>
 </AuthorizeView>
 <div style="margin-bottom:50px;"></div>
 
@@ -128,9 +125,9 @@
 @*our team*@
 
 <h2 style="text-align:center; margin-top:50px;">Our Team</h2>
-<div class="row" style="margin-bottom:10px">
-    <div class="column">
-        <div class="card">
+<MudGrid Spacing="1">
+    <MudItem xs="12" md="4" lg="4" xl="4">
+        <MudPaper Class="pa-4 ma-4" Height="90%">
             <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Chetan" style="width:100%">
             <div class="container">
                 <h2>Chetan Gupta</h2>
@@ -139,10 +136,10 @@
                 <p>chetan.gupta@chicmic.co.in</p>
                 <p><button class="button">Contact</button></p>
             </div>
-        </div>
-    </div>
-    <div class="column">
-        <div class="card">
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" md="4" lg="4" xl="4">
+        <MudPaper Class="pa-4 ma-4" Height="90%">
             <img src="https://buffer.com/library/content/images/size/w1000/2022/03/sigmund-MQ2xYBHImKM-unsplash--1--1.jpg" alt="Ajay" style="width:100%">
             <div class="container">
                 <h2>Ajay Joshi</h2>
@@ -151,10 +148,10 @@
                 <p>ajay.joshi@chicmic.co.in</p>
                 <p><button class="button">Contact</button></p>
             </div>
-        </div>
-    </div>
-    <div class="column">
-        <div class="card">
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" md="4" lg="4" xl="4">
+        <MudPaper Class="pa-4 ma-4" Height="90%">
             <img src="https://st.depositphotos.com/1028979/2311/i/600/depositphotos_23114154-stock-photo-tired-young-business-woman-with.jpg" alt="Rakesh" style="width:100%">
             <div class="container">
                 <h2>Rakesh Kumar</h2>
@@ -163,9 +160,9 @@
                 <p>rakesh.kumar23@chicmic.co.in</p>
                 <p><button class="button">Contact</button></p>
             </div>
-        </div>
-    </div>
-</div>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
 @*footer*@
 
@@ -173,18 +170,18 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <h5>About Us</h5>
+                <h5 style="color: whitesmoke;"><b>About Us</b></h5>
                 <p style="color:whitesmoke">Welcome to our shipping app! We are a team of dedicated individuals who are passionate about providing reliable and efficient shipping services to our customers. Our mission is to make shipping easy and accessible for everyone, no matter where they are in the world.</p>
             </div>
             <div class="col-md-4">
-                <h5>Links</h5>
+                <h5 style="color: whitesmoke;"><b>Links</b></h5>
                 <ul class="list-unstyled">
                     <li><a href="#">Home</a></li>
                     <li><a href="#services">Services</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
-                <h5>Contact Us</h5>
+                <h5 style="color: whitesmoke;"><b>Contact Us</b></h5>
                 <ul class="list-unstyled">
                     <li><i class="fas fa-envelope"></i>abc@chicmic.co.in</li>
                     <li><i class="fas fa-phone"></i> 9988776655</li>
@@ -209,11 +206,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // redirect to home if already logged in
-        //if (_authService.GetToken() != null)
-        //{
-        //    _navMgr.NavigateTo("/login", true);
-        //}
+         //redirect to home if already logged in
+        if (_authService.GetToken() != null)
+        {
+            _navMgr.NavigateTo("/login", true);
+        }
         HubConnection hub = socket.GetHubConnection();
         if (hub == null)
         {

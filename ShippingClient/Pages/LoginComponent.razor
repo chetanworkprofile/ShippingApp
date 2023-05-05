@@ -91,7 +91,7 @@
         {
             loginResponse = await _authService.Login(loginModel);
             Snackbar.Add(loginResponse.message, Severity.Normal);
-            if (loginResponse.statusCode != 0)
+            if (loginResponse.statusCode != 200)
             {
                 Snackbar.Add(loginResponse.message, Severity.Success);
                 await Task.Delay(1000);
