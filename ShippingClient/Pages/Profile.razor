@@ -122,6 +122,10 @@
 @*// Analytics for driver*@
 <AuthorizeView Roles="deliveryBoy">
 	<Authorized Context="auth">
+		@if (loadDriverFunc)
+		{
+			@InitializeForDriver();
+		}
 		<h3>Your Analytics</h3>
 		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
 			<MudContainer Class="mt-4">
@@ -129,28 +133,28 @@
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Earnings : @earnings!.totalEarnings</b></div>
+							<div class="mb-1">Your <b>Total Earnings : @driverEarnings!.totalEarnings</b></div>
 							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1"><b>This Month's Earnings : @earnings!.monthlyEarning</b></div>
+							<div class="mb-1"><b>This Month's Earnings : @driverEarnings!.monthlyEarning</b></div>
 							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1"><b>Today's Earnings : @earnings!.todayEarning</b></div>
+							<div class="mb-1"><b>Today's Earnings : @driverEarnings!.todayEarning</b></div>
 							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Trips : @earnings!.totalTrips</b></div>
+							<div class="mb-1">Your <b>Total Trips : @driverEarnings!.totalTrips</b></div>
 							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
@@ -174,40 +178,78 @@
 
 <AuthorizeView Roles="admin">
 	<Authorized Context="auth">
+		@if (loadAdminFunc)
+		{
+			@InitializeForAdmin();
+		}
 		<h3>Analytics</h3>
-		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2;">
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%;">
 			<MudContainer Class="mt-4">
-				<MudGrid Spacing="4" Justify="Justify.SpaceBetween">
-					<MudItem xs="12" md="6" lg="3" xl="3" Style="margin:auto;">
+				<MudGrid Spacing="2" Justify="Justify.SpaceBetween">
+					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Total Earnings : 23</div>
-							<MudButton Color="Color.Secondary">View Details</MudButton>
+							<div class="mb-1">Your <b>Total Revenue : @adminEarnings!.totalRevenue</b></div>
+							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
-					<MudItem xs="12" md="6" lg="3" xl="3" Style="margin:auto;">
+					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">This Month's Earning Earnings : 23</div>
-							<MudButton Color="Color.Secondary">View Details</MudButton>
+							<div class="mb-1"><b>This Month's Revenue : @adminEarnings!.monthRevenue</b></div>
+							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
-					<MudItem xs="12" md="6" lg="3" xl="3" Style="margin:auto;">
+					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Today's Earnings : 23</div>
-							<MudButton Color="Color.Secondary">View Details</MudButton>
+							<div class="mb-1"><b>Today's Revenue : @adminEarnings!.todayRevenue</b></div>
+							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
-					<MudItem xs="12" md="6" lg="3" xl="3" Style="margin:auto;">
+					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Total Trips : 23</div>
-							<MudButton Color="Color.Secondary">View Details</MudButton>
+							<div class="mb-1">Your <b>Total Shipments : @adminEarnings!.totalShipment</b></div>
+							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
+						</MudPaper>
+					</MudItem>
+					<MudItem xs="12" md="6" lg="4" xl="4">
+						<MudPaper Elevation="4" Class="p-3 text-center">
+							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1">Your <b>This Month's Shipments : @adminEarnings!.monthshipment</b></div>
+							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
+						</MudPaper>
+					</MudItem>
+					<MudItem xs="12" md="6" lg="4" xl="4">
+						<MudPaper Elevation="4" Class="p-3 text-center">
+							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1">Your <b>Today's Shipments : @adminEarnings!.todayShipment</b></div>
+							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 				</MudGrid>
 			</MudContainer>
+		</MudPaper>
+		<h3>Revenue Chart</h3>
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
+			<MudGrid Spacing="1">
+				<MudItem xs="12" md="12" lg="12" xl="12">
+					<MudPaper Class="ma-4" Square="true">
+						<MudChart Style="padding: 1% 2%;" ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Height="70vh" Width="100%" ChartOptions="chartOptions"></MudChart>
+					</MudPaper>
+				</MudItem>
+			</MudGrid>
+		</MudPaper>
+		<h3>Shipments Chart</h3>
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
+			<MudGrid Spacing="1">
+				<MudItem xs="12" md="12" lg="12" xl="12">
+					<MudPaper Class="ma-4" Square="true">
+						<MudChart Style="padding: 1% 2%;" ChartType="ChartType.Line" ChartSeries="@Series2" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Height="70vh" Width="100%" ChartOptions="chartOptions"></MudChart>
+					</MudPaper>
+				</MudItem>
+			</MudGrid>
 		</MudPaper>
 	</Authorized>
 </AuthorizeView>
@@ -227,36 +269,75 @@
 	DeleteUser deleteModel = new();
 
 	GlobalResponse res = new();
-	Models.GetDriverEarnings? earnings = new();
+	Models.GetDriverEarnings? driverEarnings = new();
+	Models.GetAdminEarnings? adminEarnings = new();
+	Models.GetAdminEarningsForChart? adminEarningsForChart = new();
 
 	private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
 	public ChartOptions chartOptions = new ChartOptions();
 	static GlobalResponse response = new GlobalResponse();
 	static string dat = "";
 	public List<ChartSeries> Series = new();
+	public List<ChartSeries> Series2 = new();
 
 	public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+	public bool loadDriverFunc = true;
+	public bool loadAdminFunc = true;
 
 
 	protected override async Task OnInitializedAsync()
 	{
 		getUserResponse = await _apiService.GetYourself();
 		userModel = getUserResponse.data;
+		StateHasChanged();
+	}
+
+	private async Task InitializeForDriver()
+	{
 		res = await _apiService.GetDriverEarnings(userModel.userId);
 		var obj = JsonSerializer.Serialize(res.data);
-		earnings = JsonSerializer.Deserialize<Models.GetDriverEarnings>(obj);
+		driverEarnings = JsonSerializer.Deserialize<Models.GetDriverEarnings>(obj);
 		response = await _apiService.GetDriverEarningsForChart(userModel.userId);
 
 		dat = JsonSerializer.Serialize(response.data);
 		double[] data = JsonSerializer.Deserialize<double[]>(dat);
-		for(int i = 0; i < data.Count(); i++)
+		for (int i = 0; i < data.Count(); i++)
 		{
 			data[i] = data[i] / 1000;
 		}
 		Series = new List<ChartSeries>()
 		{
-			new ChartSeries() { Name = "Monthly Earnings (in 1000's i.e, 1 unit = 1000)", Data = data },
+			new ChartSeries() { Name = "Monthly Earnings (in thousands i.e, 1 unit = 1000)", Data = data },
 		};
+		loadDriverFunc = false;
+		StateHasChanged();
+	}
+
+	private async Task InitializeForAdmin()
+	{
+		res = await _apiService.GetAdminEarnings();
+		var obj = JsonSerializer.Serialize(res.data);
+		adminEarnings = JsonSerializer.Deserialize<Models.GetAdminEarnings>(obj);
+		response = await _apiService.GetAdminEarningsForChart();
+
+		dat = JsonSerializer.Serialize(response.data);
+		adminEarningsForChart = JsonSerializer.Deserialize<GetAdminEarningsForChart>(dat);
+		double[] data1 = adminEarningsForChart.monthRevenue.ToArray();
+		double[] data2 = adminEarningsForChart.monthShipment.ToArray();
+		for (int i = 0; i < data1.Count(); i++)
+		{
+			data1[i] = data1[i] / 100000;
+		}
+		Series = new List<ChartSeries>()
+		{
+			new ChartSeries() { Name = "Monthly Revenue (in Lakhs i.e, 1 unit = 100000)", Data = data1 },
+		};
+		Series2 = new List<ChartSeries>()
+		{
+			new ChartSeries() { Name = "Monthly Shipments frequency", Data = data2 },
+		};
+		loadAdminFunc = false;
 		StateHasChanged();
 	}
 
@@ -367,5 +448,4 @@
 		chartOptions.LineStrokeWidth = random.NextInt64(1, 10);
 		//StateHasChanged();
 	}
-
 }

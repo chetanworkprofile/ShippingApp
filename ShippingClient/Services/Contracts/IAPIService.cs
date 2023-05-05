@@ -7,7 +7,7 @@ namespace ShippingClient.Services.Contracts
         public Task<GlobalResponse> GetProductTypes(string? search = null, Guid? productTypeId = null);
         public Task<GlobalResponse> AddCheckpoint(AddCheckpoint model);
         public Task<GlobalResponse> GetContainerTypes(string? search = null, Guid? containerTypeId = null);
-        public Task<GetCheckpointsResponse> GetCheckpoints();
+        public Task<GlobalResponse> GetCheckpoints();
         public Task<GlobalResponse> GetCheckpointsByName(string name);
         public Task<CreateShipmentResponse> CreateShipment(CreateShipment model);
         public Task<AddProductTypeResponse> AddProductType(AddProductType model);
@@ -36,6 +36,9 @@ namespace ShippingClient.Services.Contracts
         public Task<GlobalResponse> DeleteUser(DeleteUser model);
         public Task<GlobalResponse> GetDriverEarnings(Guid driverId);
         public Task<GlobalResponse> GetDriverEarningsForChart(Guid driverId);
+        public Task<GlobalResponse> GetAdminEarnings();
+        public Task<GlobalResponse> GetAdminEarningsForChart();
 
-	}
+
+    }
 }

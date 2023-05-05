@@ -634,5 +634,41 @@ namespace ShippingApp.Services
 				return data;
 			}
 		}
-	}
+
+        public string GetAdminEarnings(out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);//WebApi 1 project URL
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                string appendUrl = $"api/shipment/getData";
+
+                var res = client.GetAsync(appendUrl).Result;
+
+                var data = res.Content.ReadAsStringAsync().Result;
+                code = (int)res.StatusCode;
+                return data;
+            }
+        }
+
+        public string GetAdminEarningsForChart(out int code)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrlS1);//WebApi 1 project URL
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                string appendUrl = $"api/shipment/getChartData";
+
+                var res = client.GetAsync(appendUrl).Result;
+
+                var data = res.Content.ReadAsStringAsync().Result;
+                code = (int)res.StatusCode;
+                return data;
+            }
+        }
+    }
 }

@@ -125,8 +125,9 @@
 
     protected override async void OnInitialized()
     {
-        GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
-        checkpointsList = checkpoints.data;
+        GlobalResponse res = await _apiService.GetCheckpoints();
+        var obj = JsonSerializer.Serialize(res.data);
+        checkpointsList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
         driverModel.url = string.Empty;
         driverModel.url = "driverSetPassword";
         StateHasChanged();

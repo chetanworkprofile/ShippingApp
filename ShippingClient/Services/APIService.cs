@@ -84,11 +84,11 @@ namespace ShippingClient.Services
                 throw;
             }
         }
-        public async Task<GetCheckpointsResponse> GetCheckpoints()
+        public async Task<GlobalResponse> GetCheckpoints()
         {
             try
             {
-                var checkpoints = await _httpClient.GetFromJsonAsync<GetCheckpointsResponse>($"{baseUrl}api/v1/get/checkpoints");
+                var checkpoints = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/checkpoints");
                 return checkpoints!;
             }
             catch (Exception ex)
@@ -217,9 +217,9 @@ namespace ShippingClient.Services
             if (!result.IsSuccessStatusCode)
             {
                 var errorResponseContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
-                return new ResponseModel { statusCode = 0, message = errorResponseContent!.message };
+                return new GlobalResponse{ statusCode = 0, message = errorResponseContent!.message };
             }
-            var resultContent = await result.Content.ReadFromJsonAsync<ResponseModel>();
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
 
             return resultContent!;
         }
@@ -270,27 +270,6 @@ namespace ShippingClient.Services
             return resultContent!;
 
         }
-        
-        /*public async Task<LoginResponse> AddManager(AddManager model)
-        {
-            string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
-
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/admin/addManager");
-            requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
-
-            var result = await _httpClient.SendAsync(requestMessage);
-
-            if (!result.IsSuccessStatusCode)
-            {
-                var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
-                return new LoginResponse { statusCode = 0, message = errorResponseContent!.message };
-            }
-            var resultContent = await result.Content.ReadFromJsonAsync<LoginResponse>();
-            
-            return resultContent!;
-
-        }*/
 
         public async Task<GetUsersResponse> GetUsers(int pageNumber = 1,string? search = null)
         {
@@ -396,6 +375,7 @@ namespace ShippingClient.Services
                 throw;
             }
         }
+
         public async Task<ContainerType> GetContainerTypeSingle(Guid id)
         {
             try
@@ -411,6 +391,7 @@ namespace ShippingClient.Services
                 throw;
             }
         }
+
         public async Task<Checkpoints> GetCheckpointTypeSingle(Guid id)
         {
             try
@@ -700,6 +681,36 @@ namespace ShippingClient.Services
             }
         }
 
+        public async Task<GlobalResponse> GetAdminEarnings()
+        {
+            try
+            {
+                GlobalResponse? response;
+                response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/adminEarnings");
+                return response!;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<GlobalResponse> GetAdminEarningsForChart()
+        {
+            try
+            {
+                GlobalResponse? response;
+                response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/adminEarningsForChart");
+                return response!;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
         //do something of this func never used and is not declared in interface
         public void DoLogout()
         {
@@ -707,3 +718,32 @@ namespace ShippingClient.Services
         }
     }
 }
+
+
+
+
+
+
+
+
+
+/*public async Task<LoginResponse> AddManager(AddManager model)
+{
+    string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+    var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/admin/addManager");
+    requestMessage.Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+    var result = await _httpClient.SendAsync(requestMessage);
+
+    if (!result.IsSuccessStatusCode)
+    {
+        var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+        return new LoginResponse { statusCode = 0, message = errorResponseContent!.message };
+    }
+    var resultContent = await result.Content.ReadFromJsonAsync<LoginResponse>();
+
+    return resultContent!;
+
+}*/

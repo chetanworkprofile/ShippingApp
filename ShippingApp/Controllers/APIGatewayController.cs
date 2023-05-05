@@ -374,5 +374,43 @@ namespace ShippingApp.Controllers
 				return StatusCode(500, response2);
 			}
 		}
-	}
+
+        [HttpGet, Authorize(Roles = "admin")]
+        [Route("/api/v1/get/adminEarnings")]
+        public ActionResult GetAdminEarnings()
+        {
+            _logger.LogInformation("Getting Admin earnings");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetAdminEarnings(out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+
+        [HttpGet, Authorize(Roles = "admin")]
+        [Route("/api/v1/get/adminEarningsForChart")]
+        public ActionResult GetAdminEarningsForChart()
+        {
+            _logger.LogInformation("Getting Admin earnings for chart");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetAdminEarningsForChart(out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+        }
+    }
 }

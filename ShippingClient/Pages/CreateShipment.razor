@@ -226,8 +226,9 @@
         obj = JsonSerializer.Serialize(containerTypes.data);
         containerTypeList = JsonSerializer.Deserialize<List<ContainerType>>(obj);
 
-        GetCheckpointsResponse checkpoints = await _apiService.GetCheckpoints();
-        checkpointsList = checkpoints.data;
+        GlobalResponse res = await _apiService.GetCheckpoints();
+        obj = JsonSerializer.Serialize(res.data);
+        checkpointsList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
         //originList = checkpointsList;
         //destList = checkpointsList;
         StateHasChanged();
