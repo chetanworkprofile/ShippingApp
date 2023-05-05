@@ -1,0 +1,226 @@
+﻿@page "/"
+@inject Socket socket
+<PageTitle>Shipment App</PageTitle>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <MudAppBar Color="Color.Primary">
+            <MudImage Src="https://img.icons8.com/?size=512&id=18974&format=png" Alt="" Class="mr-0" Height="60" Width="60" />
+            <MudText Style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;font-size:24px;font-weight:bold;box-shadow:10px">Shippi</MudText>
+            @*<MudButton Variant="Variant.Text" Class="ml-2" Style="color:whitesmoke" Href="#about-us">About Us</MudButton>
+            <MudButton Variant="Variant.Text" Class="ml-2" Style="color:whitesmoke">Team</MudButton>*@
+            <MudSpacer/>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Class="ml-2" Href="/register">Register</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="ml-2" Href="/login">Login</MudButton>
+        </MudAppBar>
+    </NotAuthorized>
+    <Authorized>
+        
+    </Authorized>
+</AuthorizeView>
+<div style="margin-bottom:50px;"></div>
+
+@*carousel*@
+
+<MudCarousel Class="mud-width-full" Style="height:400px;width:100%" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+    <MudCarouselItem Transition="transition" Color="@Color.Warning">
+        <div class="d-flex" style="height:100%">
+            <img src="https://images.pexels.com/photos/2800121/pexels-photo-2800121.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" style="width:50%;background-size:contain" />
+            <img src="https://images.pexels.com/photos/2199293/pexels-photo-2199293.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" style="width:50%;background-size:contain" />
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="transition" Color="@Color.Secondary">
+        <div class="d-flex" style="height:100%">
+            <img src="https://images.pexels.com/photos/1252500/pexels-photo-1252500.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" style="width:50%" />
+            <img src="https://images.pexels.com/photos/7412094/pexels-photo-7412094.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" style="width:50%" />
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="transition" Color="@Color.Tertiary">
+        <div class="d-flex" style="height:100%">
+            <img src="https://images.pexels.com/photos/1427107/pexels-photo-1427107.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" style="width:50%" />
+            <img src="https://images.pexels.com/photos/3057963/pexels-photo-3057963.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" style="width:50%" />
+        </div>
+    </MudCarouselItem>
+</MudCarousel>
+
+
+@*services*@
+<div class="section" style="margin-top: 40px;">
+    <div class="container">
+        <h2 style="text-align:center">Our Services</h2>
+        <div class="row" style="padding-top:25px;width:100%">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="https://bootstrapmade.com/demo/templates/Logis/assets/img/logistics-service.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">Packaging</h5>
+                        <p class="card-text">At our shipment company, we take utmost care in packaging your items with the right materials and techniques to minimize the risk of damage during transit.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="https://bootstrapmade.com/demo/templates/Logis/assets/img/cargo-service.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">Cargo</h5>
+                        <p class="card-text">
+                            We ensure that your cargo is transported safely and efficiently to its destination.With our expertise and network, we can transport your cargo to any destination in the world.
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="https://bootstrapmade.com/demo/templates/Logis/assets/img/trucking-service.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">Trucking</h5>
+                        <p class="card-text">Trucking plays a critical role in the shipment industry. Our company uses the latest technology and equipment to ensure safe and reliable transportation of your cargo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*line *@
+
+<MudTimeline Class="mb-10 p-4">
+    <MudTimelineItem Color="Color.Info" Size="Size.Small">
+        <ItemOpposite>
+            <img src="https://img.icons8.com/?size=512&id=18974&format=png" style="width:60px;height:60px;" />
+        </ItemOpposite>
+        <ItemContent>
+            <MudText Color="Color.Info" Typo="Typo.h6" GutterBottom="true">Easy Pickup</MudText>
+            <MudText>At our shipment company, we strive to make the process of shipping as convenient as possible for our clients. With our easy pickup service, you can have your package collected from your doorstep without any hassle.</MudText>
+        </ItemContent>
+    </MudTimelineItem>
+    <MudTimelineItem Color="Color.Success" Size="Size.Small">
+        <ItemOpposite>
+            <img src="https://img.icons8.com/?size=512&id=119515&format=png" style="width:60px;height:60px;" />
+        </ItemOpposite>
+        <ItemContent>
+            <MudText Color="Color.Success" Typo="Typo.h6" GutterBottom="true">Safety and Security</MudText>
+            <MudText>At our shipment company, we take the safety of your products very seriously. We use the latest technology and employ a team of highly trained professionals to ensure that your packages are always transported safely and securely.</MudText>
+        </ItemContent>
+    </MudTimelineItem>
+    <MudTimelineItem Color="Color.Error" Size="Size.Small">
+        <ItemOpposite>
+            <img src="https://img.icons8.com/?size=512&id=3i4YXykrUuBG&format=png" style="width:60px;height:60px;" />
+        </ItemOpposite>
+        <ItemContent>
+            <MudText Color="Color.Error" Typo="Typo.h6" GutterBottom="true">Fast and Safe Delivery</MudText>
+            <MudText>We understand the urgency of your shipment, that's why we prioritize fast and efficient delivery to ensure your package arrives at its destination as quickly as possible.Our reliable shipping network and advanced tracking technology ensure a secure and timely delivery.</MudText>
+        </ItemContent>
+    </MudTimelineItem>
+</MudTimeline>
+
+@*about us *@
+
+<div class="about-section" id="about-us" style="width: 117%; margin: 0 10% 0 -10%; overflow: clip;">
+    <h2>About Us </h2>
+    <p>We ship your goods while you enjoy in your Couch</p>
+    <p>Welcome to our shipping app! We are a team of dedicated individuals who are passionate about providing reliable and efficient shipping services to our customers. Our mission is to make shipping easy and accessible for everyone, no matter where they are in the world.</p>
+</div>
+
+
+
+@*our team*@
+
+<h2 style="text-align:center; margin-top:50px;">Our Team</h2>
+<div class="row" style="margin-bottom:10px">
+    <div class="column">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Chetan" style="width:100%">
+            <div class="container">
+                <h2>Chetan Gupta</h2>
+                <p class="title">.Net Intern</p>
+                <p>Highly passionate and hardworking</p>
+                <p>chetan.gupta@chicmic.co.in</p>
+                <p><button class="button">Contact</button></p>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card">
+            <img src="https://buffer.com/library/content/images/size/w1000/2022/03/sigmund-MQ2xYBHImKM-unsplash--1--1.jpg" alt="Ajay" style="width:100%">
+            <div class="container">
+                <h2>Ajay Joshi</h2>
+                <p class="title">.Net Intern</p>
+                <p>Creative, ethical and extremely hardworking</p>
+                <p>ajay.joshi@chicmic.co.in</p>
+                <p><button class="button">Contact</button></p>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card">
+            <img src="https://st.depositphotos.com/1028979/2311/i/600/depositphotos_23114154-stock-photo-tired-young-business-woman-with.jpg" alt="Rakesh" style="width:100%">
+            <div class="container">
+                <h2>Rakesh Kumar</h2>
+                <p class="title">.Net Intern</p>
+                <p>Efficient and true to principles</p>
+                <p>rakesh.kumar23@chicmic.co.in</p>
+                <p><button class="button">Contact</button></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*footer*@
+
+<div class="footer" style="width: 117%; margin: 0 10% 0 -10%; overflow: clip;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>About Us</h5>
+                <p style="color:whitesmoke">Welcome to our shipping app! We are a team of dedicated individuals who are passionate about providing reliable and efficient shipping services to our customers. Our mission is to make shipping easy and accessible for everyone, no matter where they are in the world.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5>Contact Us</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-envelope"></i>abc@chicmic.co.in</li>
+                    <li><i class="fas fa-phone"></i> 9988776655</li>
+                    <li><i class="fas fa-map-marker-alt"></i>Phase 8, Mohali</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    private bool arrows = true;
+    private bool bullets = true;
+    private bool enableSwipeGesture = true;
+    private bool autocycle = true;
+    private Transition transition = Transition.Slide;
+
+    private static HubConnection? hubConnection;
+    private string messages = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // redirect to home if already logged in
+        //if (_authService.GetToken() != null)
+        //{
+        //    _navMgr.NavigateTo("/login", true);
+        //}
+        HubConnection hub = socket.GetHubConnection();
+        if (hub == null)
+        {
+            await socket.Connect();
+        }
+        hub = socket.GetHubConnection();
+        Console.WriteLine("helo from hub var" + hub);
+        //Connect();
+    }
+}
