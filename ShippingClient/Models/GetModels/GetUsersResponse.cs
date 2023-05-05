@@ -3,7 +3,7 @@
     public class GetUsersResponse
     {
         public int statusCode { get; set; }
-        public string message { get; set; } = string.Empty;
+        public string message { get; set; } = string.Empty; 
         public getData data { get; set; } = new getData();
         public bool isSuccess { get; set; }
     }

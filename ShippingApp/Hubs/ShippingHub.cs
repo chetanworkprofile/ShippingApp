@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using ShippingApp.Data;
-using ShippingApp.Models;
-using ShippingApp.Models.InputModels;
 using ShippingApp.Models.OutputModels;
 using ShippingApp.RabbitMQ;
 using System.Security.Claims;
@@ -17,18 +14,14 @@ namespace ShippingApp.Hubs
         ResponseWithoutData response2 = new ResponseWithoutData();
         object result = new object();
 
-        private readonly ShippingDbContext DbContext;
         private readonly ILogger<string> _logger;
-        private readonly IMQConsumer _consumer;
         //List<NotifyDriver> notifications;
         // to keep track of online users dict key-value pair
         // key - userId     value - connectionId
         //private static readonly Dictionary<string, string> Users = new Dictionary<string, string>();
-        public ShippingHub(ShippingDbContext dbContext, ILogger<string> logger, IMQConsumer consumer)
+        public ShippingHub(ILogger<string> logger)
         {
-            DbContext = dbContext;
             _logger = logger;
-            _consumer = consumer;
         }
         public async override Task<Task> OnConnectedAsync()
         {

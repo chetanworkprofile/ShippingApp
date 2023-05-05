@@ -28,15 +28,21 @@ namespace ShippingApp.Services
         private readonly ShippingDbContext DbContext;
         private readonly ILogger<APIGatewayController> _logger;
         private readonly IMessageProducer _messagePublisher;
+        private readonly IConfiguration _configuration;
         SecondaryAuthService _secondaryAuthService;
         public APIGatewayService(IConfiguration configuration, ShippingDbContext dbContext, ILogger<APIGatewayController> logger, IMessageProducer messagePublisher)
         {
             DbContext = dbContext;
             _logger = logger;
             _messagePublisher = messagePublisher;
+            _configuration = configuration;
             _secondaryAuthService = new SecondaryAuthService(configuration);
-            baseUrlS1 = "http://192.180.2.128:4000";
-            baseUrlS2 = "http://192.180.0.127:4040";
+
+            baseUrlS1 = _configuration.GetSection("BaseUrls:baseurl1").Value!;
+            baseUrlS2 = _configuration.GetSection("BaseUrls:baseurl2").Value!;
+
+            /*baseUrlS1 = "http://192.180.2.128:4000";
+            baseUrlS2 = "http://192.180.0.127:4040";*/
         }
 
         public string GetShipments(Guid? shipmentId, Guid? customerId, Guid? productTypeId, Guid? containerTypeId, out int code)

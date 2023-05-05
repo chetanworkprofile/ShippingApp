@@ -1,6 +1,7 @@
 ﻿@page "/driverGetNotification"
 @using System.Security.Claims;
 
+
 @attribute [Authorize(Roles = "deliveryBoy,admin")]
 <PageTitle>Shipment App</PageTitle>
 
@@ -57,20 +58,13 @@
         }
         hub = socket.GetHubConnection();
         SocketFunctions();
-        GetShipmentsNotification();
+        await GetShipmentsNotification();
         StateHasChanged();
     }
     public void SocketFunctions()
     {
         hub.On("refresh", () =>
         {
-            //Snackbar.Clear();
-            //Snackbar.Add("New Shipment Added at Your location", Severity.Success, config =>
-            //{
-            //    config.Icon = Icons.Material.Filled.DeliveryDining;
-            //    config.IconColor = Color.Warning;
-            //    config.IconSize = Size.Large;
-            //});
             GetShipmentsNotification();
             Console.WriteLine("refresh fxn");
             StateHasChanged();
@@ -91,7 +85,10 @@
             acceptShipment.isAccepted = true;
             acceptShipment.mapId = id;
             GlobalResponse driverIdResponse = await _apiService.AcceptShipment(acceptShipment);
-
+            if (driverIdResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+            }
             if (driverIdResponse.statusCode == 200)
             {
                 Snackbar.Add(driverIdResponse.message, Severity.Success, config =>
@@ -137,7 +134,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
         }

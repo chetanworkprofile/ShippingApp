@@ -3,16 +3,6 @@
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
 
-<style type="text/css">
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        margin: 0;
-    }
-</style>
-
 <AuthorizeView>
     <Authorized Context="auth">
         <div class="card col-sm-6" style="margin: 2% auto; justify-content:center">
@@ -31,21 +21,13 @@
                         <InputText id="lastName" class="form-control" @bind-Value="driverModel.lastName" />
                         <ValidationMessage For="@(()=>driverModel.lastName)" />
                     </div>
+
                      <div class="form-group">
                        <label for="email">Email</label>
                         <InputText id="email" class="form-control" @bind-Value="driverModel.email" />
                         <ValidationMessage For="@(()=>driverModel.email)" />
                     </div>
 
-                    @*<div class="form-group">
-                        <label for="password">Password</label>
-                        <InputText id="password" type="password" class="form-control" @bind-Value="driverModel.password" />
-                        <ValidationMessage For="@(()=>driverModel.password)" />
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
-                    </div>*@
                     <div class="form-group">
                         <label for="contact">Contact No.</label>
                         <InputNumber id="contact" class="form-control" @bind-Value="driverModel.contactno" />
@@ -57,11 +39,13 @@
                         <InputText type="address" class="form-control" @bind-Value="driverModel.address" />
                         <ValidationMessage For="@(()=>driverModel.address)" />
                     </div>
+
                     <div class="row">
                         <div class="col-md-4">
                             <label for="checkpointLocation" class="control-label">Current Checkpoint</label>
                         </div>
                     </div>
+
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
                             <select class="form-control" onchange="@CheckpointClicked">
@@ -73,6 +57,7 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label for="isAvailable">Is Available (not busy)?</label>
                         <input type="radio" checked="@(isAvailable == true)"
@@ -83,9 +68,6 @@
                                name="isAvailable" @onchange="@(() => isAvailable = false)" />
                         <label>No</label>
                     </div>
-                    @*<div class="my-2">
-                        @addDriverResponse.message
-                    </div>*@
 
                     <div class="my-2">
                         <button disabled="@loading" type="submit" class="btn btn-primary">
@@ -114,10 +96,10 @@
 
 @code {
     Models.AddDriver driverModel = new();
-    AddDriverResponse addDriverResponse = new();
+    GlobalResponse addDriverResponse = new();
     private bool loading;
     private bool isAvailable = true;
-    //string confirmPassword = string.Empty;
+
     Guid checkPoint;
     [Inject] ISnackbar Snackbar { get; set; }
 
@@ -132,44 +114,34 @@
         driverModel.url = "driverSetPassword";
         StateHasChanged();
     }
+
     void CheckpointClicked(ChangeEventArgs originEvent)
     {
         checkPoint = new Guid(originEvent.Value!.ToString()!);
         this.StateHasChanged();
     }
+
     async Task DoAddDriver()
     {
-        // reset alerts on submit
-        //AlertService.Clear();
         loading = true;
         driverModel.checkpointLocation = checkPoint;
         driverModel.isAvailable = isAvailable;
         try
         {
-            //if (confirmPassword != driverModel.password)
-            //{
-            //    //addDriverResponse.message = "Password and Confirm Password does not match...";
-            //    Snackbar.Add("Password and Confirme Password does not match..", Severity.Error, config =>
-            //    {
-            //        config.Icon = Icons.Material.Filled.Error;
-            //        config.IconColor = Color.Warning;
-            //        config.IconSize = Size.Small;
-            //    });
-            //    loading = false;
-            //    return;
-            //}
-            //addDriverResponse.message = "Wait....";
             addDriverResponse = await _apiService.AddDriver(driverModel);
+            if (addDriverResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (addDriverResponse.statusCode == 200)
             {
-                //AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
                 Snackbar.Add("Driver Added Successfully", Severity.Success, config =>
                 {
                     config.Icon = Icons.Material.Filled.Done;
                     config.IconColor = Color.Warning;
                     config.IconSize = Size.Small;
                 });
-                //_navMgr.NavigateTo("/shipmentHistory");
             }
             else
             {
@@ -183,10 +155,38 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }
     }
+
+
+    //if (confirmPassword != driverModel.password)
+    //{
+    //    //addDriverResponse.message = "Password and Confirm Password does not match...";
+    //    Snackbar.Add("Password and Confirme Password does not match..", Severity.Error, config =>
+    //    {
+    //        config.Icon = Icons.Material.Filled.Error;
+    //        config.IconColor = Color.Warning;
+    //        config.IconSize = Size.Small;
+    //    });
+    //    loading = false;
+    //    return;
+    //}
 }
+
+
+
+
+
+@*<div class="form-group">
+    <label for="password">Password</label>
+    <InputText id="password" type="password" class="form-control" @bind-Value="driverModel.password" />
+    <ValidationMessage For="@(()=>driverModel.password)" />
+</div>
+<div class="form-group">
+    <label for="confirmPassword">Confirm Password</label>
+    <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
+</div>*@
+

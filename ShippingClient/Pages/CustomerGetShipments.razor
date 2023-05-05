@@ -55,7 +55,6 @@
     GetShipmentsCutomerResponse shipmentsResponse = new();
     List<GetListOfShipments> shipmentList = new();
     [Inject] ISnackbar Snackbar { get; set; }
-    //List<GetShipmentsConverted> shipmentListConverted = new();
 
     private bool loading;
 
@@ -81,6 +80,11 @@
             Guid tempId = temp.data.userId;
             shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
             shipmentList = shipmentsResponse.data;
+            if (shipmentsResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (shipmentsResponse.statusCode == 200)
             {
                 loading = false;
@@ -99,7 +103,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
@@ -115,52 +118,52 @@
 
 
 
-                @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
-                @*<table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Product Type</th>
-                            <th>Container Type</th>
-                            <th>Shipment Price</th>
-                            <th>Shipment Weight</th>
-                            <th>Origin</th>
-                            <th>Destination</th>
-                            <th>Order Date</th>
-                            <th>Notes</th>
-                            <th>Status</th>
-                            <th>Current Location</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    @if (shipmentList != null && shipmentList.Count > 0)
-                    {
-                        @foreach (var shipment in shipmentList)
-                        {
-                            <tbody>
-                                <tr>
-                                    <td>@shipment.shipmentId</td>
-                                    <td>@shipment.productType</td>
-                                    <td>@shipment.cointainerType</td>
-                                    <td>@shipment.shipmentPrice</td>
-                                    <td>@shipment.shipmentWeight</td>
-                                    <td>@shipment.origin</td>
-                                    <td>@shipment.destination</td>
-                                    <td>@shipment.dateOfOrder</td>
-                                    <td>@shipment.notes</td>
-                                    <td>@shipment.shipmentStatus</td>
-                                    <td>@shipment.currentLocation</td>
-                                    <td>
-                                        <button @onclick="() => ShowStatus(shipment.shipmentId)" class="btn btn-primary">
-                                            Show Status
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        }
-                    }
-                    else
-                    {
-                        <p><em>No Record found</em></p>
-                    }
-                </table>*@
+@*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
+@*<table class="table table-striped">
+<thead>
+    <tr>
+        <th>Id</th>
+        <th>Product Type</th>
+        <th>Container Type</th>
+        <th>Shipment Price</th>
+        <th>Shipment Weight</th>
+        <th>Origin</th>
+        <th>Destination</th>
+        <th>Order Date</th>
+        <th>Notes</th>
+        <th>Status</th>
+        <th>Current Location</th>
+        <th>Action</th>
+    </tr>
+</thead>
+@if (shipmentList != null && shipmentList.Count > 0)
+{
+    @foreach (var shipment in shipmentList)
+    {
+        <tbody>
+            <tr>
+                <td>@shipment.shipmentId</td>
+                <td>@shipment.productType</td>
+                <td>@shipment.cointainerType</td>
+                <td>@shipment.shipmentPrice</td>
+                <td>@shipment.shipmentWeight</td>
+                <td>@shipment.origin</td>
+                <td>@shipment.destination</td>
+                <td>@shipment.dateOfOrder</td>
+                <td>@shipment.notes</td>
+                <td>@shipment.shipmentStatus</td>
+                <td>@shipment.currentLocation</td>
+                <td>
+                    <button @onclick="() => ShowStatus(shipment.shipmentId)" class="btn btn-primary">
+                        Show Status
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    }
+}
+else
+{
+    <p><em>No Record found</em></p>
+}
+</table>*@

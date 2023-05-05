@@ -55,25 +55,22 @@
         if (firstRender)
         {
             var d = await jsRuntime.InvokeAsync<object>("initialize", null);
-            //Console.WriteLine(d + "hoo");
         }
     }
+
     [JSInvokable]
     public static void AddCoordinates(float a, float b)
     {
-        //Console.WriteLine(a + " " + b);
         checkpointModel.latitude = a;
         checkpointModel.longitude = b;
     }
+
     async Task DoAddCheckpoint()
     {
-        // reset alerts on submit
-        //AlertService.Clear();
         loading = true;
 
         try
         {
-            //addResponse.message = "Wait....";
             addResponse = await _apiService.AddCheckpoint(checkpointModel);
             if (addResponse.statusCode == 401)
             {
@@ -82,14 +79,12 @@
             }
             if (addResponse.statusCode == 200)
             {
-                //AlertService.Success("Checkpoint Added successfully", keepAfterRouteChange: true);
                 Snackbar.Add("Checkpoint Added Successfully", Severity.Success, config =>
                 {
                     config.Icon = Icons.Material.Filled.Done;
                     config.IconColor = Color.Warning;
                     config.IconSize = Size.Small;
                 });
-                //_navMgr.NavigateTo("/shipmentHistory");
             }
             else
             {
@@ -103,7 +98,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
@@ -120,16 +114,16 @@
 
 
 
-                @*<div class="form-group">
-                        <label for="price">Latitude</label>
-                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.latitude" />
-                        <ValidationMessage For="@(()=>checkpointModel.latitude)" />
-                        </div>
-                        <div class="form-group">
-                        <label for="price">Longitude</label>
-                        <InputNumber id="price" class="form-control" @bind-Value="checkpointModel.longitude" />
-                        <ValidationMessage For="@(()=>checkpointModel.longitude)" />
-                        </div>
-                        <div class="my-2">
-                        @addResponse.message
-                        </div>*@
+@*<div class="form-group">
+<label for="price">Latitude</label>
+<InputNumber id="price" class="form-control" @bind-Value="checkpointModel.latitude" />
+<ValidationMessage For="@(()=>checkpointModel.latitude)" />
+</div>
+<div class="form-group">
+<label for="price">Longitude</label>
+<InputNumber id="price" class="form-control" @bind-Value="checkpointModel.longitude" />
+<ValidationMessage For="@(()=>checkpointModel.longitude)" />
+</div>
+<div class="my-2">
+@addResponse.message
+</div>*@

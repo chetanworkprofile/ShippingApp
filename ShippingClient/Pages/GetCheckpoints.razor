@@ -71,6 +71,11 @@
         try
         {
             checkpointsResponse = await _apiService.GetCheckpointsByName(search);
+            if (checkpointsResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             var obj = JsonSerializer.Serialize(checkpointsResponse.data);
             checkpointList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
             loading = false;

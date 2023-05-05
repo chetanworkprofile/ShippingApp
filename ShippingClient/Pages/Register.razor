@@ -96,15 +96,14 @@
             loading = true;
             if (confirmPassword != registerModel.password)
             {
-                //registerResponse.message = "Password and Confirm Password does not match...";
                 Snackbar.Add("Password and confirm password does not match..", Severity.Normal);
                 loading = false;
                 return;
             }
-            //registerResponse.message = "Wait....";
+            
             registerResponse = await _authService.Register(registerModel);
             Snackbar.Add(registerResponse.message, Severity.Normal);
-            if (registerResponse.statusCode != 0)
+            if (registerResponse.statusCode == 200)
             {
                 Snackbar.Add(registerResponse.message, Severity.Success);
                 _navMgr.NavigateTo("/", true);
@@ -112,7 +111,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
@@ -124,55 +122,55 @@
 
 
 
-             @*<DataAnnotationsValidator />
-                     <div class="form-group">
-                       <label for="firstName">First Name</label>
-                        <InputText id="firstName" class="form-control" @bind-Value="registerModel.firstName" />
-                        <ValidationMessage For="@(()=>registerModel.firstName)" />
-                    </div>
+@*<DataAnnotationsValidator />
+    <div class="form-group">
+    <label for="firstName">First Name</label>
+    <InputText id="firstName" class="form-control" @bind-Value="registerModel.firstName" />
+    <ValidationMessage For="@(()=>registerModel.firstName)" />
+</div>
 
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <InputText id="lastName" class="form-control" @bind-Value="registerModel.lastName" />
-                        <ValidationMessage For="@(()=>registerModel.lastName)" />
-                    </div>
-                     <div class="form-group">
-                       <label for="email">Email</label>
-                        <InputText id="email" class="form-control" @bind-Value="registerModel.email" />
-                        <ValidationMessage For="@(()=>registerModel.email)" />
-                    </div>
+<div class="form-group">
+    <label for="lastName">Last Name</label>
+    <InputText id="lastName" class="form-control" @bind-Value="registerModel.lastName" />
+    <ValidationMessage For="@(()=>registerModel.lastName)" />
+</div>
+    <div class="form-group">
+    <label for="email">Email</label>
+    <InputText id="email" class="form-control" @bind-Value="registerModel.email" />
+    <ValidationMessage For="@(()=>registerModel.email)" />
+</div>
 
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <InputText id="password" type="password" class="form-control" @bind-Value="registerModel.password" />
-                        <ValidationMessage For="@(()=>registerModel.password)" />
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
-                    </div>
-                    <div class="form-group">
-                        <label for="contact">Contact No.</label>
-                        <InputNumber id="contact" class="form-control" @bind-Value="registerModel.contactno" />
-                        <ValidationMessage For="@(()=>registerModel.contactno)" />
-                    </div>
+<div class="form-group">
+    <label for="password">Password</label>
+    <InputText id="password" type="password" class="form-control" @bind-Value="registerModel.password" />
+    <ValidationMessage For="@(()=>registerModel.password)" />
+</div>
+<div class="form-group">
+    <label for="confirmPassword">Confirm Password</label>
+    <InputText id="confirmPassword" type="Password" class="form-control" @bind-Value="confirmPassword" />
+</div>
+<div class="form-group">
+    <label for="contact">Contact No.</label>
+    <InputNumber id="contact" class="form-control" @bind-Value="registerModel.contactno" />
+    <ValidationMessage For="@(()=>registerModel.contactno)" />
+</div>
 
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <InputText type="address" class="form-control" @bind-Value="registerModel.address" />
-                        <ValidationMessage For="@(()=>registerModel.address)" />
-                    </div>
+<div class="form-group">
+    <label for="address">Address</label>
+    <InputText type="address" class="form-control" @bind-Value="registerModel.address" />
+    <ValidationMessage For="@(()=>registerModel.address)" />
+</div>
 
-                    <div class="my-2">
-                        @registerResponse.message
-                    </div>
+<div class="my-2">
+    @registerResponse.message
+</div>
 
-                    <div class="my-2">
-                        @if (loading)
-                        {
-                            <span class="spinner-border spinner-border-sm mr-1"></span>
-                            Task.Delay(5000);
-                            loading = false;
-                        }
-                        <button type="submit" class="btn btn-primary">Register</button>
-                    </div>*@
+<div class="my-2">
+    @if (loading)
+    {
+        <span class="spinner-border spinner-border-sm mr-1"></span>
+        Task.Delay(5000);
+        loading = false;
+    }
+    <button type="submit" class="btn btn-primary">Register</button>
+</div>*@

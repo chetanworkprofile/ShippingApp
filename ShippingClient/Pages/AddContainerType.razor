@@ -48,19 +48,17 @@
 
 @code {
     Models.AddContainerType containerTypeModel = new();
-    AddContainerTypeResponse addContainerTypeResponse = new();
+    GlobalResponse addContainerTypeResponse = new();
     private bool loading;
     [Inject] ISnackbar Snackbar { get; set; }
 
     
     async Task DoAddContainerType()
     {
-        // reset alerts on submit
         loading = true;
 
         try
         {
-            //addContainerTypeResponse.message = "Wait....";
             addContainerTypeResponse = await _apiService.AddContainerType(containerTypeModel);
             if (addContainerTypeResponse.statusCode == 401)
             {
@@ -75,7 +73,6 @@
                     config.IconColor = Color.Warning;
                     config.IconSize = Size.Small;
                 });
-                //_navMgr.NavigateTo("/shipmentHistory");
             }
             else
             {

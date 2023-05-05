@@ -28,7 +28,7 @@ namespace ShippingApp.Controllers
 
         [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/shipments")]
-        public ActionResult GetShipments(Guid? shipmentId=null,Guid? customerId = null,Guid? productTypeId = null,Guid? containerTypeId = null)
+        public ActionResult GetShipments(Guid? shipmentId=null,Guid? customerId = null,Guid? productTypeId = null,Guid? containerTypeId = null)             // get shipments list acc to various parameters 
         {
             _logger.LogInformation("Getting list of shipments");
             try
@@ -47,7 +47,7 @@ namespace ShippingApp.Controllers
 
         [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/shipmentHistory")]
-        public ActionResult GetShipmentHistory(Guid? shipmentId = null)
+        public ActionResult GetShipmentHistory(Guid? shipmentId = null)             //get history of a particular
         {
             _logger.LogInformation("Getting shipment history");
             try

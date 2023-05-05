@@ -2,14 +2,6 @@
 
 namespace ShippingClient.Models
 {
-    public class CreateShipmentResponse
-    {
-        public int statusCode{ get; set; }
-        public string message { get; set; } = string.Empty; 
-        public ShipmentData data { get; set; } = new ShipmentData();
-        public bool isSuccess { get; set; }
-    }
-
     public class ShipmentData
     {
         public Guid customerId { get; set; }

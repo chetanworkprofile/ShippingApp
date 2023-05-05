@@ -6,10 +6,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text;
-using static System.Net.WebRequestMethods;
-using System.Reflection;
 using System.Net;
-using Microsoft.AspNetCore.Components;
 
 namespace ShippingClient.Services
 {
@@ -19,7 +16,6 @@ namespace ShippingClient.Services
         private readonly ILocalStorageService _localStorage;
         private readonly string baseUrl;
         private readonly string frontUrl;
-        [Inject] private NavigationManager navigationManager { get; set; }
 
         public APIService(HttpClient httpClient,
             ILocalStorageService localStorage)
@@ -139,7 +135,7 @@ namespace ShippingClient.Services
             }
         }
 
-        public async Task<CreateShipmentResponse> CreateShipment(CreateShipment model)
+        public async Task<GlobalResponse> CreateShipment(CreateShipment model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
 
@@ -152,19 +148,14 @@ namespace ShippingClient.Services
             if (!result.IsSuccessStatusCode)
             {
                 var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
-                return new CreateShipmentResponse { statusCode = 0, message = errorResponseContent!.message };
+                return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
             }
-            var resultContent = await result.Content.ReadFromJsonAsync<CreateShipmentResponse>();
-            /*if (resultContent != null)
-            {
-                await _localStorage.RemoveItemAsync("accessToken");
-                await _localStorage.SetItemAsync("accessToken", resultContent.data.token);
-                token = resultContent.data.token;
-            }*/
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+            
             return resultContent!;
 
         }
-        public async Task<AddProductTypeResponse> AddProductType(AddProductType model)
+        public async Task<GlobalResponse> AddProductType(AddProductType model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
 
@@ -177,9 +168,9 @@ namespace ShippingClient.Services
             if (!result.IsSuccessStatusCode)
             {
                 var errorResponseContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
-                return new AddProductTypeResponse { statusCode = 0, message = errorResponseContent!.message };
+                return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
             }
-            var resultContent = await result.Content.ReadFromJsonAsync<AddProductTypeResponse>();
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
             
             return resultContent!;
         }
@@ -224,7 +215,7 @@ namespace ShippingClient.Services
             return resultContent!;
         }
 
-        public async Task<AddContainerTypeResponse> AddContainerType(AddContainerType model)
+        public async Task<GlobalResponse> AddContainerType(AddContainerType model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
 
@@ -237,14 +228,14 @@ namespace ShippingClient.Services
             if (!result.IsSuccessStatusCode)
             {
                 var errorResponseContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
-                return new AddContainerTypeResponse { statusCode = 0, message = errorResponseContent!.message };
+                return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
             }
-            var resultContent = await result.Content.ReadFromJsonAsync<AddContainerTypeResponse>();
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
             
             return resultContent!;
 
         }
-        public async Task<AddDriverResponse> AddDriver(AddDriver model)
+        public async Task<GlobalResponse> AddDriver(AddDriver model)
         {
             var temp = model.url;
             Console.WriteLine("modelurl"+model.url);
@@ -262,9 +253,9 @@ namespace ShippingClient.Services
             if (!result.IsSuccessStatusCode)
             {
                 var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
-                return new AddDriverResponse { statusCode = 0, message = errorResponseContent!.message };
+                return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
             }
-            var resultContent = await result.Content.ReadFromJsonAsync<AddDriverResponse>();
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
             
             
             return resultContent!;
@@ -309,7 +300,7 @@ namespace ShippingClient.Services
             }
         }
 
-        public async Task<UpdateDriverLocationResponse> UpdateDriverLocation(Guid checkpointId)
+        public async Task<GlobalResponse> UpdateDriverLocation(Guid checkpointId)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
             var requestMessage = new HttpRequestMessage(HttpMethod.Put, $"{baseUrl}api/v1/update/driverLocation?checkpointId={checkpointId}");
@@ -320,9 +311,9 @@ namespace ShippingClient.Services
             if (!result.IsSuccessStatusCode)
             {
                 var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
-                return new UpdateDriverLocationResponse { statusCode = 0, message = errorResponseContent!.message };
+                return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
             }
-            var resultContent = await result.Content.ReadFromJsonAsync<UpdateDriverLocationResponse>();
+            var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
             return resultContent!;
         }
 
@@ -408,12 +399,12 @@ namespace ShippingClient.Services
             }
         }
 
-        public async Task<ShipmentHistory> GetShipmentHistory(Guid shipmentId)
+        public async Task<GlobalResponse> GetShipmentHistory(Guid shipmentId)
         {
             try
             {
-                ShipmentHistory? history;
-                history = await _httpClient.GetFromJsonAsync<ShipmentHistory>($"{baseUrl}api/v1/get/shipmentHistory?shipmentId={shipmentId}");
+                GlobalResponse? history;
+                history = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/shipmentHistory?shipmentId={shipmentId}");
                 return history!;
             }
             catch (Exception ex)
@@ -424,35 +415,34 @@ namespace ShippingClient.Services
             }
         }
 
-        public async Task<List<AvailableShipmentsDriver>> GetShipmentHistoryDriver()
+        public async Task<GlobalResponse> GetShipmentHistoryDriver()
         {
             try
             {
                 AvailableShipmentsDriver? shipments;
                 var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/driver/shipmentHistory");
                 var obj = JsonSerializer.Serialize(response.data);
-                var history = JsonSerializer.Deserialize<List<AvailableShipmentsDriver>>(obj);
+                var history = JsonSerializer.Deserialize<GlobalResponse>(obj);
                 return history!;
             }
             catch (Exception ex)
             {
-                //log exception
                 Console.WriteLine(ex);
                 throw;
             }
         }
 
-        public async Task<List<CheckpointModel>> GetShortRoute(Guid shipmentId)
+        public async Task<List<Checkpoints>> GetShortRoute(Guid shipmentId)
         {
-            List<CheckpointModel> checkpoints = new List<CheckpointModel>();
+            List<Checkpoints> checkpoints = new List<Checkpoints>();
             try
             {
                 var result = await _httpClient.GetAsync($"{baseUrl}api/v1/get/bestRoute?shipmentId={shipmentId}");
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    var res = await result.Content.ReadFromJsonAsync<ResponseModel>();
+                    var res = await result.Content.ReadFromJsonAsync<GlobalResponse>();
                     var dat = JsonSerializer.Serialize(res!.data!);
-                    checkpoints = JsonSerializer.Deserialize<List<CheckpointModel>>(dat)!;
+                    checkpoints = JsonSerializer.Deserialize<List<Checkpoints>>(dat)!;
                     return checkpoints;
                 };
             }
@@ -712,10 +702,10 @@ namespace ShippingClient.Services
         }
 
         //do something of this func never used and is not declared in interface
-        public void DoLogout()
+        /*public void DoLogout()
         {
             navigationManager.NavigateTo("/logout");
-        }
+        }*/
     }
 }
 

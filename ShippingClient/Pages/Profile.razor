@@ -143,21 +143,18 @@
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1"><b>This Month's Earnings : @driverEarnings!.monthlyEarning</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1"><b>Today's Earnings : @driverEarnings!.todayEarning</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1">Your <b>Total Trips : @driverEarnings!.totalTrips</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 				</MudGrid>
@@ -199,35 +196,30 @@
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1"><b>This Month's Revenue : @adminEarnings!.monthRevenue</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1"><b>Today's Revenue : @adminEarnings!.todayRevenue</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1">Your <b>Total Shipments : @adminEarnings!.totalShipment</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1">Your <b>This Month's Shipments : @adminEarnings!.monthshipment</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
 							<div class="mb-1">Your <b>Today's Shipments : @adminEarnings!.todayShipment</b></div>
-							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 				</MudGrid>
@@ -271,9 +263,9 @@
 	DeleteUser deleteModel = new();
 
 	GlobalResponse res = new();
-	Models.GetDriverEarnings? driverEarnings = new();
-	Models.GetAdminEarnings? adminEarnings = new();
-	Models.GetAdminEarningsForChart? adminEarningsForChart = new();
+        GetDriverEarnings? driverEarnings = new();
+        GetAdminEarnings? adminEarnings = new();
+	GetAdminEarningsForChart? adminEarningsForChart = new();
 
 	private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
 	public ChartOptions chartOptions = new ChartOptions();
@@ -291,6 +283,11 @@
 	protected override async Task OnInitializedAsync()
 	{
 		getUserResponse = await _apiService.GetYourself();
+		if (getUserResponse.statusCode == 401)
+		{
+			_navMgr.NavigateTo("/logout");
+			return;
+		}
 		userModel = getUserResponse.data;
 		StateHasChanged();
 	}
@@ -299,7 +296,7 @@
 	{
 		res = await _apiService.GetDriverEarnings(userModel.userId);
 		var obj = JsonSerializer.Serialize(res.data);
-		driverEarnings = JsonSerializer.Deserialize<Models.GetDriverEarnings>(obj);
+		driverEarnings = JsonSerializer.Deserialize<ShippingClient.Models.GetDriverEarnings>(obj);
 		response = await _apiService.GetDriverEarningsForChart(userModel.userId);
 
 		dat = JsonSerializer.Serialize(response.data);
@@ -320,7 +317,7 @@
 	{
 		res = await _apiService.GetAdminEarnings();
 		var obj = JsonSerializer.Serialize(res.data);
-		adminEarnings = JsonSerializer.Deserialize<Models.GetAdminEarnings>(obj);
+		adminEarnings = JsonSerializer.Deserialize<ShippingClient.Models.GetAdminEarnings>(obj);
 		response = await _apiService.GetAdminEarningsForChart();
 
 		dat = JsonSerializer.Serialize(response.data);

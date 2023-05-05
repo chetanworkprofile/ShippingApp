@@ -4,13 +4,12 @@
 <PageTitle>Shipment App</PageTitle>
 
 <h3>Users List</h3>
-@*<a href="/person/add" class="btn btn-secondary my-2">Add more</a>*@
+
 <AuthorizeView>
     <Authorized Context="auth">
         <div class="row vw-85">
             <div>
-
-            <input type="text" class="form-control" placeholder="search by name" @bind="searchText" @bind:event="oninput" @onkeyup="async ()=>await Search()" />
+                <input type="text" class="form-control" placeholder="search by name" @bind="searchText" @bind:event="oninput" @onkeyup="async ()=>await Search()" />
                 <MudTable Loading="@loading" Items="@list" Hover="true">
                     <HeaderContent>
                         <MudTh>Id</MudTh>
@@ -29,38 +28,38 @@
                         <MudTd DataLabel="Address">@context.address</MudTd>
                     </RowTemplate>
                 </MudTable>
-                    <nav aria-label="Page navigation example" class="align-items-center">
-                        <ul class="pagination">
-                            @if (pageNumber > 1)
+                <nav aria-label="Page navigation example" class="align-items-center">
+                    <ul class="pagination">
+                        @if (pageNumber > 1)
+                        {
+                            <li class="page-item">
+                                <a @onclick="async ()=> {await GetPersons(pageNumber-1); pageNumber--;}" class="page-link" style="cursor:pointer" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        }
+                        @if(totalPages==1){}
+                        else
+                        {
+                            @for (int i = 1; i <= totalPages; i++)
                             {
-                                <li class="page-item">
-                                    <a @onclick="async ()=> {await GetPersons(pageNumber-1); pageNumber--;}" class="page-link" style="cursor:pointer" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                            }
-                            @if(totalPages==1){}
-                            else
-                            {
-                                @for (int i = 1; i <= totalPages; i++)
-                                {
 
-                                    string activeClass = (i == pageNumber) ? "active" : "";
-                                    int c = i;
-                                    <li class="page-item @activeClass"><a @onclick="async ()=> {await GetPersons(c); pageNumber=c;}" style="cursor:pointer" class="page-link">@c</a></li>
-                                }
+                                string activeClass = (i == pageNumber) ? "active" : "";
+                                int c = i;
+                                <li class="page-item @activeClass"><a @onclick="async ()=> {await GetPersons(c); pageNumber=c;}" style="cursor:pointer" class="page-link">@c</a></li>
                             }
+                        }
                             
-                            @if (pageNumber < totalPages)
-                            {
-                                <li class="page-item">
-                                    <a @onclick="async ()=> {await GetPersons(pageNumber+1); pageNumber++;}" class="page-link" style="cursor:pointer" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    </nav>
+                        @if (pageNumber < totalPages)
+                        {
+                            <li class="page-item">
+                                <a @onclick="async ()=> {await GetPersons(pageNumber+1); pageNumber++;}" class="page-link" style="cursor:pointer" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
         </div>
     </div>
     </Authorized>
@@ -101,12 +100,15 @@
     {
         try
         {
-            //result.message = "Wait....";
             result = await _apiService.GetUsers(pageNo, search);
             loading = false;
+            if (result.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (result.statusCode == 200)
             {
-                //AlertService.Success("Driver Added successfully", keepAfterRouteChange: true);
                 //_navMgr.NavigateTo("/shipmentHistory");
                 list = result.data.list;
                 totalPages = (int)Math.Ceiling(result.data.totalAvailableRecords / 10.0);
@@ -120,7 +122,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             StateHasChanged();
         }

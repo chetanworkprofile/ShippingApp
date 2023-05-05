@@ -78,6 +78,11 @@
         try
         {
             updateContainerTypeResponse = await _apiService.UpdateContainerTypes(containerTypeModel);
+            if (updateContainerTypeResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (updateContainerTypeResponse.statusCode == 200)
             {
                 Snackbar.Add("Container Type Updated Successfully", Severity.Success, config =>
@@ -100,7 +105,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();

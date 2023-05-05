@@ -38,19 +38,19 @@
                 </MudTable>
                 </div>
             </div>
-        <MudPopover Open="@_isOpenAdd" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpenAdd" Style="margin-top: 15%;" Class="px-4 pt-4" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column">
                 <AddProductType />
                 <MudButton OnClick="@ToggleOpenAdd" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
             </div>
         </MudPopover>
-        <MudPopover Open="@_isOpenUpdate" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpenUpdate" Style="margin-top: 15%;" Class="px-4 pt-4" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column">
                 <UpdateProductType Id=@tempId.ToString() />
                 <MudButton OnClick="@ToggleOpenUpdate" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
             </div>
         </MudPopover>
-        <MudPopover Open="@_isOpenDelete" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpenDelete" Style="margin-top: 15%;" Class="px-4 pt-4" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column row">
                 <MudText>Are You Sure you want to Delete this ?</MudText>
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Class="ml-auto" Color="Color.Error" OnClick="@Delete">Delete</MudButton>
@@ -106,6 +106,7 @@
         else
             _isOpenUpdate = true;
     }
+
     public void ToggleOpenDelete(Guid id)
     {
         tempId = id;
@@ -142,6 +143,11 @@
         try
         {
             productTypesResponse = await _apiService.GetProductTypes(search);
+            if (productTypesResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             loading = false;
             var obj = JsonSerializer.Serialize(productTypesResponse.data);
             productTypeList = JsonSerializer.Deserialize<List<ProductType>>(obj);

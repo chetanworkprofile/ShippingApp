@@ -77,7 +77,11 @@
         {
             Guid idInGuid = new Guid(Id);
             updateProductTypeResponse = await _apiService.GetProductTypes("", idInGuid);
-            //var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/drivers?driverId={driverId}");
+            if (updateProductTypeResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             var obj = JsonSerializer.Serialize(updateProductTypeResponse.data);
             productTypeModel = JsonSerializer.Deserialize<List<Models.UpdateProductType>>(obj).FirstOrDefault();
             isFragileCheck = productTypeModel.isFragile;
@@ -91,18 +95,15 @@
         productTypeModel.isFragile = isFragileCheck;
         try
         {
-            //addProductTypeResponse.message = "Wait....";
             updateProductTypeResponse = await _apiService.UpdateProductTypes(productTypeModel);
             if (updateProductTypeResponse.statusCode == 200)
             {
-                //AlertService.Success("Product Type Added successfully", keepAfterRouteChange: true);
                 Snackbar.Add("Product Type Updated Successfully", Severity.Success, config =>
                 {
                     config.Icon = Icons.Material.Filled.Done;
                     config.IconColor = Color.Warning;
                     config.IconSize = Size.Small;
                 });
-                //_navMgr.NavigateTo("/shipmentHistory");
             }
             else
             {
@@ -116,7 +117,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();

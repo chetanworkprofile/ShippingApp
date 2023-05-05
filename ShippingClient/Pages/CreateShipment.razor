@@ -169,7 +169,7 @@
 
 @code {
     Models.CreateShipment shipmentModel = new();
-    CreateShipmentResponse createShipmentResponse = new();
+    GlobalResponse createShipmentResponse = new();
     private bool loading;
     [Inject] ISnackbar Snackbar { get; set; }
     List<ProductType> productTypeList = new List<ProductType>();
@@ -233,10 +233,9 @@
         //destList = checkpointsList;
         StateHasChanged();
     }
+
     async Task DoCreateShipment()
     {
-        // reset alerts on submit
-        //AlertService.Clear();
         loading = true;
         shipmentModel.origin = origin;
         shipmentModel.destination = destination;
@@ -246,16 +245,20 @@
         {
             if (origin == destination)
             {
-                //createShipmentResponse.message = "Origin and Destination can't be same";
                 Snackbar.Add("Origin and Destination can't be same", Severity.Error);
                 loading = false;
                 return;
             }
-            //createShipmentResponse.message = "Wait....";
+
             createShipmentResponse = await _apiService.CreateShipment(shipmentModel);
+            
+            if (createShipmentResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (createShipmentResponse.statusCode == 200)
             {
-                //AlertService.Success("Shipment Queued successfully", keepAfterRouteChange: true);
                 Snackbar.Add("Shipment Queued Successfully", Severity.Success, config =>
                 {
                     config.Icon = Icons.Material.Filled.Done;
@@ -276,12 +279,12 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();
         }
     }
+
     void OriginClicked(ChangeEventArgs originEvent)
     {
         //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(originEvent.Value!.ToString()!)).FirstOrDefault();
@@ -290,6 +293,7 @@
         origin = new Guid(originEvent.Value.ToString());
         this.StateHasChanged();
     }
+
     void DestinationClicked(ChangeEventArgs destEvent)
     {
         //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(destEvent.Value!.ToString()!)).FirstOrDefault();
@@ -299,12 +303,14 @@
         destination = new Guid(destEvent.Value.ToString());
         this.StateHasChanged();
     }
+
     void ProductTypeClicked(ChangeEventArgs productTypeEvent)
     {
         //productTypeList.Clear();
         productTypeId = new Guid(productTypeEvent.Value.ToString());
         this.StateHasChanged();
     }
+
     void ContainerTypeClicked(ChangeEventArgs containerTypeEvent)
     {
         //containerTypeList.Clear();

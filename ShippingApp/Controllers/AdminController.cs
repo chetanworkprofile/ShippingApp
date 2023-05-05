@@ -25,7 +25,7 @@ namespace ShippingApp.Controllers
 
         [HttpDelete, Authorize(Roles = "admin")]
         [Route("/api/v1/admin/removeUser")]
-        public IActionResult RemoveUser(string userId)             //add chef uses service 
+        public IActionResult RemoveUser(string userId)             // controller for admin to remove any user with userId
         {
             try
             {
@@ -49,7 +49,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/admin/get")]
         public IActionResult GetUsers(Guid? UserId = null, string userType = "all", string? searchString = null, string? Email = null, long Phone = -1, String OrderBy = "Id", int SortOrder = 1, int RecordsPerPage = 1000, int PageNumber = 1)          // sort order   ===   e1 for ascending  -1 for descending
         {
-            _logger.LogInformation("Get users method started");
+            _logger.LogInformation("Get users method started by admin");
             try
             {
                 string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -74,20 +74,20 @@ namespace ShippingApp.Controllers
 
 
 /*[HttpPost, Authorize(Roles = "admin")]
-       [Route("/api/v1/admin/addManager")]
-       public IActionResult RegisterManager([FromBody] RegisterUser inpUser)             //register user function uses authService to create a new user in db
-       {
-           try
-           {
-               _logger.LogInformation("User registration attempt");
-               int statusCode = 0;
-               result = adminService.CreateManager(inpUser, out statusCode);
-               return StatusCode(statusCode, result);
-           }
-           catch (Exception ex)
-           {
-               _logger.LogError("Internal server error ", ex.Message);
-               response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
-               return StatusCode(500, response2);
-           }
-       }*/
+[Route("/api/v1/admin/addManager")]
+public IActionResult RegisterManager([FromBody] RegisterUser inpUser)             //register user function uses authService to create a new user in db
+{
+    try
+    {
+        _logger.LogInformation("User registration attempt");
+        int statusCode = 0;
+        result = adminService.CreateManager(inpUser, out statusCode);
+        return StatusCode(statusCode, result);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError("Internal server error ", ex.Message);
+        response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+        return StatusCode(500, response2);
+    }
+}*/

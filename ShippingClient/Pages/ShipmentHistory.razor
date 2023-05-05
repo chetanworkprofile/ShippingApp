@@ -48,7 +48,9 @@
     public string? Id { get; set; }
     Guid shipmentId;
     private bool loading = true;
-    List<CheckpointModel> routeList = new();
+    GlobalResponse response = new();
+    List<Checkpoints> routeList = new();
+    List<ShipmentStatusModel> list = new();
     int countOfChecksInRoute = 0;
     List<float> latitudes = new();
     List<float> longitudes = new();
@@ -62,20 +64,21 @@
             routeList = await _apiService.GetShortRoute(shipmentId);
             countOfChecksInRoute = routeList.Count();
             fillArrays(countOfChecksInRoute);
-            res = await _apiService.GetShipmentHistory(shipmentId);
-            list = res.data;
+            response = await _apiService.GetShipmentHistory(shipmentId);
+            var obj = JsonSerializer.Serialize(response.data);
+            list = JsonSerializer.Deserialize<List<ShipmentStatusModel>>(obj);
             loading = false;
             ShipmentStatusModel shipmentStatus = list.FirstOrDefault();
             Checkpoints shipmentCheckpoint = new();
             if (shipmentStatus!.currentLocation != "At Origin")
             {
                 var temp = await _apiService.GetCheckpointsByName(shipmentStatus.currentLocation);
-                var obj = JsonSerializer.Serialize(temp.data);
+                obj = JsonSerializer.Serialize(temp.data);
                 var checkpointList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
                 shipmentCheckpoint = checkpointList.FirstOrDefault();
             }
 
-            var d = await jsRuntime.InvokeAsync<object>("shipmentHistory", latitudes,longitudes,countOfChecksInRoute,shipmentStatus.shipmentStatus,shipmentCheckpoint.longitude,shipmentCheckpoint.latitude);
+            var invokeJsFunForMap = await jsRuntime.InvokeAsync<object>("shipmentHistory", latitudes,longitudes,countOfChecksInRoute,shipmentStatus.shipmentStatus,shipmentCheckpoint.longitude,shipmentCheckpoint.latitude);
             //var d = await jsRuntime.InvokeAsync<object>("initialize", null);
         }
         else
@@ -93,8 +96,4 @@
             longitudes.Add(routeList[i].longitude);
         }
     }
-
-    public Models.ShipmentHistory res = new();
-    List<ShipmentStatusModel> list = new();
-    
 }

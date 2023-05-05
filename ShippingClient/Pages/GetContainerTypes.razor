@@ -34,19 +34,19 @@
                 </MudTable>
             </div>
         </div>
-        <MudPopover Open="@_isOpenAdd" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpenAdd" Style="margin-top: 15%;" Class="px-4 pt-4" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column">
                 <AddContainerType/>
                 <MudButton OnClick="@ToggleOpenAdd" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
             </div>
         </MudPopover>
-        <MudPopover Open="@_isOpenUpdate" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpenUpdate" Style="margin-top: 15%;" Class="px-4 pt-4" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column">
                 <UpdateContainerType Id=@tempId.ToString()/>
                 <MudButton OnClick="@ToggleOpenUpdate" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
             </div>
         </MudPopover>
-        <MudPopover Open="@_isOpenDelete" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpenDelete" Style="margin-top: 15%;" Class="px-4 pt-4" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column row">
                 <MudText>Are You Sure you want to Delete this ?</MudText>
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Class="ml-auto" Color="Color.Error" OnClick="@Delete">Delete</MudButton>
@@ -91,6 +91,7 @@
         else
             _isOpenAdd = true;
     }
+
     public async Task ToggleOpenUpdate()
     {
         if (_isOpenUpdate)
@@ -101,6 +102,7 @@
         else
             _isOpenUpdate = true;
     }
+
     public void ToggleOpenDelete(Guid id)
     {
         tempId = id;
@@ -121,6 +123,7 @@
         await GetContainerTypesList(searchString);
         StateHasChanged();
     }
+
     protected async Task Delete()
     {
         await _apiService.RemoveContainerType(tempId);
@@ -136,6 +139,11 @@
         try
         {
             containerTypesResponse = await _apiService.GetContainerTypes(search);
+            if (containerTypesResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             var obj = JsonSerializer.Serialize(containerTypesResponse.data);
             containerTypeList = JsonSerializer.Deserialize<List<ContainerType>>(obj);
             loading = false;
@@ -155,28 +163,28 @@
 
 
 @*<table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Type Name</th>
-                            <th>Price(/kg)</th>
-                        </tr>
-                    </thead>
-                    @if (containerTypeList != null && containerTypeList.Count > 0)
-                    {
-                        @foreach (var containerType in containerTypeList)
-                        {
-                            <tbody>
-                                <tr>
-                                    <td>@containerType.containerTypeId</td>
-                                    <td>@containerType.containerName</td>
-                                    <td>@containerType.price</td>
-                                </tr>
-                            </tbody>
-                        }
-                    }
-                    else
-                    {
-                        <p><em>No Record found</em></p>
-                    }
-                </table>*@
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Type Name</th>
+            <th>Price(/kg)</th>
+        </tr>
+    </thead>
+    @if (containerTypeList != null && containerTypeList.Count > 0)
+    {
+        @foreach (var containerType in containerTypeList)
+        {
+            <tbody>
+                <tr>
+                    <td>@containerType.containerTypeId</td>
+                    <td>@containerType.containerName</td>
+                    <td>@containerType.price</td>
+                </tr>
+            </tbody>
+        }
+    }
+    else
+    {
+        <p><em>No Record found</em></p>
+    }
+</table>*@

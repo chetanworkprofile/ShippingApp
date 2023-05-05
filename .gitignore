@@ -476,3 +476,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 ShippingApp/appsettings.json
+/ShippingClient/appsettings.json

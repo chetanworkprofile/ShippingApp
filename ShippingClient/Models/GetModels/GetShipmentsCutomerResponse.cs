@@ -1,5 +1,5 @@
 ﻿namespace ShippingClient.Models
-{
+{   
     public class GetShipmentsCutomerResponse
     {
         public int statusCode { get; set; }

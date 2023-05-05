@@ -58,7 +58,7 @@
 
 @code {
     Models.AddProductType productTypeModel = new();
-    AddProductTypeResponse addProductTypeResponse = new();
+    GlobalResponse addProductTypeResponse = new();
     private bool loading;
     private bool isFragileCheck = true;
     [Inject] ISnackbar Snackbar { get; set; }
@@ -69,11 +69,14 @@
         productTypeModel.isFragile = isFragileCheck;
         try
         {
-            //addProductTypeResponse.message = "Wait....";
             addProductTypeResponse = await _apiService.AddProductType(productTypeModel);
+            if (addProductTypeResponse.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
             if (addProductTypeResponse.statusCode == 200)
             {
-                //AlertService.Success("Product Type Added successfully", keepAfterRouteChange: true);
                 Snackbar.Add("Product Type Added Successfully", Severity.Success, config =>
                 {
                     config.Icon = Icons.Material.Filled.Done;
@@ -94,7 +97,6 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             loading = false;
             StateHasChanged();

@@ -61,6 +61,7 @@
 
 
 @code {
+    GlobalResponse res = new();
     List<AvailableShipmentsDriver> shipments = new();
     public bool _isOpen = false;
     private bool loading = true;
@@ -77,7 +78,14 @@
         {
             //GetYourselfResponse temp = await _apiService.GetYourself();
             //Guid tempId = temp.data.userId;
-            shipments = await _apiService.GetShipmentHistoryDriver();
+            res = await _apiService.GetShipmentHistoryDriver();
+            if (res.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
+            var obj = JsonSerializer.Serialize(res.data);
+            shipments = JsonSerializer.Deserialize<List<AvailableShipmentsDriver>>(obj);
             shipments = shipments.OrderByDescending(s => s.time).ToList();
             shipments = shipments.OrderByDescending(s => s.isActive).ToList();
             loading = false;
@@ -85,11 +93,11 @@
         }
         catch (Exception ex)
         {
-            //AlertService.Error(ex.Message);
             Snackbar.Add(ex.Message, Severity.Error);
             StateHasChanged();
         }
     }
+
     public void TrackOpen()
     {
         if (shipments.Any(s => s.isActive == true))
@@ -103,6 +111,7 @@
             
         }
     }
+
     public void ToggleOpen()
     {
         if (_isOpen)
@@ -122,42 +131,42 @@
 
 
 
-        @*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
-               @* <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>S.No</th>
-                            <th>shipmentId</th>
-                            <th>Product Type</th>
-                            <th>Container Type</th>
-                            <th>Shipment Weight</th>
-                            <th>Is Accepted</th>
-                            <th>Is Active</th>
-                            <th>Available Location</th>
-                            <th>Next Location</th>
-                        </tr>
-                    </thead>
-                    @if (shipments != null && shipments.Count > 0)
-                    {
-                        @foreach (var shipment in shipments)
-                        {
-                            <tbody>
-                                <tr>
-                                    <td>@(sno++)</td>
-                                    <td>@shipment.shipmentId</td>
-                                    <td>@shipment.productType</td>
-                                    <td>@shipment.containerType</td>
-                                    <td>@shipment.shipmentWeight</td>
-                                    <td>@shipment.isAccepted</td>
-                                    <td>@shipment.isActive</td>
-                                    <td>@shipment.checkpoint1Id</td>
-                                    <td>@shipment.checkpoint2Id</td>
+@*<input type="text" class="form-control" placeholder="search by name" @bind="searchString" @bind:event="oninput" @onkeyup="async ()=>await Search()" />*@
+@* <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>shipmentId</th>
+            <th>Product Type</th>
+            <th>Container Type</th>
+            <th>Shipment Weight</th>
+            <th>Is Accepted</th>
+            <th>Is Active</th>
+            <th>Available Location</th>
+            <th>Next Location</th>
+        </tr>
+    </thead>
+    @if (shipments != null && shipments.Count > 0)
+    {
+        @foreach (var shipment in shipments)
+        {
+            <tbody>
+                <tr>
+                    <td>@(sno++)</td>
+                    <td>@shipment.shipmentId</td>
+                    <td>@shipment.productType</td>
+                    <td>@shipment.containerType</td>
+                    <td>@shipment.shipmentWeight</td>
+                    <td>@shipment.isAccepted</td>
+                    <td>@shipment.isActive</td>
+                    <td>@shipment.checkpoint1Id</td>
+                    <td>@shipment.checkpoint2Id</td>
 
-                                </tr>
-                            </tbody>
-                        }
-                    }
-                    else
-                    {
-                        <p><em>No Record found</em></p>
-                    }*@
+                </tr>
+            </tbody>
+        }
+    }
+    else
+    {
+        <p><em>No Record found</em></p>
+    }*@

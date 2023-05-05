@@ -57,6 +57,11 @@
         }
 
         GlobalResponse checkpoints = await _apiService.GetCheckpointsByName(origin);
+        if (checkpoints.statusCode == 401)
+        {
+            _navMgr.NavigateTo("/logout");
+            return;
+        }
         var obj = JsonSerializer.Serialize(checkpoints.data);
         var checkpointList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
         checkOrigin = checkpointList.FirstOrDefault();
