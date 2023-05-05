@@ -1,4 +1,4 @@
-﻿using Blazored.LocalStorage;
+﻿/*using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using ShippingClient.Models;
 using ShippingClient.Services.Contracts;
@@ -37,7 +37,7 @@ namespace ShippingClient.Services
 
         //private HubConnection hubConnection;
 
-        /*protected override async Task OnInitializedAsync()
+        *//*protected override async Task OnInitializedAsync()
         {
             var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var token = authenticationState.User.FindFirst("access_token").Value;
@@ -80,6 +80,7 @@ namespace ShippingClient.Services
         public ValueTask<AccessTokenResult> RequestAccessToken(AccessTokenRequestOptions options)
         {
             throw new NotImplementedException();
-        }*/
+        }*//*
     }
 }
+*/

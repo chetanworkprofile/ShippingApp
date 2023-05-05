@@ -14,12 +14,14 @@
 									<h4 class="text-secondary mb-1"><b>@userModel.firstName @userModel.lastName</b></h4>
 									<p class="text-secondary mb-1">Role : @userModel.userRole</p>
 									<p class="text-muted font-size-sm">Joined on : @userModel.createdAt</p>
-									<div class="row">
-										<div class="d-flex justify-content-center">
-											<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PublishedWithChanges" Color="Color.Default" OnClick="@ToggleOpenChange">Change Password</MudButton>
-											<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@ToggleOpenDelete">Delete Account</MudButton>
+										<div class="row">
+											<div class="d-flex justify-content-center">
+												<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PublishedWithChanges" Color="Color.Default" OnClick="@ToggleOpenChange">Change Password</MudButton>
+												<AuthorizeView Roles="deliveryBoy, client">
+													<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@ToggleOpenDelete">Delete Account</MudButton>
+												</AuthorizeView>
+											</div>
 										</div>
-									</div>
 								</div>
 							</div>
 						</MudPaper>
@@ -90,13 +92,13 @@
 				</MudGrid>
 			</MudContainer>
 		</MudPaper>
-		<MudPopover Open="@_isOpenChange" Style="height: 50vh; width:50vw;" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+		<MudPopover Open="@_isOpenChange" Style="height: 50vh; width:50vw; margin-top: 15%;" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
             <div class="d-flex flex-column">
                 <ChangePassword/>
 				<MudButton Variant="Variant.Filled" OnClick="@ToggleOpenChange" Class="ml-auto" Style="margin: 1% auto;" Color="Color.Default">Close</MudButton>
             </div>
         </MudPopover>
-		<MudPopover Open="@_isOpenDelete" Class="px-6 pt-6" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+		<MudPopover Open="@_isOpenDelete" Style="margin-top: 15%;" Class="px-6 pt-6" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
 			<div class="d-flex flex-column">
 				<MudText>Are You Sure you want to Delete this account ?</MudText>
 				<p><b>Note : </b>You will not be able to access this.</p>
