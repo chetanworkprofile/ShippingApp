@@ -34,6 +34,7 @@ namespace ShippingClient.Services.Contracts
         public Task<GlobalResponse> AcceptShipment(AcceptShipment model);
         public Task<GlobalResponse> UpdateUser(UpdateUser model);
         public Task<GlobalResponse> DeleteUser(DeleteUser model);
+        public Task<GlobalResponse> GetDriverEarnings(Guid driverId);
 
 	}
 }

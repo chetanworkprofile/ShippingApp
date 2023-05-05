@@ -669,6 +669,22 @@ namespace ShippingClient.Services
 				throw;
 			}
 		}
+
+		public async Task<GlobalResponse> GetDriverEarnings(Guid driverId)
+		{
+			try
+			{
+				GlobalResponse? response;
+				response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/driverEarnings?driverId={driverId}");
+				return response!;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				throw;
+			}
+		}
+
 		//do something of this func never used and is not declared in interface
 		public void DoLogout()
         {

@@ -35,8 +35,8 @@
     float destinationcc2 = 28.7041F;
     public string origin = "ludhiana";
     public string destination = "chandigarh";
-    Checkpoints checkOrigin;
-    Checkpoints checkDestination;
+    Checkpoints checkOrigin = new();
+    Checkpoints checkDestination = new();
 
     List<Checkpoints> checkpointsList = new List<Checkpoints>();
     protected override async Task OnInitializedAsync()
@@ -49,11 +49,11 @@
 
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("origin", out var param))
         {
-            origin = param.First();
+            origin = param.FirstOrDefault();
         }
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("destination", out param))
         {
-            destination = param.First();
+            destination = param.FirstOrDefault();
         }
 
         GlobalResponse checkpoints = await _apiService.GetCheckpointsByName(origin);
