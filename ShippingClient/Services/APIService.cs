@@ -204,7 +204,7 @@ namespace ShippingClient.Services
             return resultContent!;
         }
 
-        public async Task<ResponseModel> AddCheckpoint(AddCheckpoint model)
+        public async Task<GlobalResponse> AddCheckpoint(AddCheckpoint model)
         {
             string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
 
@@ -685,8 +685,23 @@ namespace ShippingClient.Services
 			}
 		}
 
-		//do something of this func never used and is not declared in interface
-		public void DoLogout()
+        public async Task<GlobalResponse> GetDriverEarningsForChart(Guid driverId)
+        {
+            try
+            {
+                GlobalResponse? response;
+                response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/driverEarningsForChart?driverId={driverId}");
+                return response!;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        //do something of this func never used and is not declared in interface
+        public void DoLogout()
         {
             navigationManager.NavigateTo("/logout");
         }

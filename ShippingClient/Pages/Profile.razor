@@ -123,7 +123,7 @@
 <AuthorizeView Roles="deliveryBoy">
 	<Authorized Context="auth">
 		<h3>Your Analytics</h3>
-		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2;">
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
 			<MudContainer Class="mt-4">
 				<MudGrid Spacing="2" Justify="Justify.SpaceBetween">
 					<MudItem xs="12" md="6" lg="3" xl="3">
@@ -156,6 +156,16 @@
 					</MudItem>
 				</MudGrid>
 			</MudContainer>
+		</MudPaper>
+		<h3>Your Earnings Chart</h3>
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
+			<MudGrid Spacing="1">
+				<MudItem xs="12" md="12" lg="12" xl="12">
+					<MudPaper Class="ma-4" Square="true">
+						<MudChart Style="padding: 1% 2%;" ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Height="70vh" Width="100%" ChartOptions="chartOptions"></MudChart>
+					</MudPaper>
+				</MudItem>
+			</MudGrid>
 		</MudPaper>
 	</Authorized>
 </AuthorizeView>
@@ -219,6 +229,14 @@
 	GlobalResponse res = new();
 	Models.GetDriverEarnings? earnings = new();
 
+	private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+	public ChartOptions chartOptions = new ChartOptions();
+	static GlobalResponse response = new GlobalResponse();
+	static string dat = "";
+	public List<ChartSeries> Series = new();
+
+	public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -227,6 +245,18 @@
 		res = await _apiService.GetDriverEarnings(userModel.userId);
 		var obj = JsonSerializer.Serialize(res.data);
 		earnings = JsonSerializer.Deserialize<Models.GetDriverEarnings>(obj);
+		response = await _apiService.GetDriverEarningsForChart(userModel.userId);
+
+		dat = JsonSerializer.Serialize(response.data);
+		double[] data = JsonSerializer.Deserialize<double[]>(dat);
+		for(int i = 0; i < data.Count(); i++)
+		{
+			data[i] = data[i] / 1000;
+		}
+		Series = new List<ChartSeries>()
+		{
+			new ChartSeries() { Name = "Monthly Earnings (in 1000's i.e, 1 unit = 1000)", Data = data },
+		};
 		StateHasChanged();
 	}
 
@@ -315,6 +345,27 @@
 			});
 		}
 		Edit();
+	}
+
+	Random random = new Random();
+	public void RandomizeData()
+	{
+		var new_series = new List<ChartSeries>()
+		{
+			new ChartSeries() { Name = "Series 1", Data = new double[9] },
+		};
+		for (int i = 0; i < 9; i++)
+		{
+			new_series[0].Data[i] = random.NextDouble() * 100;
+		}
+		Series = new_series;
+		//StateHasChanged();
+	}
+
+	public void RandomizeLineWidths()
+	{
+		chartOptions.LineStrokeWidth = random.NextInt64(1, 10);
+		//StateHasChanged();
 	}
 
 }
