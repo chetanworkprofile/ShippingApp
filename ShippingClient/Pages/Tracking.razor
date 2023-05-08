@@ -10,13 +10,16 @@
 
 <AuthorizeView>
     <Authorized Context="auth">
-        <div style="margin: 10% auto; width: 80vw; height: 80vh; justify-content:center">
-            <h4>Track On Map</h4>
-            <div>
-            <div id='map' style='width: 1000px; height: 600px;'>
+        <MudPaper>
+            <div style="margin: 2% auto; width: 80vw; height: 80vh; padding: 10px; justify-content:center">
+                <h4 style="margin-top: 10px;">Track On Map</h4>
+                <div>
+                    <div id='map' style='width: 1000px; height: 600px; margin: auto; justify-content: center;'>
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
+        </MudPaper>
+        
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>

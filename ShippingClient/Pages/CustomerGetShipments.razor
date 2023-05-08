@@ -80,6 +80,7 @@
             Guid tempId = temp.data.userId;
             shipmentsResponse = await _apiService.GetShipmentsForCustomer(tempId);
             shipmentList = shipmentsResponse.data;
+            shipmentList = shipmentList.OrderByDescending(s => s.lastUpdated).ToList();
             if (shipmentsResponse.statusCode == 401)
             {
                 _navMgr.NavigateTo("/logout");
