@@ -8,15 +8,27 @@ using ShippingClient.Pages;
 using ShippingClient.Services;
 using ShippingClient.Services.Contracts;
 using MudBlazor.Services;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-//builder.Services.AddOptions();
+
+var http = new HttpClient()
+{
+    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+};
+
+builder.Services.AddScoped(sp => http);
+
+using var response = await http.GetAsync("appsettings.json");
+using var stream = await response.Content.ReadAsStreamAsync();
+
+builder.Configuration.AddJsonStream(stream);
+
 //var baseUrl = "http://192.180.0.192:5656/";
-var baseUrl = "https://localhost:7147/";
-//var baseUrl = builder.Configuration.GetSection("urls:baseUrlServer").Value;
-Console.WriteLine(builder.Configuration.GetSection("urls:baseUrlServer").Value);
+var baseUrl = builder.Configuration.GetSection("urls:baseUrlServer").Value;
+
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseUrl) });
 
@@ -28,7 +40,4 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<Socket>();
 builder.Services.AddMudServices();
 
-/*
-builder.Configuration.GetConnectionString("ConnectionString")*/
-//builder.Configuration.Bind("AppSettings", new AppSettings());
 await builder.Build().RunAsync();

@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
 namespace ShippingClient.Services
 {
@@ -14,17 +15,22 @@ namespace ShippingClient.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
+        private readonly IConfiguration _configuration;
         private readonly string baseUrl;
         private readonly string frontUrl;
 
         public APIService(HttpClient httpClient,
-            ILocalStorageService localStorage)
+            ILocalStorageService localStorage,
+            IConfiguration configuration)
         {
             this._httpClient = httpClient;
             this._localStorage = localStorage;
             //frontUrl = "https://localhost:7004/";
-            frontUrl = "http://192.180.0.192:7676/";
-            baseUrl = "https://localhost:7147/";
+            _configuration = configuration;
+            frontUrl = baseUrl = _configuration.GetSection("urls:baseUrlClient").Value!;
+            baseUrl = _configuration.GetSection("urls:baseUrlServer").Value!;
+            //frontUrl = "http://192.180.0.192:7676/";
+            //baseUrl = "https://localhost:7147/";
             //baseUrl = "http://192.180.0.192:5656/";
         }
 

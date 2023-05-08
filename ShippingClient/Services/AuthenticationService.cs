@@ -18,16 +18,20 @@ namespace ShippingClient.Services
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authStateProvider;
         private readonly ILocalStorageService _localStorage;
+        private readonly IConfiguration _configuration;
+
         private readonly string baseUrl;
         private string? token { get; set; } = null;
 
-        public AuthenticationService(HttpClient httpClient, AuthenticationStateProvider authStateProvider,
+        public AuthenticationService(HttpClient httpClient, AuthenticationStateProvider authStateProvider, IConfiguration configuration,
             ILocalStorageService localStorage)
         {
             this._httpClient = httpClient;
             this._authStateProvider = authStateProvider;
             this._localStorage = localStorage;
-            baseUrl = "https://localhost:7147/";
+            this._configuration = configuration;
+            baseUrl = _configuration.GetSection("urls:baseUrlServer").Value!;
+            //baseUrl = "https://localhost:7147/";
             //baseUrl = "http://192.180.0.192:5656/";
         }
 

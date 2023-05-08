@@ -10,13 +10,16 @@ namespace ShippingClient.Pages
         public static HubConnection? hubConnection;
         protected NavigationManager _navMgr;
         private readonly ILocalStorageService _localStorage;
+        private readonly IConfiguration _configuration;
 
-        public string baseUrl = "https://localhost:7147/";
+        public string baseUrl = "";
         //public string baseUrl = "http://192.180.0.192:5656/";
-        public Socket(NavigationManager NavigationManager, ILocalStorageService localStorage)
+        public Socket(NavigationManager NavigationManager, ILocalStorageService localStorage, IConfiguration configuration)
         {
             _navMgr = NavigationManager;
             _localStorage = localStorage;
+            _configuration = configuration;
+            baseUrl = _configuration.GetSection("urls:baseUrlServer").Value!;
         }
         public async Task Connect()
         {
