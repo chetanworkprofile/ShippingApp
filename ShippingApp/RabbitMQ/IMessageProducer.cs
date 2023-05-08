@@ -8,3 +8,4 @@ namespace ShippingApp.RabbitMQ
         public ResponseWithoutData SendEmail<T>(T message);
     }
 }
+//producer interface

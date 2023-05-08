@@ -27,7 +27,7 @@ namespace ShippingClient.Services
             this._localStorage = localStorage;
             //frontUrl = "https://localhost:7004/";
             _configuration = configuration;
-            frontUrl = baseUrl = _configuration.GetSection("urls:baseUrlClient").Value!;
+            frontUrl =  _configuration.GetSection("urls:baseUrlClient").Value!;
             baseUrl = _configuration.GetSection("urls:baseUrlServer").Value!;
             //frontUrl = "http://192.180.0.192:7676/";
             //baseUrl = "https://localhost:7147/";

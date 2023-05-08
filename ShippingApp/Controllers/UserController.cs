@@ -16,9 +16,9 @@ namespace ShippingApp.Controllers
     public class UserController : ControllerBase
     {
         IUserService userService;                   //service dependency
-        Response response = new Response();
-        ResponseWithoutData response2 = new ResponseWithoutData();
-        object result = new object();
+        Response response = new Response();         //response model
+        ResponseWithoutData response2 = new ResponseWithoutData();      //response model without data
+        object result = new object();                   //to accomodate both response models in function return type
         private readonly ILogger<AuthController> _logger;
 
         public UserController(IConfiguration configuration, ShippingDbContext dbContext, ILogger<AuthController> logger, IMessageProducer messageProducer)
@@ -50,7 +50,7 @@ namespace ShippingApp.Controllers
 
         [HttpPut, Authorize(Roles = "admin,client,deliveryBoy")]
         [Route("/api/v1/user/update")]
-        public IActionResult UpdateUser(UpdateUser u)
+        public IActionResult UpdateUser(UpdateUser u)               //api to update user's profile
         {
             _logger.LogInformation("Update user method started");
             try
@@ -72,7 +72,7 @@ namespace ShippingApp.Controllers
 
         [HttpDelete, Authorize(Roles = "client,deliveryBoy")]
         [Route("/api/v1/user/delete")]
-        public IActionResult DeleteUser(DeleteUser user)
+        public IActionResult DeleteUser(DeleteUser user)            //method for user to delete his/her account
         {
             _logger.LogInformation("Delete user method started");
             try

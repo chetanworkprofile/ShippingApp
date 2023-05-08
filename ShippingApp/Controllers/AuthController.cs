@@ -22,7 +22,6 @@ namespace ShippingApp.Controllers
         ResponseWithoutData response2 = new ResponseWithoutData();      //response model in case we don't return data
         object result = new object();                                   //object to match both response models in return values from function
         private readonly ILogger<AuthController> _logger;
-
         //private readonly IValidator<User> _userValidator;
 
         public AuthController(IConfiguration configuration, ShippingDbContext dbContext, ILogger<AuthController> logger, IMessageProducer messagePublisher)          //constructor
@@ -36,6 +35,8 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/user/register")]
         public IActionResult RegisterUser([FromBody] RegisterUser inpUser)             //register user function uses authService to create a new user in db
         {
+            //this code is commented out bcz it can be used for fluent validation which is not implemented right now in project
+
             /*byte[] a = new byte[9302193];
             var user = new User(Guid.NewGuid(), inpUser.firstName, inpUser.lastName, inpUser.email, inpUser.phone, "user", inpUser.address, a, inpUser.pathToProfilePic, "sdasda");
             var validationResult = _userValidator.Validate(user);
@@ -52,7 +53,7 @@ namespace ShippingApp.Controllers
             }
             try
             {
-                _logger.LogInformation("User registration attempt");
+                _logger.LogInformation("User registration attempt " + inpUser);
                 int statusCode = 0;
                 result = authService.CreateUser(inpUser, out statusCode);
                 return StatusCode(statusCode, result);
@@ -68,7 +69,7 @@ namespace ShippingApp.Controllers
         [HttpPost("/api/v1/login")]
         public ActionResult<User> UserLogin(UserDTO request)
         {
-            _logger.LogInformation("User Login attempt");
+            _logger.LogInformation("User Login attempt " + request);
             try
             {
                 int statusCode = 0;
@@ -102,11 +103,11 @@ namespace ShippingApp.Controllers
             }
         }
 
-        [HttpPost, Authorize(Roles = "resetpassword")]
+        [HttpPost, Authorize(Roles = "resetpassword")]          // resetpassword is not a role it is to allow only that request which come with resetpassword token and not login token
         [Route("/api/v1/resetPassword")]
         public ActionResult<User> Verify(ResetPasswordModel r)
         {
-            _logger.LogInformation("verification attempt");
+            _logger.LogInformation("rest password verification attempt");
             try
             {
                 string? userId = User.FindFirstValue(ClaimTypes.Sid);                  //extracting userid from token
@@ -126,7 +127,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/driver/setPassword")]
         public ActionResult<User> DriverSetPassword(DriverSetPass r)
         {
-            _logger.LogInformation("setting password attempt");
+            _logger.LogInformation("driver setting new password attempt");
             try
             {
                 string? userId = User.FindFirstValue(ClaimTypes.Sid);                  //extracting userid from token
@@ -146,7 +147,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/changePassword")]
         public ActionResult<User> ChangePassword(ChangePasswordModel r)
         {
-            _logger.LogInformation("reset password attempt");
+            _logger.LogInformation("change password attempt");
             try
             {
                 string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();        //getting token from header

@@ -36,6 +36,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/createShipment")]
         public IActionResult CreateNewShipment(AddShipment inpShipment)
         {
+            _logger.LogInformation("new shipment created " + inpShipment);
             try
             {
                 //string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();        //getting token from header

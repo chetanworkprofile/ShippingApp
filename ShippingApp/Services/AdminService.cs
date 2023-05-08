@@ -30,18 +30,18 @@ namespace ShippingApp.Services
 
         public Object GetUsers(string userId, string userType, string token, Guid? UserId, string? searchString, string? Email, long contactNo, string OrderBy, int SortOrder, int RecordsPerPage, int PageNumber, out int code)          // sort order   ===   e1 for ascending   -1 for descending
         {
-            Guid id = new Guid(userId);
+            Guid id = new Guid(userId);             //create guid from string id
             var userLoggedIn = DbContext.Users.Find(id);
             var userss = DbContext.Users.AsQueryable();
 
             userss = userss.Where(t => t.isDeleted == false);     //remove deleted users from list
 
-            if (userType != "all")
+            if (userType != "all")          //get users of specific type
             {
                 userss = userss.Where(t => t.userRole == userType);
             }
 
-            if (token != userLoggedIn.token)
+            if (token != userLoggedIn.token)        //check if user has valid token
             {
                 response2 = new ResponseWithoutData(401, "Invalid/expired token. Login First", false);
                 code = 401;
@@ -57,12 +57,13 @@ namespace ShippingApp.Services
             if (contactNo != -1) { userss = userss.Where(s => (s.contactNo == contactNo)); }
 
             var users = userss.ToList();
-            if (!users.Any())
+            if (!users.Any())           //if no user is found return
             {
                 response2 = new ResponseWithoutData(404, "No User found.", true);
                 code = 404;
                 return response2;
             }
+
             // delegate used to create orderby depending on user input
             Func<User, Object> orderBy = s => s.userId;
             if (OrderBy == "UserId" || OrderBy == "ID" || OrderBy == "Id")
@@ -95,7 +96,8 @@ namespace ShippingApp.Services
             {
                 users = users.OrderByDescending(orderBy).Select(c => (c)).ToList();
             }
-            int count = users.Count;
+
+            int count = users.Count;    //count to return total no of records for pagination on front-end
             //pagination
             users = users.Skip((PageNumber - 1) * RecordsPerPage)
                                   .Take(RecordsPerPage).ToList();
@@ -127,7 +129,7 @@ namespace ShippingApp.Services
                 return response2;
             }
 
-            if (user != null && user.isDeleted == false)
+            if (user != null && user.isDeleted == false)        //if valid soft delete the user
             {
                 user.isDeleted = true;
                 user.token = string.Empty;

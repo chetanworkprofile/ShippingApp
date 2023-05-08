@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using ShippingApp.Models.OutputModels;
 
+//this file is used to implemet IAuthorizationMiddlewareResultHandler to send custom response when user is not authorized /authenticated
 namespace ShippingApp.Services
 {
     public class AuthorizationMiddlewareResultHandlerService : IAuthorizationMiddlewareResultHandler

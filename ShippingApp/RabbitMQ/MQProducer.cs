@@ -10,14 +10,16 @@ namespace ShippingApp.RabbitMQ
     public class MQProducer : IMessageProducer
     {
         private ConnectionFactory factory;
-        public MQProducer()
+        private readonly IConfiguration _configuration; //get configuration values from appsettings
+        public MQProducer(IConfiguration configuration)
         {
-            factory = new ConnectionFactory
+            _configuration = configuration;
+            factory = new ConnectionFactory                 // create connection factory
             {
-                HostName = "192.180.3.63",
+                HostName = _configuration.GetSection("RabbitMq:url").Value!,
                 Port = Protocols.DefaultProtocol.DefaultPort,
-                UserName = "s1",
-                Password = "guest",
+                UserName = _configuration.GetSection("RabbitMq:user").Value!,
+                Password = _configuration.GetSection("RabbitMq:password").Value!,
                 VirtualHost = "/",
                 ContinuationTimeout = new TimeSpan(10, 0, 0, 0)
             };
@@ -25,20 +27,20 @@ namespace ShippingApp.RabbitMQ
         }
         public void SendShipment<T>(T message)
         {
-            var connection = factory.CreateConnection();
+            var connection = factory.CreateConnection();        //create connection through factory
             using var channel = connection.CreateModel();
-            channel.QueueDeclare("createShipment", 
+            channel.QueueDeclare("createShipment",      // declare queue
                      durable: true,
                      exclusive: false,
                      autoDelete: false,
                      arguments: null);
 
-            var json = JsonConvert.SerializeObject(message);
+            var json = JsonConvert.SerializeObject(message);        //serialize object
             var body = Encoding.UTF8.GetBytes(json);
 
-            channel.BasicPublish(exchange: "", routingKey: "createShipment", body: body);
+            channel.BasicPublish(exchange: "", routingKey: "createShipment", body: body);       //publish the produced item to queue
         }
-        public ResponseWithoutData SendEmail<T>(T message)
+        public ResponseWithoutData SendEmail<T>(T message)          //function used to send email through microservices it sends the content and email address to queue
         {
             var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();

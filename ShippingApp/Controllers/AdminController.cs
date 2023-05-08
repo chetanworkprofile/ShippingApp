@@ -16,7 +16,7 @@ namespace ShippingApp.Controllers
         Response response = new Response();     //response model instance
         ResponseWithoutData response2 = new ResponseWithoutData();      //response model in case we don't return data
         object result = new object();                                   //object to match both response models in return values from function
-        private readonly ILogger<AdminController> _logger;
+        private readonly ILogger<AdminController> _logger;              // logger instance to log output to console or file
         public AdminController(IConfiguration configuration, ShippingDbContext dbContext, ILogger<AdminController> logger)          //constructor
         {
             adminService = new AdminService(configuration, dbContext, logger);
@@ -29,11 +29,11 @@ namespace ShippingApp.Controllers
         {
             try
             {
-                _logger.LogInformation("Removing user attempt with id " + userId);
-                string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                string? adminId = User.FindFirstValue(ClaimTypes.Sid);
-                int statusCode = 0;
-                result = adminService.DeleteUser(adminId,userId, token, out statusCode);
+                _logger.LogInformation("Admin Removing user attempt with id " + userId);
+                string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();   // getting token from headers
+                string? adminId = User.FindFirstValue(ClaimTypes.Sid);              // getting userid from token
+                int statusCode = 0;                     //to get back status code from service
+                result = adminService.DeleteUser(adminId,userId, token, out statusCode);    // call to service function
                 return StatusCode(statusCode, result);
             }
             catch (Exception ex)

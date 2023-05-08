@@ -32,7 +32,5 @@ namespace ShippingApp.Services
         public string GetDriverEarningsByDate(Guid driverId, DateTime startDate, DateTime endDate, out int code);
         public string GetAdminEarnings(out int code);
         public string GetAdminEarningsForChart(out int code);
-
-
     }
 }

@@ -20,7 +20,7 @@ namespace ShippingApp.Controllers
         Response response = new Response();
         public UploadFileController(ILogger<UploadFileController> logger, IConfiguration configuration, ShippingDbContext dbContext)
         {
-            uploadPicServiceInstance = new UploadPicService(dbContext);
+            uploadPicServiceInstance = new UploadPicService(dbContext);     //service class instance
             _logger = logger;
         }
 
@@ -31,8 +31,8 @@ namespace ShippingApp.Controllers
             _logger.LogInformation("Profile Pic Upload method started");
             try
             {
-                string? userId = User.FindFirstValue(ClaimTypes.Sid);
-                string? userRole = User.FindFirstValue(ClaimTypes.Role);
+                string? userId = User.FindFirstValue(ClaimTypes.Sid);           //getting user id from token
+                string? userRole = User.FindFirstValue(ClaimTypes.Role);        //getting user role
                 string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
                 int statusCode = 0;
                 result = uploadPicServiceInstance.ProfilePicUpload(file, userId, token, userRole, out statusCode);

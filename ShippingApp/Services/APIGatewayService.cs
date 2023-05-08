@@ -23,7 +23,7 @@ namespace ShippingApp.Services
         private string baseUrlS2;
 
         Response response = new Response();                             //response models/objects
-        ResponseWithoutData response2 = new ResponseWithoutData();             // model to create token
+        ResponseWithoutData response2 = new ResponseWithoutData();             // response model without data
         object result = new object();
         private readonly ShippingDbContext DbContext;
         private readonly ILogger<APIGatewayController> _logger;
@@ -36,15 +36,16 @@ namespace ShippingApp.Services
             _logger = logger;
             _messagePublisher = messagePublisher;
             _configuration = configuration;
-            _secondaryAuthService = new SecondaryAuthService(configuration);
+            _secondaryAuthService = new SecondaryAuthService(configuration);        //secondary service to take care of functions like create password, verify password, .. etc
 
-            baseUrlS1 = _configuration.GetSection("BaseUrls:baseurl1").Value!;
-            baseUrlS2 = _configuration.GetSection("BaseUrls:baseurl2").Value!;
+            baseUrlS1 = _configuration.GetSection("BaseUrls:baseurl1").Value!;      //url of server 1 for microservices(s2) 
+            baseUrlS2 = _configuration.GetSection("BaseUrls:baseurl2").Value!;      //url of server 2 (s3)
 
             /*baseUrlS1 = "http://192.180.2.128:4000";
             baseUrlS2 = "http://192.180.0.127:4040";*/
         }
 
+        //this function simply uses other api to fetch and serve data used to get shipments 
         public string GetShipments(Guid? shipmentId, Guid? customerId, Guid? productTypeId, Guid? containerTypeId, out int code)
         {
             using (var client = new HttpClient())

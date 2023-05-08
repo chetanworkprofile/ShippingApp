@@ -18,23 +18,23 @@ namespace ShippingApp.Controllers
     {
         IAPIGatewayService _apiGatewayService;
         Response response = new Response();     //response model instance
-        ResponseWithoutData response2 = new ResponseWithoutData();
-        private readonly ILogger<APIGatewayController> _logger;
+        ResponseWithoutData response2 = new ResponseWithoutData();      // response model 2 in case of no data return
+        private readonly ILogger<APIGatewayController> _logger;         // logger instance to log
         public APIGatewayController(IConfiguration configuration, ShippingDbContext dbContext, ILogger<APIGatewayController> logger, IMessageProducer messagePublisher)
         {
-            _apiGatewayService = new APIGatewayService(configuration, dbContext,logger,messagePublisher);
+            _apiGatewayService = new APIGatewayService(configuration, dbContext, logger, messagePublisher);
             _logger = logger;
         }
 
         [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/shipments")]
-        public ActionResult GetShipments(Guid? shipmentId=null,Guid? customerId = null,Guid? productTypeId = null,Guid? containerTypeId = null)             // get shipments list acc to various parameters 
+        public ActionResult GetShipments(Guid? shipmentId = null, Guid? customerId = null, Guid? productTypeId = null, Guid? containerTypeId = null)             // get shipments list acc to various parameters 
         {
             _logger.LogInformation("Getting list of shipments");
             try
             {
-                int statusCode = 0;
-                var res = _apiGatewayService.GetShipments(shipmentId, customerId, productTypeId, containerTypeId,out statusCode);
+                int statusCode = 0;         //to get back status code from service
+                var res = _apiGatewayService.GetShipments(shipmentId, customerId, productTypeId, containerTypeId, out statusCode);       // call to service function
                 return StatusCode(statusCode, res);
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/get/shipmentHistory")]
         public ActionResult GetShipmentHistory(Guid? shipmentId = null)             //get history of a particular
         {
-            _logger.LogInformation("Getting shipment history");
+            _logger.LogInformation("Getting shipment history with shipment id " + shipmentId);
             try
             {
                 int statusCode = 0;
@@ -68,7 +68,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/get/bestRoute")]
         public ActionResult GetBestRoute(Guid? shipmentId = null)
         {
-            _logger.LogInformation("Getting shipment history");
+            _logger.LogInformation("Getting best route for shipment with id " + shipmentId);
             try
             {
                 int statusCode = 0;
@@ -87,11 +87,11 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/get/driver/shipmentHistory")]
         public ActionResult GetShipmentHistoryDriver()
         {
-            _logger.LogInformation("Getting shipment history");
+            _logger.LogInformation("Getting shipment history for driver");
             try
             {
                 int statusCode = 0;
-                string? driverId = User.FindFirstValue(ClaimTypes.Sid);
+                string? driverId = User.FindFirstValue(ClaimTypes.Sid);         // getting driver's userid
                 var res = _apiGatewayService.GetShipmentHistoryDriver(driverId, out statusCode);
                 return StatusCode(statusCode, res);
             }
@@ -127,7 +127,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/get/containerTypes")]
         public ActionResult GetContainerTypes(Guid? containerTypeId = null, string? searchString = null)
         {
-            _logger.LogInformation("Getting list of productTypes");
+            _logger.LogInformation("Getting list of containerTypes");
             try
             {
                 int statusCode = 0;
@@ -163,13 +163,13 @@ namespace ShippingApp.Controllers
 
         [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/checkpoints")]
-        public ActionResult GetCheckpoints(Guid? checkpointId = null,string? checkpointName = null)
+        public ActionResult GetCheckpoints(Guid? checkpointId = null, string? checkpointName = null)
         {
             _logger.LogInformation("Getting list of checkpoints");
             try
             {
                 int statusCode = 0;
-                var res = _apiGatewayService.GetCheckpoints(checkpointId,checkpointName, out statusCode);
+                var res = _apiGatewayService.GetCheckpoints(checkpointId, checkpointName, out statusCode);
                 return StatusCode(statusCode, res);
             }
             catch (Exception ex)
@@ -184,63 +184,123 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/add/productType")]
         public ActionResult AddProductType(AddProductType inpPtype)
         {
-            int statusCode = 0;
-            var res = _apiGatewayService.AddProductType(inpPtype, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Adding new productType to database");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.AddProductType(inpPtype, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
         [HttpPost, Authorize(Roles = "admin,client,manager,deliveryBoy")]
         [Route("/api/v1/getCost")]
         public ActionResult GetCost(AddShipment inpDetails)
         {
-            int statusCode = 0;
-            var res = _apiGatewayService.GetCost(inpDetails, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Getting cost of a shipment");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.GetCost(inpDetails, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
         [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/add/containerType")]
         public ActionResult AddContainerType(AddContainerType inpCtype)
         {
-            int statusCode = 0;
-            var res = _apiGatewayService.AddContainerType(inpCtype, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Adding new container type");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.AddContainerType(inpCtype, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
         [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/add/checkpoint")]
         public ActionResult AddCheckpoint(AddCheckpoint inp)
         {
-            int statusCode = 0;
-            var res = _apiGatewayService.AddCheckpoint(inp, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Adding new checkpoint");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.AddCheckpoint(inp, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
         [HttpPost, Authorize(Roles = "admin")]
         [Route("/api/v1/add/driver")]
         public ActionResult AddDeliveryPerson(RegisterDriver inpUser)
         {
-            int statusCode = 0;
-            var res = _apiGatewayService.AddDriver(inpUser, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Adding new delivery person");
+            try
+            {
+                int statusCode = 0;
+                var res = _apiGatewayService.AddDriver(inpUser, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
         
         [HttpPut, Authorize(Roles = "deliveryBoy")]
         [Route("/api/v1/update/driverLocation")]
         public ActionResult UpdateDriverLocation(Guid checkPointId)
         {
-            int statusCode = 0;
-            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            string? userId = User.FindFirstValue(ClaimTypes.Sid);
-            var res = _apiGatewayService.UpdateDriverLocation(userId, token, checkPointId, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Updating delivery person location to checkpoint "+ checkPointId);
+            try
+            {
+                int statusCode = 0;
+                string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();       // getting token from header
+                string? userId = User.FindFirstValue(ClaimTypes.Sid);
+                var res = _apiGatewayService.UpdateDriverLocation(userId, token, checkPointId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
         [HttpGet, Authorize(Roles = "client, admin, deliveryBoy")]
         [Route("/api/v1/get/availableShipments")]
         public ActionResult GetAvailableShipments(Guid checkpointId)
         {
-            _logger.LogInformation("Getting available Shipments");
+            _logger.LogInformation("Getting available Shipments at checkpoint "+ checkpointId);
             try
             {
                 int statusCode = 0;
@@ -259,7 +319,7 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/get/acceptShipment")]
         public ActionResult AcceptShipment(AcceptShipment acceptShipment)
         {
-            _logger.LogInformation("Getting available Shipments");
+            _logger.LogInformation("Acceptng shipment "+ acceptShipment);
             try
             {
                 int statusCode = 0;
@@ -278,44 +338,85 @@ namespace ShippingApp.Controllers
         [Route("/api/v1/update/productType")]
         public ActionResult UpdateProductType(UpdateProductType model)
         {
-            int statusCode = 0;
-            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            string? userId = User.FindFirstValue(ClaimTypes.Sid);
-            var res = _apiGatewayService.UpdateProductType(userId, token, model, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Updating product type");
+            try
+            {
+                int statusCode = 0;
+                string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string? userId = User.FindFirstValue(ClaimTypes.Sid);
+                var res = _apiGatewayService.UpdateProductType(userId, token, model, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
         [HttpPut, Authorize(Roles = "admin")]
         [Route("/api/v1/update/containerType")]
         public ActionResult UpdateContainerType(UpdateContainerType model)
         {
-            int statusCode = 0;
-            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            string? userId = User.FindFirstValue(ClaimTypes.Sid);
-            var res = _apiGatewayService.UpdateContainerType(userId, token, model, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Updating Container type");
+            try
+            {
+                int statusCode = 0;
+                string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string? userId = User.FindFirstValue(ClaimTypes.Sid);
+                var res = _apiGatewayService.UpdateContainerType(userId, token, model, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
+            
         }
 
         [HttpDelete, Authorize(Roles = "admin")]
         [Route("/api/v1/remove/containerType")]
         public ActionResult RemoveContainerType(Guid containerTypeId)
         {
-            int statusCode = 0;
-            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            string? userId = User.FindFirstValue(ClaimTypes.Sid);
-            var res = _apiGatewayService.RemoveContainerType(userId, token, containerTypeId, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("Removing container type");
+            try
+            {
+                int statusCode = 0;
+                string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string? userId = User.FindFirstValue(ClaimTypes.Sid);
+                var res = _apiGatewayService.RemoveContainerType(userId, token, containerTypeId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
         [HttpDelete, Authorize(Roles = "admin")]
         [Route("/api/v1/remove/productType")]
         public ActionResult RemoveProductType(Guid productTypeId)
         {
-            int statusCode = 0;
-            string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            string? userId = User.FindFirstValue(ClaimTypes.Sid);
-            var res = _apiGatewayService.RemoveProductType(userId, token, productTypeId, out statusCode);
-            return StatusCode(statusCode, res);
+            _logger.LogInformation("removing product type");
+            try
+            {
+                int statusCode = 0;
+                string? token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string? userId = User.FindFirstValue(ClaimTypes.Sid);
+                var res = _apiGatewayService.RemoveProductType(userId, token, productTypeId, out statusCode);
+                return StatusCode(statusCode, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Internal server error ", ex.Message);
+                response2 = new ResponseWithoutData(500, $"Internal server error: {ex.Message}", false);
+                return StatusCode(500, response2);
+            }
         }
 
 		[HttpGet, Authorize(Roles = "admin, deliveryBoy")]
@@ -360,7 +461,7 @@ namespace ShippingApp.Controllers
 		[Route("/api/v1/get/driverEarningsForChart")]
 		public ActionResult GetDriverEarningsForChart(Guid driverId)
 		{
-			_logger.LogInformation("Getting driver earnings");
+			_logger.LogInformation("Getting driver earnings for chart");
 			try
 			{
 				int statusCode = 0;

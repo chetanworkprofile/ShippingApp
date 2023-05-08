@@ -7,3 +7,4 @@ namespace ShippingApp.RabbitMQ
         public void NotifyDeliveryBoy();
     }
 }
+//consumer interface
