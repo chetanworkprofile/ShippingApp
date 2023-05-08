@@ -7,30 +7,44 @@
 
 <AuthorizeView>
     <Authorized Context="auth">
-        <div style="margin: 1% auto; width: 75vw; height: 75vh; justify-content:center">
-            <h4>Track On Map</h4>
-            <div>
-                <div id='map' style='width: 1000px; height: 600px;'>
+        <MudPaper>
+            <div style="margin: 1% auto; height: 100%; overflow:hidden; justify-content:center">
+                <h4 style="margin: 1%;">Track On Map</h4> <h5 style="margin: 2%;">Shipment Id : @shipmentId</h5>
+                <div>
+                    <div id='map' style='width: 1000px; height: 600px; margin: auto;'>
+                    </div>
+                </div>
+                <div style="margin: 2%; display: flex; flex-direction:row; justify-content: center; overflow: auto;">
+                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Style="color: #FF3300; margin: 2px 2px 2px 5px;" />
+                    <p style="margin-top: 4px;">Destination</p>
+                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Style="color: #C7A1AC; margin: 2px 2px 2px 5px;" />
+                    <p style="margin-top: 4px;">Checkpoints</p>
+                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Style="color: #3887BE; margin: 2px 2px 2px 5px;" />
+                    <p style="margin-top: 4px;">Origin</p>
+                    <MudImage Alt="" Src="./mapbox-icon.png" Style="height: 25px; width: 25px; margin: 2px 2px 2px 5px;" />
+                    <p style="margin-top: 4px;">Current Location of Shipment</p>
                 </div>
             </div>
-            <h4 style="margin: auto;">Shipment Id : @shipmentId</h4>
-        </div>
-        
-        <MudTable Items="@list" Hover="true" Loading="@loading" FixedHeader="true"  Height="400px">
-            <HeaderContent>
-                <MudTh></MudTh>
-                <MudTh>Status</MudTh>
-                <MudTh>Current Location</MudTh>
-                <MudTh>Date</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel=""><i class="oi oi-location"></i></MudTd>
-                <MudTd DataLabel="Status">@context.shipmentStatus</MudTd>
-                <MudTd DataLabel="Current Location">@context.currentLocation</MudTd>
-                <MudTd DataLabel="Date">@context.lastUpdated</MudTd>
-            </RowTemplate>
-            
-        </MudTable>
+        </MudPaper>
+        <br />
+        <MudPaper>
+            <div style="margin: 1% auto; justify-content:center">
+                <MudTable Items="@list" Hover="true" Loading="@loading" FixedHeader="true" Height="400px" style="margin-top: 3%;">
+                    <HeaderContent>
+                        <MudTh></MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Current Location</MudTh>
+                        <MudTh>Date</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel=""><i class="oi oi-location"></i></MudTd>
+                        <MudTd DataLabel="Status">@context.shipmentStatus</MudTd>
+                        <MudTd DataLabel="Current Location">@context.currentLocation</MudTd>
+                        <MudTd DataLabel="Date">@context.lastUpdated</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        </MudPaper>
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>

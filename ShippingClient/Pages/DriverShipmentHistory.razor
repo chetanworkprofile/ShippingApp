@@ -93,7 +93,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add(ex.Message, Severity.Error);
+            Snackbar.Add(ex.ToString(), Severity.Error);
             StateHasChanged();
         }
     }

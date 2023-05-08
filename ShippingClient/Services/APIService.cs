@@ -22,7 +22,8 @@ namespace ShippingClient.Services
         {
             this._httpClient = httpClient;
             this._localStorage = localStorage;
-            frontUrl = "https://localhost:7004/";
+            //frontUrl = "https://localhost:7004/";
+            frontUrl = "http://192.180.0.192:7676/";
             baseUrl = "https://localhost:7147/";
             //baseUrl = "http://192.180.0.192:5656/";
         }
@@ -419,11 +420,11 @@ namespace ShippingClient.Services
         {
             try
             {
-                AvailableShipmentsDriver? shipments;
-                var response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/driver/shipmentHistory");
-                var obj = JsonSerializer.Serialize(response.data);
-                var history = JsonSerializer.Deserialize<GlobalResponse>(obj);
-                return history!;
+                //AvailableShipmentsDriver? shipments;
+                GlobalResponse response = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/driver/shipmentHistory");
+                /*var obj = JsonSerializer.Serialize(response.data);
+                var history = JsonSerializer.Deserialize<GlobalResponse>(obj);*/
+                return response;
             }
             catch (Exception ex)
             {
