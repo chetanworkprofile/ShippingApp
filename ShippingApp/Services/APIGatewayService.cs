@@ -12,6 +12,7 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using static System.Net.WebRequestMethods;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace ShippingApp.Services
@@ -424,7 +425,9 @@ namespace ShippingApp.Services
                 string returntoken = _secondaryAuthService.CreateToken(tokenUser);
 
                 string subject = "Mail Verification by Shipping Logistics Management System.Please Verify your account";
-                string body = "Please verify your email.You are added as a new Delivery person in our system .Please Create your password by clicking on this link " + $"{inpUser.url}?access_token={returntoken}";
+                var link = $"{inpUser.url}?access_token={returntoken}";
+                string button = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\r\n    <tr>\r\n        <td>\r\n            <table cellspacing=\"0\" cellpadding=\"0\">\r\n                <tr>\r\n                    <td style=\"border-radius: 2px;\" bgcolor=\"#ED2939\">\r\n                        <a href=" + link + " style=\"padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;\">\r\n                            Verify Yourself\r\n                        </a>\r\n                    </td>\r\n                </tr>\r\n            </table>\r\n        </td>\r\n    </tr>\r\n</table>";
+                string body = "Please verify your email.You are added as a new Delivery person in our system .Please Create your password by clicking on this Button " + button;
                 //send mail function used to send mail 
                 //response2 = _secondaryAuthService.SendEmail(email, otp);
                 response2 = _messagePublisher.SendEmail(new SendEmailModel(inpUser.email, subject, body));
