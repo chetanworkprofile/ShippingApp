@@ -24,5 +24,6 @@ namespace ShippingApp.Data
         }
         //entity table for user object
         public DbSet<User> Users { get; set; }
+        public DbSet<TransactionRecords> TransactionRecords { get; set; }
     }
 }

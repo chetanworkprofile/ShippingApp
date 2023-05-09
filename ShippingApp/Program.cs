@@ -93,6 +93,7 @@ builder.Services.AddScoped<IUploadPicService, UploadPicService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAPIGatewayService, APIGatewayService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 //rabbitmq
 builder.Services.AddScoped<IMessageProducer, MQProducer>();
