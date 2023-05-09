@@ -46,7 +46,7 @@ namespace ShippingApp.Controllers
         }
 
         [HttpPost, Authorize(Roles = "client,admin")]
-        [Route("/api/v1/user/vrifyPayment")]
+        [Route("/api/v1/user/verifyPayment")]
         public IActionResult VerifyPayment(string paymentId, string orderId, string signature)             // controller for admin to remove any user with userId
         {
             try

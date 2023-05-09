@@ -38,7 +38,7 @@ namespace ShippingApp.Services
                 code = 401;
                 return response;
             }
-            Guid transcationId = new Guid();
+            Guid transcationId = Guid.NewGuid();
             Dictionary<string, object> input = new Dictionary<string, object>();
             input.Add("amount", ((double)amount * 100)); // this amount should be same as transaction amount
             input.Add("currency", "INR");
@@ -50,7 +50,7 @@ namespace ShippingApp.Services
             RazorpayClient client = new RazorpayClient(key, secret);
 
             Razorpay.Api.Order order = client.Order.Create(input);
-            DbContext.TransactionRecords.Add(new TransactionRecords(order["id"], "", transcationId, DateTime.Now, false, amount));
+            DbContext.TransactionRecords.Add(new TransactionRecords(order["id"].ToString(), "", transcationId, DateTime.Now, false, amount));
             DbContext.SaveChanges();
             response = new Response(200, "Order id created successfully", order["id"].ToString(), true);
             code = 200;

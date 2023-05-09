@@ -708,6 +708,62 @@ namespace ShippingClient.Services
             }
         }
 
+        public async Task<GlobalResponse> CreateOrder(int amount)
+        {
+            try
+            {
+                string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/user/createPaymentOrderId?amount={amount}");
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+                var result = await _httpClient.SendAsync(requestMessage);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                    return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
+                }
+                var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+
+                return resultContent!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        public async Task<GlobalResponse> VerifyPayment(string paymentId,string orderId, string signature)
+        {
+            try
+            {
+                string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}api/v1/user/verifyPayment?paymentId={paymentId}&orderId={orderId}&signature={signature}");
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
+
+                var result = await _httpClient.SendAsync(requestMessage);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorResponseContent = await result.Content.ReadFromJsonAsync<ErrorLoginResponse>();
+                    return new GlobalResponse { statusCode = 0, message = errorResponseContent!.message };
+                }
+                var resultContent = await result.Content.ReadFromJsonAsync<GlobalResponse>();
+
+                return resultContent!;
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
         //do something of this func never used and is not declared in interface
         /*public void DoLogout()
         {

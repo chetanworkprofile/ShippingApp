@@ -150,8 +150,8 @@
                         </MudListItem>
                     </MudList>
                 </MudPaper>
-                <MudButton  type="submit" Variant="Variant.Filled" Color="Color.Default" Class="align-content-center m-lg-2" OnClick="DoCreateShipment">
-                    Confirm
+                <MudButton  type="submit" Variant="Variant.Filled" Color="Color.Default" Class="align-content-center m-lg-2" OnClick="CreateOrder">
+                    Confirm & Proceed to pay
                 </MudButton>
                 <MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
             </div>
@@ -184,9 +184,14 @@
     Guid destination = Guid.Empty;
     decimal weight;
     string notes = string.Empty;
-    public bool _isOpen;
+    public bool _isOpen = false;
 
     public float cost = 0;
+
+    static string paymentId = "";
+    static string orderId = "";
+    static string signature = "";
+    static CreateShipment _createShipment;
 
     public async Task Calculate()
     {
@@ -202,11 +207,19 @@
 
     public async void ToggleOpen()
     {
-        Calculate();
+        if (origin == destination)
+        {
+            Snackbar.Add("Origin and Destination can't be same", Severity.Error);
+            loading = false;
+            return;
+        }
+        await Calculate();
         if (_isOpen)
             _isOpen = false;
         else
             _isOpen = true;
+
+        StateHasChanged();
     }
 
     protected override async void OnInitialized()
@@ -231,7 +244,97 @@
         checkpointsList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
         //originList = checkpointsList;
         //destList = checkpointsList;
+        _createShipment = this;
         StateHasChanged();
+    }
+
+    async void CreateOrder()
+    {
+        loading = true;
+        try
+        {
+            GlobalResponse res = await _apiService.CreateOrder((int)(1.18 * cost));
+            GetYourselfResponse userResponse = await _apiService.GetYourself();
+
+            if (res.statusCode == 401)
+            {
+                _navMgr.NavigateTo("/logout");
+                return;
+            }
+            if (res.statusCode == 200)
+            {
+                //invoke js code to start razorpay popup of payment
+                //res.data
+                await jsRuntime.InvokeAsync<object>("createOrder", userResponse.data.firstName + userResponse.data.lastName, userResponse.data.email, userResponse.data.contactNo, userResponse.data.address, res.data);
+            }
+            else
+            {
+                Snackbar.Add(createShipmentResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            Console.WriteLine(ex.Data.ToString());
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    //this method is invoked after successful payment
+    [JSInvokable]
+    public static async void VerifyResponseRazorpay(string _paymentId, string _orderId, string _signature)
+    {
+        Console.WriteLine(_paymentId + _orderId + _signature);
+        //CreateShipment s = new();
+        paymentId = _paymentId;
+        orderId = _orderId;
+        signature = _signature;
+        await _createShipment.VerifyPayment();
+    }
+
+    async Task VerifyPayment()
+    {
+        try
+        {
+            //Console.WriteLine("func called verify payment" + paymentId + orderId + signature);
+            GlobalResponse response = await _apiService.VerifyPayment(paymentId, orderId, signature);
+            var obj = JsonSerializer.Serialize(response.data);
+            var result = JsonSerializer.Deserialize<TransactionRecords>(obj);
+            if (response.statusCode == 200)
+            {
+                //Console.WriteLine(res);
+                Snackbar.Add(response.message, Severity.Success, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Done;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
+                shipmentModel.transactionRecordId = result.transactionRecordsId;
+                await DoCreateShipment();
+            }
+            else
+            {
+                Snackbar.Add(createShipmentResponse.message, Severity.Error, config =>
+                {
+                    config.Icon = Icons.Material.Filled.Error;
+                    config.IconColor = Color.Warning;
+                    config.IconSize = Size.Small;
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            Console.WriteLine(ex.StackTrace.ToString());
+            loading = false;
+            StateHasChanged();
+        }
     }
 
     async Task DoCreateShipment()
@@ -243,13 +346,6 @@
         shipmentModel.containerTypeId = containerTypeId;
         try
         {
-            if (origin == destination)
-            {
-                Snackbar.Add("Origin and Destination can't be same", Severity.Error);
-                loading = false;
-                return;
-            }
-
             createShipmentResponse = await _apiService.CreateShipment(shipmentModel);
             
             if (createShipmentResponse.statusCode == 401)

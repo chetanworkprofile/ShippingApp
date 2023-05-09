@@ -39,5 +39,7 @@ namespace ShippingClient.Services.Contracts
         public Task<GlobalResponse> GetDriverEarningsForChart(Guid driverId);
         public Task<GlobalResponse> GetAdminEarnings();
         public Task<GlobalResponse> GetAdminEarningsForChart();
+        public Task<GlobalResponse> CreateOrder(int amount);
+        public Task<GlobalResponse> VerifyPayment(string paymentId, string orderId, string signature);
     }
 }

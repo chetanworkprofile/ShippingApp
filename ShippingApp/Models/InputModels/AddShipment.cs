@@ -2,6 +2,7 @@
 {
     public class AddShipment
     {
+        public Guid transactionRecordId { get; set; }
         public Guid productTypeId { get; set; }
         public Guid containerTypeId { get; set; }
         public decimal? shipmentWeight { get; set; }

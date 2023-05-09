@@ -1,5 +1,5 @@
 ﻿mapboxgl.accessToken = 'pk.eyJ1Ijoiam9vc2hpIiwiYSI6ImNsaDRjeTBiazBqeG0zZ281enNzOXR4cjcifQ.eLxwYoRL5rhHhQxjv9mZkg';
-//for checkpoints
+//for adding checkpoints by admin map
 function initialize() {
     const map = new mapboxgl.Map({
         container: document.getElementById("map"), // container ID
@@ -230,9 +230,54 @@ function shipmentHistory(lats, longis, count, shipmentStatus, shipmentLongitude,
         });
 }
 
+function createOrder(name, email, phone, address, orderId) {
+    //var orderId = "order_LnS9siHznqfFkn"
+    var options = {
+        "name": "Shippi",
+        "description": "New Shipment Order",
+        "order_id": orderId,
+        "image": "https://img.icons8.com/?size=512&id=18974&format=png",
+        "prefill": {
+            "name": name,
+            "email": email,
+            "contact": phone,
+        },
+        "notes": {
+            "address": address
+        },
+        "theme": {
+            "color": "#594AE2"
+        }
+    }
+    // Boolean whether to show image inside a white frame. (default: true)
 
+    options.handler = function (response) {
+        DotNet.invokeMethodAsync('ShippingClient', 'VerifyResponseRazorpay', response.razorpay_payment_id, orderId, response.razorpay_signature);
+        //document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+        //document.getElementById('razorpay_order_id').value = orderId;
+        //document.getElementById('razorpay_signature').value = response.razorpay_signature;
+        //document.razorpayForm.submit();
+        //return values to c# function from here
+        // return 
+    };
+    options.modal = {
+        ondismiss: function () {
+            console.log("This code runs when the popup is closed");
+        },
+        // Boolean indicating whether pressing escape key
+        // should close the checkout form. (default: true)
+        escape: true,
+        // Boolean indicating whether clicking translucent blank
+        // space outside checkout form should close the form. (default: false)
+        backdropclose: false
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+}
 
-
+function GetResult() {
+    return res;
+}
 
 
 

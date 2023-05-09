@@ -4,6 +4,7 @@ namespace ShippingClient.Models
 {
     public class CreateShipment
     {
+        public Guid transactionRecordId { get; set; }
         public Guid productTypeId { get; set; }
         public Guid containerTypeId { get; set; }
         [Required]

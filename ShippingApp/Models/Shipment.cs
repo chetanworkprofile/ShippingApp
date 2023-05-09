@@ -5,6 +5,7 @@ namespace ShippingApp.Models
     public class Shipment
     {
         public Guid customerId { get; set; }
+        public Guid transactionRecordId { get; set; }
         public Guid productTypeId { get; set; }
         public Guid containerTypeId { get; set; }
         public decimal? shipmentWeight { get; set; }
@@ -17,6 +18,7 @@ namespace ShippingApp.Models
         public Shipment(Guid id,AddShipment a)
         {
             customerId= id;
+            transactionRecordId= a.transactionRecordId;
             productTypeId = a.productTypeId;
             containerTypeId = a.containerTypeId;
             shipmentWeight = a.shipmentWeight;
