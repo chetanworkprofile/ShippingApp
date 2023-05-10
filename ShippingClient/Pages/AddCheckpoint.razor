@@ -19,12 +19,12 @@
                             <ValidationMessage For="@(()=>checkpointModel.checkpointName)" />
                         </div>
                         <div class="my-2">
-                            <button disabled="@loading" type="submit" class="btn btn-primary">
-                                @if (loading)
+                            <button disabled="@IsSpin" type="submit" class="btn btn-primary">
+                                @if (IsSpin)
                                 {
                                     <span class="spinner-border spinner-border-sm mr-1"></span>
                                     Task.Delay(5000);
-                                    loading = false;
+                                    //loading = false;
                                 }
                                 Add
                             </button>
@@ -33,6 +33,10 @@
                 </div>
             </div>
         </div>
+        <MudPopover Open="@IsSpin" Class="px-4 pt-4" Style="padding: 10px;" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+            <div class=@(IsSpin ? "spinner-border spinner-border-sm mr-1" : "")  style="height: 5vh; width: 5vh; border-radius: 50%;">
+            </div>
+        </MudPopover>
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized</p>
@@ -49,6 +53,7 @@
     GlobalResponse addResponse = new();
     [Inject] ISnackbar Snackbar { get; set; }
     private bool loading;
+    private bool IsSpin = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -67,8 +72,10 @@
 
     async Task DoAddCheckpoint()
     {
-        loading = true;
-
+        //loading = true;
+        IsSpin = true;
+        Console.WriteLine(IsSpin);
+        StateHasChanged();
         try
         {
             addResponse = await _apiService.AddCheckpoint(checkpointModel);
@@ -95,10 +102,15 @@
                     config.IconSize = Size.Small;
                 });
             }
+            checkpointModel.checkpointName = "";
+            IsSpin = false;
+            Console.WriteLine(IsSpin);
+            StateHasChanged();
         }
         catch (Exception ex)
         {
-            Snackbar.Add(ex.Message, Severity.Error);
+            Snackbar.Add("Server Error", Severity.Error);
+            IsSpin = false;
             loading = false;
             StateHasChanged();
         }

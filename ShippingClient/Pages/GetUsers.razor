@@ -100,7 +100,7 @@
     {
         try
         {
-            result = await _apiService.GetUsers(pageNo, search);
+            result = await _apiService.GetUsers(pageNumber: pageNo, search: search);
             loading = false;
             if (result.statusCode == 401)
             {

@@ -16,7 +16,7 @@ namespace ShippingClient.Services.Contracts
         public Task<GlobalResponse> AddContainerType(AddContainerType model);
         public Task<GlobalResponse> AddDriver(AddDriver model);
         //public Task<LoginResponse> AddManager(AddManager model);
-        public Task<GetUsersResponse> GetUsers(int pageNumber = 1, string? search = null);
+        public Task<GetUsersResponse> GetUsers(string? userId = null, string? search = null, string? userType = null, int pageNumber = 1);
         public Task<GlobalResponse> UpdateDriverLocation(Guid checkpointId);
         public Task<GetYourselfResponse> GetYourself();
         public Task<GetShipmentsCutomerResponse> GetShipmentsForCustomer(Guid customerId);

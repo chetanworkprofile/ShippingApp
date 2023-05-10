@@ -134,27 +134,27 @@
 				<MudGrid Spacing="2" Justify="Justify.SpaceBetween">
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
-							<MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Earnings : @driverEarnings!.totalEarnings</b></div>
+							<MudIcon Icon="@Icons.Material.Filled.CurrencyRupee" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1">Your <b>Total Earnings : @driverEarnings!.totalEarnings.ToString("N0")</b></div>
 							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1"><b>This Month's Earnings : @driverEarnings!.monthlyEarning</b></div>
+							<div class="mb-1"><b>This Month's Earnings : @driverEarnings!.monthlyEarning.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1"><b>Today's Earnings : @driverEarnings!.todayEarning</b></div>
+							<div class="mb-1"><b>Today's Earnings : @driverEarnings!.todayEarning.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Trips : @driverEarnings!.totalTrips</b></div>
+							<div class="mb-1">Your <b>Total Trips : @driverEarnings!.totalTrips.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 				</MudGrid>
@@ -187,39 +187,39 @@
 				<MudGrid Spacing="2" Justify="Justify.SpaceBetween">
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
-							<MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Revenue : @adminEarnings!.totalRevenue</b></div>
+							<MudIcon Icon="@Icons.Material.Filled.CurrencyRupee" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1">Your <b>Total Revenue : @adminEarnings!.totalRevenue.ToString("N0")</b></div>
 							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1"><b>This Month's Revenue : @adminEarnings!.monthRevenue</b></div>
+							<div class="mb-1"><b>This Month's Revenue : @adminEarnings!.monthRevenue.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1"><b>Today's Revenue : @adminEarnings!.todayRevenue</b></div>
+							<div class="mb-1"><b>Today's Revenue : @adminEarnings!.todayRevenue.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Shipments : @adminEarnings!.totalShipment</b></div>
+							<div class="mb-1">Your <b>Total Shipments : @adminEarnings!.totalShipment.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>This Month's Shipments : @adminEarnings!.monthshipment</b></div>
+							<div class="mb-1">Your <b>This Month's Shipments : @adminEarnings!.monthshipment.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 					<MudItem xs="12" md="6" lg="4" xl="4">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Today's Shipments : @adminEarnings!.todayShipment</b></div>
+							<div class="mb-1">Your <b>Today's Shipments : @adminEarnings!.todayShipment.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 				</MudGrid>

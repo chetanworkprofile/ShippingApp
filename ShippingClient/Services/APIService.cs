@@ -269,21 +269,34 @@ namespace ShippingClient.Services
 
         }
 
-        public async Task<GetUsersResponse> GetUsers(int pageNumber = 1,string? search = null)
+        public async Task<GetUsersResponse> GetUsers(string? userId = null, string? search = null, string? userType = null,int pageNumber = 1)
         {
             try
             {
                 GetUsersResponse? users;
                 string url = string.Empty;
                 string savedToken = await _localStorage.GetItemAsync<string>("accessToken");
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}");
+                if(userType!= null)
+                {
+                    sb.Clear();
+                    sb.Append($"api/v1/admin/get?userType={userType}&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}");
+                }
                 if (search != null)
                 {
-                    url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}&searchString={search}";
+                    sb.Append($"&searchString={search}");
+                    //url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}&searchString={search}";
                 }
-                else
-                {
-                    url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}";
-                }
+				if (userId != null)
+				{
+					sb.Append($"&UserId={userId}");
+					//url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}&searchString={search}";
+				}
+				//else
+                //{
+                    //url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}";
+                //}
                 var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}{url}");
                 
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);

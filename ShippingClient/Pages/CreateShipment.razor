@@ -119,7 +119,7 @@
                 }
             </div>
         </div>
-        <MudPopover Open="@_isOpen" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+        <MudPopover Open="@_isOpen" Class="px-4 pt-4" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter" Style="z-index: 2;">
             <div class="container d-flex flex-column">
                 <MudPaper Width="40vw" Height="40vh" Class="col-6" Square="true">
                     <MudList>
@@ -132,20 +132,20 @@
                         <MudListItem>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>Cost</div>
-                                <div>@((int)cost)</div>
+                                <div>@(cost.ToString("N0"))</div>
                             </div>
                         </MudListItem>
                         <MudListItem>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>GST(18% of cost)</div>
-                                <div>@((int)(0.18*cost))</div>
+                                <div>@((0.18 * cost).ToString("N0"))</div>
                             </div>
                         </MudListItem>
                         <MudDivider />
                         <MudListItem>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>Total Cost</div>
-                                <div>@((int)(1.18*cost))</div>
+                                <div>@((1.18 * cost).ToString("N0"))</div>
                             </div>
                         </MudListItem>
                     </MudList>
@@ -154,6 +154,10 @@
                     Confirm & Proceed to pay
                 </MudButton>
                 <MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+            </div>
+        </MudPopover>
+        <MudPopover Open="@IsSpin" Class="px-4 pt-4" Style="padding: 10px; z-index:10;" AnchorOrigin="Origin.CenterCenter" TransformOrigin="Origin.CenterCenter">
+            <div class=@(IsSpin ? "spinner-border spinner-border-sm mr-1" : "") style="height: 5vh; width: 5vh; border-radius: 50%;">
             </div>
         </MudPopover>
     </Authorized>
@@ -185,6 +189,7 @@
     decimal weight;
     string notes = string.Empty;
     public bool _isOpen = false;
+    private bool IsSpin = false;
 
     public float cost = 0;
 
@@ -196,12 +201,15 @@
     public async Task Calculate()
     {
         loading = true;
+        IsSpin = true;
+        StateHasChanged();
         shipmentModel.origin = origin;
         shipmentModel.destination = destination;
         shipmentModel.productTypeId = productTypeId;
         shipmentModel.containerTypeId = containerTypeId;
         GlobalResponse response = await _apiService.GetCost(shipmentModel);
         cost = JsonSerializer.Deserialize<float>(JsonSerializer.Serialize(response.data));
+        IsSpin = false;
         StateHasChanged();
     }
 

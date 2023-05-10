@@ -1,0 +1,260 @@
+﻿@page "/adminGetDriverProfile/{Id}"
+<h3>@userModel.firstName 's Profile</h3>
+
+<AuthorizeView>
+	<Authorized Context="auth">
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
+			<MudContainer Fixed="true">
+				<MudGrid Spacing="1">
+					<MudItem xs="12" md="5" lg="5" xl="5">
+						<MudPaper Class="pa-16 ma-4" Height="90%">
+							<div class="d-flex flex-column align-items-center text-center" style=" height: 100%;">
+								<MudAvatar Color="Color.Surface" Style="height:120px; width: 120px; background:; font-size:3rem">@userModel.firstName.ToList().FirstOrDefault()</MudAvatar>
+								<div class="mt-3">
+									<h4 class="text-secondary mb-1"><b>@userModel.firstName @userModel.lastName</b></h4>
+									<p class="text-secondary mb-1">Role : @userModel.userRole</p>
+									<p class="text-muted font-size-sm">Joined on : @userModel.createdAt</p>
+									@*<div class="row">
+									<div class="d-flex justify-content-center">
+									<AuthorizeView Roles="admin">
+									<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@ToggleOpenDelete">Delete Account</MudButton>
+									</AuthorizeView>
+									</div>
+									</div>*@
+								</div>
+							</div>
+						</MudPaper>
+					</MudItem>
+					<MudItem xs="12" md="7" lg="7" xl="7">
+						<MudPaper Class="pa-16 ma-4" Height="90%">
+							<EditForm Model="userModel">
+								<div style="height: 100%;">
+									<div class="row mb-1">
+										<div class="col-sm-3">
+											<h6 class="mt-3">First Name</h6>
+										</div>
+										<div class="col-sm-9 text-secondary">
+											<MudTextField @bind-Value="userModel.firstName" Variant="Variant.Outlined" Disabled="true" Margin="Margin.Dense" />
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="col-sm-3">
+											<h6 class="mt-3">Last Name</h6>
+										</div>
+										<div class="col-sm-9 text-secondary">
+											<MudTextField @bind-Value="userModel.lastName" Variant="Variant.Outlined" Disabled="true" Margin="Margin.Dense" />
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="col-sm-3">
+											<h6 class="mt-3">Email</h6>
+										</div>
+										<div class="col-sm-9 text-secondary">
+											<MudTextField @bind-Value="userModel.email" Variant="Variant.Outlined" Disabled="true" Margin="Margin.Dense" />
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="col-sm-3">
+											<h6 class="mt-3">Contact No</h6>
+										</div>
+										<div class="col-sm-9 text-secondary">
+											<MudTextField @bind-Value="userModel.contactNo" Variant="Variant.Outlined" Disabled="true" Margin="Margin.Dense" />
+										</div>
+									</div>
+									<div class="row mb-1">
+										<div class="col-sm-3">
+											<h6 class="mt-3">Address</h6>
+										</div>
+										<div class="col-sm-9 text-secondary">
+											<MudTextField @bind-Value="userModel.address" Variant="Variant.Outlined" Disabled="true" Margin="Margin.Dense" />
+										</div>
+									</div>
+								</div>
+							</EditForm>
+						</MudPaper>
+					</MudItem>
+				</MudGrid>
+			</MudContainer>
+		</MudPaper>
+		@*<MudPopover Open="@_isOpenDelete" Style="margin-top: 15%;" Class="px-6 pt-6" AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.CenterCenter">
+		<div class="d-flex flex-column">
+		<MudText>Are You Sure you want to Delete this account ?</MudText>
+		<p><b>Note : </b>You will not be able to access this.</p>
+		<MudTextField T="string" Label="Password" @bind-Value=deleteModel.password
+		InputType="InputType.Password" HelperText="Enter password to proceed" Required="true"
+		RequiredError="Password is required!" />
+		<div class="d-flex justify-content-center" style="margin: 2% auto">
+		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Class="mx-2 ml-auto" Style="margin: 1% auto;" Color="Color.Error" OnClick="@Delete">Delete</MudButton>
+		<MudButton Variant="Variant.Filled" OnClick="@ToggleOpenDelete" Class="mx-2 ml-auto" Style="margin:1% auto;" Color="Color.Default">Close</MudButton>
+		</div>
+		</div>
+		</MudPopover>*@
+		<h3>@userModel.firstName 's Analytics</h3>
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
+			<MudContainer Class="mt-4">
+				<MudGrid Spacing="2" Justify="Justify.SpaceBetween">
+					<MudItem xs="12" md="6" lg="3" xl="3">
+						<MudPaper Elevation="4" Class="p-3 text-center">
+							<MudIcon Icon="@Icons.Material.Filled.CurrencyRupee" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1">Your <b>Total Earnings : @driverEarnings!.totalEarnings.ToString("N0")</b></div>
+							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
+						</MudPaper>
+					</MudItem>
+					<MudItem xs="12" md="6" lg="3" xl="3">
+						<MudPaper Elevation="4" Class="p-3 text-center">
+							<MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1"><b>This Month's Earnings : @driverEarnings!.monthlyEarning.ToString("N0")</b></div>
+						</MudPaper>
+					</MudItem>
+					<MudItem xs="12" md="6" lg="3" xl="3">
+						<MudPaper Elevation="4" Class="p-3 text-center">
+							<MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1"><b>Today's Earnings : @driverEarnings!.todayEarning.ToString("N0")</b></div>
+						</MudPaper>
+					</MudItem>
+					<MudItem xs="12" md="6" lg="3" xl="3">
+						<MudPaper Elevation="4" Class="p-3 text-center">
+							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
+							<div class="mb-1">Your <b>Total Trips : @driverEarnings!.totalTrips.ToString("N0")</b></div>
+						</MudPaper>
+					</MudItem>
+				</MudGrid>
+			</MudContainer>
+		</MudPaper>
+		<h3>Earnings Chart</h3>
+		<MudPaper Height="100%" MaxWidth="85vw" Width="80vw" Style="background: #594AE2; margin-bottom: 2%">
+			<MudGrid Spacing="1">
+				<MudItem xs="12" md="12" lg="12" xl="12">
+					<MudPaper Class="ma-4" Square="true">
+						<MudChart Style="padding: 1% 2%;" ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Height="70vh" Width="100%" ChartOptions="chartOptions"></MudChart>
+					</MudPaper>
+				</MudItem>
+			</MudGrid>
+		</MudPaper>
+	</Authorized>
+	<NotAuthorized>
+		<p>You are not authorized</p>
+		@if (true)
+		{
+			_navMgr.NavigateTo("/login");
+		}
+	</NotAuthorized>
+</AuthorizeView>
+
+@code {
+	[Parameter]
+	public string? Id { get; set; }
+
+	public bool _isOpenDelete;
+	Models.ResponseUser userModel = new();
+	GetYourselfResponse getUserResponse = new();
+	GlobalResponse globalResponse = new();
+	private bool loading = false;
+	[Inject] ISnackbar Snackbar { get; set; }
+	public bool isDisabled = true;
+
+	DeleteUser deleteModel = new();
+
+	GlobalResponse res = new();
+	GetDriverEarnings? driverEarnings = new();
+
+	private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+	public ChartOptions chartOptions = new ChartOptions();
+	static GlobalResponse response = new GlobalResponse();
+	static string dat = "";
+	public List<ChartSeries> Series = new();
+	public List<ChartSeries> Series2 = new();
+
+	public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+	public bool loadDriverFunc = true;
+	public bool loadAdminFunc = true;
+
+
+	protected override async void OnParametersSet()
+	{
+		GetUsersResponse temp = await _apiService.GetUsers(userId: Id);
+		if (temp.statusCode == 401)
+		{
+			_navMgr.NavigateTo("/logout");
+			return;
+		}
+
+		userModel = temp.data.list.FirstOrDefault();
+		StateHasChanged();
+		res = await _apiService.GetDriverEarnings(userModel.userId);
+		var obj = JsonSerializer.Serialize(res.data);
+		driverEarnings = JsonSerializer.Deserialize<ShippingClient.Models.GetDriverEarnings>(obj);
+		response = await _apiService.GetDriverEarningsForChart(userModel.userId);
+
+		dat = JsonSerializer.Serialize(response.data);
+		double[] data = JsonSerializer.Deserialize<double[]>(dat);
+		for (int i = 0; i < data.Count(); i++)
+		{
+			data[i] = data[i] / 1000;
+		}
+		Series = new List<ChartSeries>()
+		{
+			new ChartSeries() { Name = "Monthly Earnings (in thousands i.e, 1 unit = 1000)", Data = data },
+		};
+		loadDriverFunc = false;
+		StateHasChanged();
+	}
+
+	//public void ToggleOpenDelete()
+	//{
+	//	if (_isOpenDelete)
+	//	{
+	//		_isOpenDelete = false;
+	//	}
+	//	else
+	//		_isOpenDelete = true;
+	//}
+
+	//public async Task Delete()
+	//{
+	//	loading = true;
+	//	globalResponse = await _apiService.DeleteUser(deleteModel);
+	//	if (globalResponse.statusCode == 200)
+	//	{
+	//		Snackbar.Add("User Deleteed successfully", Severity.Success, config =>
+	//		{
+	//			config.Icon = Icons.Material.Filled.Done;
+	//			config.IconColor = Color.Warning;
+	//			config.IconSize = Size.Small;
+	//		});
+	//		_navMgr.NavigateTo("/login");
+	//	}
+	//	else
+	//	{
+	//		Snackbar.Add(globalResponse.message, Severity.Error, config =>
+	//		{
+	//			config.Icon = Icons.Material.Filled.Error;
+	//			config.IconColor = Color.Warning;
+	//			config.IconSize = Size.Small;
+	//		});
+	//	}
+	//	loading = false;
+	//}
+
+	Random random = new Random();
+	public void RandomizeData()
+	{
+		var new_series = new List<ChartSeries>()
+		{
+			new ChartSeries() { Name = "Series 1", Data = new double[9] },
+		};
+		for (int i = 0; i < 9; i++)
+		{
+			new_series[0].Data[i] = random.NextDouble() * 100;
+		}
+		Series = new_series;
+		//StateHasChanged();
+	}
+
+	public void RandomizeLineWidths()
+	{
+		chartOptions.LineStrokeWidth = random.NextInt64(1, 10);
+		//StateHasChanged();
+	}
+}

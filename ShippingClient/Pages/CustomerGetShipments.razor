@@ -8,6 +8,9 @@
         <div class="row">
             <div>
                 <h3>Shipment History</h3>
+                <div class="row justify-content-end" style="margin: 10px;">
+                    <MudFab Class="col-4" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Refresh" Size="Size.Medium" OnClick="@Refresh" />
+                </div>
                 <MudTable Loading="@loading" Items="@shipmentList" Hover="true" >
                     <HeaderContent>
                         <MudTh>Id</MudTh>
@@ -68,6 +71,12 @@
     {
         _navMgr.NavigateTo($"/tracking/{id}");
         return 0;
+    }
+
+    public async Task Refresh()
+    {
+        await GetShipmentsTypesList();
+        StateHasChanged();
     }
 
     async Task GetShipmentsTypesList()

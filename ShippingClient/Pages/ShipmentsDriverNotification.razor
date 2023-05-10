@@ -129,6 +129,7 @@
             var driverIdResponse = await _apiService.GetDrivers(driverId);
             Guid checkpoint = driverIdResponse.FirstOrDefault().checkpointLocation;
             shipments = await _apiService.GetAvailableShipments(checkpoint);
+            shipments = shipments.OrderByDescending(s => s.time).ToList();
             loading = false;
             StateHasChanged();
         }
