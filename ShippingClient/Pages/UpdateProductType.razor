@@ -10,7 +10,7 @@
        @* <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">*@
             <h4 class="card-header">Update Product Type</h4>
             <div class="card-body">
-                <EditForm Model="productTypeModel" OnSubmit="DoUpdateProductType">
+            <EditForm Model="productTypeModel" OnSubmit="DoUpdateProductType" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                     <div class="form-group">
                         <label for="type">Type (name)</label>
@@ -86,6 +86,16 @@
             productTypeModel = JsonSerializer.Deserialize<List<Models.UpdateProductType>>(obj).FirstOrDefault();
             isFragileCheck = productTypeModel.isFragile;
             StateHasChanged();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+        
+        if (e.Key == "Enter")
+        {
+            await DoUpdateProductType();
         }
     }
 

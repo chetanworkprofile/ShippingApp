@@ -8,7 +8,7 @@
        @* <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">*@
             <h4 class="card-header">Add New Product Type</h4>
             <div class="card-body">
-                <EditForm Model="productTypeModel" OnSubmit="DoAddProductType">
+            <EditForm Model="productTypeModel" OnSubmit="DoAddProductType" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                     <div class="form-group">
                         <label for="type">Type (name)</label>
@@ -63,6 +63,16 @@
     private bool isFragileCheck = true;
     [Inject] ISnackbar Snackbar { get; set; }
     
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+        
+        if (e.Key == "Enter")
+        {
+            await DoAddProductType();
+        }
+    }
+
     async Task DoAddProductType()
     {
         loading = true;

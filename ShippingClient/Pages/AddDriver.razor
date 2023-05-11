@@ -8,7 +8,7 @@
         <div class="card col-sm-6" style="margin: 2% auto; justify-content:center">
             <h4 class="card-header">Add New Driver</h4>
             <div class="card-body">
-                <EditForm Model="driverModel" OnValidSubmit="DoAddDriver">
+                <EditForm Model="driverModel" OnValidSubmit="DoAddDriver" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                      <div class="form-group">
                        <label for="firstName">First Name</label>
@@ -119,6 +119,16 @@
     {
         checkPoint = new Guid(originEvent.Value!.ToString()!);
         this.StateHasChanged();
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+
+        if (e.Key == "Enter")
+        {
+            await DoAddDriver();
+        }
     }
 
     async Task DoAddDriver()

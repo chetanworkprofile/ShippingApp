@@ -16,7 +16,7 @@
         <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
             <h4 class="card-header">Login</h4>
             <div class="card-body">
-                <EditForm Model="@loginModel" OnValidSubmit="DoLogin" @onkeydown="@HandleKeyDown">
+                <EditForm Model="@loginModel" OnValidSubmit="DoLogin" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                         <MudCard>
                         <MudForm Model="loginModel" @ref=form ReadOnly="false">

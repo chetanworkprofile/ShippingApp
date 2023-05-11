@@ -9,7 +9,7 @@
         <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">
             <h4 class="card-header">Update Location</h4>
             <div class="card-body">
-                <EditForm Model="point" OnSubmit="DoUpdateLocation">
+                <EditForm Model="point" OnSubmit="DoUpdateLocation" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                     <div class="row">
                         <div class="col-md-4">
@@ -75,6 +75,16 @@
         var obj = JsonSerializer.Serialize(res.data);
         checkpointsList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
         StateHasChanged();
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+        
+        if (e.Key == "Enter")
+        {
+            await DoUpdateLocation();
+        }
     }
 
     async Task DoUpdateLocation()

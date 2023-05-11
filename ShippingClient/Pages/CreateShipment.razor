@@ -14,7 +14,7 @@
                     <p><em>Loading...</em></p>
                 }
                 else{
-                    <EditForm Model="shipmentModel" OnValidSubmit="ToggleOpen">
+                    <EditForm Model="shipmentModel" OnValidSubmit="ToggleOpen" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                     <div class="row">
                         <div class="col-md-4">
@@ -250,6 +250,16 @@
     string searchDest = "";
     string searchProductType = "";
     string searchContainerType = "";
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+
+        if (e.Key == "Enter")
+        {
+            await ToggleOpen();
+        }
+    }
 
     public async Task Calculate()
     {

@@ -11,7 +11,7 @@
             <div class="card col-sm-6" style="margin: 2% auto; justify-content:center">
                 <h4 class="card-header">Add New Checkpoint</h4>
                 <div class="card-body">
-                    <EditForm Model="checkpointModel" OnSubmit="DoAddCheckpoint">
+                    <EditForm Model="checkpointModel" OnSubmit="DoAddCheckpoint" @onkeyup="@HandleKeyDown">
                         <DataAnnotationsValidator />
                         <div class="form-group">
                             <label for="type">Name</label>
@@ -68,6 +68,16 @@
     {
         checkpointModel.latitude = a;
         checkpointModel.longitude = b;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+        
+        if (e.Key == "Enter")
+        {
+            await DoAddCheckpoint();
+        }
     }
 
     async Task DoAddCheckpoint()

@@ -19,7 +19,7 @@
             <div class="card-body">
                 <EditForm Model="@registerModel" OnValidSubmit="DoRegister">
                     <MudCard>
-                        <MudForm Model="registerModel" @ref=form ReadOnly="false" @onkeydown="@HandleKeyDown">
+                        <MudForm Model="registerModel" @ref=form ReadOnly="false" @onkeyup="@HandleKeyDown">
                             <MudCardContent>
                                 <MudTextField T="string" Label="First Name" Required="true" @bind-Value="registerModel.firstName" 
                                               ValidationMessage For="@(()=>registerModel.firstName)"

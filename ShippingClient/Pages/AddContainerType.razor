@@ -8,7 +8,7 @@
        @* <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">*@
             <h4 class="card-header">Add New Container Type</h4>
             <div class="card-body">
-                <EditForm Model="containerTypeModel" OnSubmit="DoAddContainerType">
+            <EditForm Model="containerTypeModel" OnSubmit="DoAddContainerType" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                     <div class="form-group">
                         <label for="name">Container Type Name</label>
@@ -52,6 +52,16 @@
     private bool loading;
     [Inject] ISnackbar Snackbar { get; set; }
 
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+        
+        if (e.Key == "Enter")
+        {
+            await DoAddContainerType();
+        }
+    }
     
     async Task DoAddContainerType()
     {

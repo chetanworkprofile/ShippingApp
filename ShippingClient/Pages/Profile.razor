@@ -28,7 +28,7 @@
 					</MudItem>
 					<MudItem xs="12" md="7" lg="7" xl="7">
 						<MudPaper Class="pa-16 ma-4" Height="90%">
-							<EditForm Model="userModel">
+							<EditForm Model="userModel" @onkeyup="@HandleKeyDown">
 								<div style="height: 100%;">
 									<div class="row mb-1">
 										<div class="col-sm-3">
@@ -279,6 +279,15 @@
 	public bool loadDriverFunc = true;
 	public bool loadAdminFunc = true;
 
+	private async Task HandleKeyDown(KeyboardEventArgs e)
+	{
+		Snackbar.Clear();
+
+		if (e.Key == "Enter")
+		{
+			await Update();
+		}
+	}
 
 	protected override async Task OnInitializedAsync()
 	{

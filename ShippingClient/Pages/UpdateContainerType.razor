@@ -10,7 +10,7 @@
        @* <div class="card col-sm-6" style="margin: 10% auto; justify-content:center">*@
             <h4 class="card-header">Update Container Type</h4>
             <div class="card-body">
-                <EditForm Model="containerTypeModel" OnSubmit="DoUpdateContainerType">
+            <EditForm Model="containerTypeModel" OnSubmit="DoUpdateContainerType" @onkeyup="@HandleKeyDown">
                     <DataAnnotationsValidator />
                     <div class="form-group">
                         <label for="name">Container Type Name</label>
@@ -69,6 +69,16 @@
             containerTypeModel = JsonSerializer.Deserialize<List<Models.UpdateContainerType>>(obj).FirstOrDefault();
             Console.WriteLine(containerTypeModel);
             StateHasChanged();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        Snackbar.Clear();
+        
+        if (e.Key == "Enter")
+        {
+            await DoUpdateContainerType();
         }
     }
 
