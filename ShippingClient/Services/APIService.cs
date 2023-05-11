@@ -87,11 +87,20 @@ namespace ShippingClient.Services
                 throw;
             }
         }
-        public async Task<GlobalResponse> GetCheckpoints()
+        public async Task<GlobalResponse> GetCheckpoints(string? search=null)
         {
             try
             {
-                var checkpoints = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/checkpoints");
+                GlobalResponse checkpoints = new();
+                if(search != null)
+                {
+                    checkpoints = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/checkpoints?checkpointName={search}");
+                }
+                else
+                {
+                    checkpoints = await _httpClient.GetFromJsonAsync<GlobalResponse>($"{baseUrl}api/v1/get/checkpoints");
+
+                }
                 return checkpoints!;
             }
             catch (Exception ex)
@@ -297,6 +306,7 @@ namespace ShippingClient.Services
                 //{
                     //url = $"api/v1/admin/get?userType=all&Phone=-1&OrderBy=Id&SortOrder=1&RecordsPerPage=10&PageNumber={pageNumber}";
                 //}
+                url = sb.ToString();
                 var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}{url}");
                 
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);

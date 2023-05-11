@@ -8,7 +8,7 @@ namespace ShippingClient.Services.Contracts
         public Task<GlobalResponse> GetProductTypes(string? search = null, Guid? productTypeId = null);
         public Task<GlobalResponse> AddCheckpoint(AddCheckpoint model);
         public Task<GlobalResponse> GetContainerTypes(string? search = null, Guid? containerTypeId = null);
-        public Task<GlobalResponse> GetCheckpoints();
+        public Task<GlobalResponse> GetCheckpoints(string? search=null);
         public Task<GlobalResponse> GetCheckpointsByName(string name);
         public Task<GlobalResponse> CreateShipment(CreateShipment model);
         public Task<GlobalResponse> AddProductType(AddProductType model);

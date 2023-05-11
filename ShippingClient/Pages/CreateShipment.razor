@@ -23,13 +23,25 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@ProductTypeClicked" required>
+                            <input type="text" list="list-productTypes" class="form-control" placeholder="search ProductType" @bind="searchProductType" @bind:event="oninput" />
+                                <datalist id="list-productTypes">
+                                    @if (productTypeList != null)
+                                    {
+                                        foreach (var a in productTypeList)
+                                        {
+                                            {
+                                                <option value="@a.type" />
+                                            }
+                                        }
+                                    }
+                                </datalist>
+                            @*<select class="form-control" onchange="@ProductTypeClicked" required>
                                 <option value="" disabled selected>-- Select ProductType --</option>
                                 @foreach (var product in productTypeList)
                                 {
                                     <option value="@product.productTypeId">@product.type</option>
                                 }
-                            </select>
+                            </select>*@
                         </div>
                     </div>
                     <div class="row">
@@ -39,7 +51,19 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@ContainerTypeClicked" required>
+                                <input type="text" list="list-containerTypes" class="form-control" placeholder="search ContainerType" @bind="searchContainerType" @bind:event="oninput" />
+                                <datalist id="list-containerTypes">
+                                    @if (productTypeList != null)
+                                    {
+                                        foreach (var a in containerTypeList)
+                                        {
+                                            {
+                                                <option value="@a.containerName" />
+                                            }
+                                        }
+                                    }
+                                </datalist>
+                            @*<select class="form-control" onchange="" required>
                                 <option value="" disabled selected>-- Select ContainerType --</option>
                                 @if (containerTypeList != null)
                                 {
@@ -48,7 +72,7 @@
                                         <option value="@container.containerTypeId">@container.containerName</option>
                                     }
                                 }
-                            </select>
+                            </select>*@
                         </div>
                     </div>
                     @*//----------------------------------------------------------------//*@
@@ -59,20 +83,37 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@OriginClicked" required>
+                                <input type="text" list="list-origin" class="form-control" placeholder="search origin" @bind="searchOrigin" @bind:event="oninput" />
+                                <datalist id="list-origin">
+                                    @if (originList != null)
+                                    {
+                                        foreach (var origin in originList)
+                                        {
+                                            @*if (dest.checkpointId == origin)
+                                            {
+                                            <option value="@dest.checkpointId" disabled>@dest.checkpointName</option>
+                                            }
+                                            else*@
+                                            {
+                                                <option value="@origin.checkpointName"/>
+                                            }
+                                        }
+                                    }
+                                </datalist>
+                            @*<select class="form-control" onchange="@OriginClicked" required>
                                 <option value="" disabled selected>-- Select Origin --</option>
-                                @foreach (var origin in checkpointsList)
+                                @foreach (var origin in originList)
                                 {
                                     @*if (origin.checkpointId == destination)
                                     {
                                         <option value="@origin.checkpointId" disabled>@origin.checkpointName</option>
                                     }
-                                    else*@
+                                    else*
                                     {
                                         <option value="@origin.checkpointId">@origin.checkpointName</option>    
                                     }
                                 }
-                            </select>
+                            </select>*@
                         </div>
                     </div>
                         <div class="row">
@@ -82,20 +123,26 @@
                     </div>
                     <div class="row" style="padding-top:10px">
                         <div class="col-md">
-                            <select class="form-control" onchange="@DestinationClicked" required>
-                                <option value="" disabled selected>-- Select Destination --</option>
-                                    @foreach (var dest in checkpointsList)
+                            <input type="text" list="list-dest" class="form-control" placeholder="search destination" @bind="searchDest" @bind:event="oninput"  />
+                            @*<select class="form-control" onchange="@DestinationClicked" required>*@
+                                    @*<option value="" disabled selected>-- Select Destination --</option>*@
+                                    <datalist id="list-dest">
+                                    @if (destList != null)
                                     {
-                                        @*if (dest.checkpointId == origin)
+                                        foreach (var dest in destList)
                                         {
+                                            @*if (dest.checkpointId == origin)
+                                            {
                                             <option value="@dest.checkpointId" disabled>@dest.checkpointName</option>
-                                        }
-                                        else*@
-                                        {
-                                            <option value="@dest.checkpointId">@dest.checkpointName</option>
+                                            }
+                                            else*@
+                                            {
+                                                <option value="@dest.checkpointName"/>
+                                            }
                                         }
                                     }
-                            </select>
+                                </datalist>
+                            @*</select>*@
                         </div>
                     </div>
                     <div class="form-group">
@@ -178,14 +225,15 @@
     [Inject] ISnackbar Snackbar { get; set; }
     List<ProductType> productTypeList = new List<ProductType>();
     List<ContainerType> containerTypeList = new List<ContainerType>();
-    List<Checkpoints> checkpointsList = new List<Checkpoints>();
-    //List<Checkpoints> originList = new List<Checkpoints>();
-    //List<Checkpoints> destList = new List<Checkpoints>();
+    //List<Checkpoints> checkpointsList = new List<Checkpoints>();
+    List<Checkpoints> originList = new List<Checkpoints>();
+    List<Checkpoints> destList = new List<Checkpoints>();
 
     Guid productTypeId;
     Guid containerTypeId;
     Guid origin = Guid.Empty;
     Guid destination = Guid.Empty;
+
     decimal weight;
     string notes = string.Empty;
     public bool _isOpen = false;
@@ -198,6 +246,11 @@
     static string signature = "";
     static CreateShipment _createShipment;
 
+    string searchOrigin = "";
+    string searchDest = "";
+    string searchProductType = "";
+    string searchContainerType = "";
+
     public async Task Calculate()
     {
         loading = true;
@@ -207,25 +260,49 @@
         shipmentModel.destination = destination;
         shipmentModel.productTypeId = productTypeId;
         shipmentModel.containerTypeId = containerTypeId;
-        GlobalResponse response = await _apiService.GetCost(shipmentModel);
-        cost = JsonSerializer.Deserialize<float>(JsonSerializer.Serialize(response.data));
-        IsSpin = false;
-        StateHasChanged();
+        try
+        {
+            GlobalResponse response = await _apiService.GetCost(shipmentModel);
+            if (response.isSuccess == false)
+            {
+                Snackbar.Add(response.message, Severity.Error);
+            }
+            cost = JsonSerializer.Deserialize<float>(JsonSerializer.Serialize(response.data));
+            IsSpin = false;
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            IsSpin = false;
+            StateHasChanged();
+            return;
+        }
     }
 
     public async void ToggleOpen()
     {
+        destination = destList.Where(s => s.checkpointName == searchDest).Select(s=>s.checkpointId).FirstOrDefault();
+        origin = destList.Where(s => s.checkpointName == searchOrigin).Select(s=>s.checkpointId).FirstOrDefault();
+        productTypeId = productTypeList.Where(s => s.type == searchProductType).Select(s=>s.productTypeId).FirstOrDefault();
+        containerTypeId = containerTypeList.Where(s => s.containerName == searchContainerType).Select(s=>s.containerTypeId).FirstOrDefault();
+
         if (origin == destination)
         {
             Snackbar.Add("Origin and Destination can't be same", Severity.Error);
             loading = false;
             return;
         }
-        Calculate();
         if (_isOpen)
+        {
             _isOpen = false;
+            IsSpin = false;
+        }
         else
+        {
+            Calculate();
             _isOpen = true;
+        }
 
         StateHasChanged();
     }
@@ -249,9 +326,10 @@
 
         GlobalResponse res = await _apiService.GetCheckpoints();
         obj = JsonSerializer.Serialize(res.data);
-        checkpointsList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
+        //checkpointsList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
+        originList = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
         //originList = checkpointsList;
-        //destList = checkpointsList;
+        destList = originList;
         _createShipment = this;
         StateHasChanged();
     }
@@ -389,16 +467,16 @@
         }
     }
 
-    void OriginClicked(ChangeEventArgs originEvent)
+    @*void OriginClicked(ChangeEventArgs originEvent)
     {
         //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(originEvent.Value!.ToString()!)).FirstOrDefault();
         //destList = checkpointsList;
         //destList.Remove(temp);
         origin = new Guid(originEvent.Value.ToString());
         this.StateHasChanged();
-    }
+    }*@
 
-    void DestinationClicked(ChangeEventArgs destEvent)
+    @*void DestinationClicked(ChangeEventArgs destEvent)
     {
         //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(destEvent.Value!.ToString()!)).FirstOrDefault();
         //originList = checkpointsList;
@@ -406,9 +484,18 @@
         Console.WriteLine(destEvent.Value);
         destination = new Guid(destEvent.Value.ToString());
         this.StateHasChanged();
-    }
+    }*@
+    @*void DestinationClicked(Guid destId)
+    {
+        //Checkpoints? temp = checkpointsList.Where(s => s.checkpointId == new Guid(destEvent.Value!.ToString()!)).FirstOrDefault();
+        //originList = checkpointsList;
+        //originList.Remove(temp);
+        //Console.WriteLine(destEvent.Value);
+        destination = destId;
+        this.StateHasChanged();
+    }*@
 
-    void ProductTypeClicked(ChangeEventArgs productTypeEvent)
+    @*void ProductTypeClicked(ChangeEventArgs productTypeEvent)
     {
         //productTypeList.Clear();
         productTypeId = new Guid(productTypeEvent.Value.ToString());
@@ -420,5 +507,5 @@
         //containerTypeList.Clear();
         containerTypeId = new Guid(containerTypeEvent.Value.ToString());
         this.StateHasChanged();
-    }
+    }*@
 }
