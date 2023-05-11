@@ -14,13 +14,6 @@
 									<h4 class="text-secondary mb-1"><b>@userModel.firstName @userModel.lastName</b></h4>
 									<p class="text-secondary mb-1">Role : @userModel.userRole</p>
 									<p class="text-muted font-size-sm">Joined on : @userModel.createdAt</p>
-									@*<div class="row">
-									<div class="d-flex justify-content-center">
-									<AuthorizeView Roles="admin">
-									<MudButton Class="mx-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@ToggleOpenDelete">Delete Account</MudButton>
-									</AuthorizeView>
-									</div>
-									</div>*@
 								</div>
 							</div>
 						</MudPaper>
@@ -96,7 +89,7 @@
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.CurrencyRupee" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Earnings : @driverEarnings!.totalEarnings.ToString("N0")</b></div>
+							<div class="mb-1"><b>Total Earnings : @driverEarnings!.totalEarnings.ToString("N0")</b></div>
 							@*<MudButton Color="Color.Secondary">View Details</MudButton>*@
 						</MudPaper>
 					</MudItem>
@@ -115,7 +108,7 @@
 					<MudItem xs="12" md="6" lg="3" xl="3">
 						<MudPaper Elevation="4" Class="p-3 text-center">
 							<MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Class="mb-3" />
-							<div class="mb-1">Your <b>Total Trips : @driverEarnings!.totalTrips.ToString("N0")</b></div>
+							<div class="mb-1"><b>Total Trips : @driverEarnings!.totalTrips.ToString("N0")</b></div>
 						</MudPaper>
 					</MudItem>
 				</MudGrid>
@@ -200,43 +193,6 @@
 		loadDriverFunc = false;
 		StateHasChanged();
 	}
-
-	//public void ToggleOpenDelete()
-	//{
-	//	if (_isOpenDelete)
-	//	{
-	//		_isOpenDelete = false;
-	//	}
-	//	else
-	//		_isOpenDelete = true;
-	//}
-
-	//public async Task Delete()
-	//{
-	//	loading = true;
-	//	globalResponse = await _apiService.DeleteUser(deleteModel);
-	//	if (globalResponse.statusCode == 200)
-	//	{
-	//		Snackbar.Add("User Deleteed successfully", Severity.Success, config =>
-	//		{
-	//			config.Icon = Icons.Material.Filled.Done;
-	//			config.IconColor = Color.Warning;
-	//			config.IconSize = Size.Small;
-	//		});
-	//		_navMgr.NavigateTo("/login");
-	//	}
-	//	else
-	//	{
-	//		Snackbar.Add(globalResponse.message, Severity.Error, config =>
-	//		{
-	//			config.Icon = Icons.Material.Filled.Error;
-	//			config.IconColor = Color.Warning;
-	//			config.IconSize = Size.Small;
-	//		});
-	//	}
-	//	loading = false;
-	//}
-
 	Random random = new Random();
 	public void RandomizeData()
 	{

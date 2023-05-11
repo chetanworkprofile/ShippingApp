@@ -1,4 +1,4 @@
-﻿@page "/getUsers"
+﻿@page "/getDrivers"
 
 @attribute [Authorize(Roles = "admin")]
 <PageTitle>Shipment App</PageTitle>
@@ -17,6 +17,7 @@
                         <MudTh>Email</MudTh>
                         <MudTh>Contact No.</MudTh>
                         <MudTh>Address</MudTh>
+                        <MudTh>Action</MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Id">@context.userId</MudTd>
@@ -24,6 +25,9 @@
                         <MudTd DataLabel="Email">@context.email</MudTd>
                         <MudTd DataLabel="Contact No.">@context.contactNo</MudTd>
                         <MudTd DataLabel="Address">@context.address</MudTd>
+                        <MudTd DataLabel="Action">
+                            <MudFab Class="col-1" Color="Color.Default" StartIcon="@Icons.Material.Filled.Person" OnClick="() => NavigateToProfile(context.userId)" />
+                        </MudTd>
                     </RowTemplate>
                 </MudTable>
                 <nav aria-label="Page navigation example" class="align-items-center">
@@ -83,22 +87,11 @@
         await GetPersons(1, searchText);
     }
 
-    //private async Task Delete(Person person)
-    //{
-    //    bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
-    //    if (confirmed)
-    //    {
-    //        var result = await http.DeleteFromJsonAsync<Status>($"api/person/delete/{person.Id}");
-    //        if (result.StatusCode == 1)
-    //            await GetPersons();
-    //    }
-    //}
-
     private async Task GetPersons(int pageNo = 1, string? search = null)
     {
         try
         {
-            result = await _apiService.GetUsers(pageNumber: pageNo,userType: "client", search: search);
+            result = await _apiService.GetUsers(pageNumber: pageNo,userType: "deliveryBoy", search: search);
             loading = false;
             if (result.statusCode == 401)
             {
@@ -123,12 +116,17 @@
             Snackbar.Add(ex.Message, Severity.Error);
             StateHasChanged();
         }
-        
+
     }
 
     protected override async Task OnInitializedAsync()
     {
         await GetPersons();
+    }
+
+    void NavigateToProfile(Guid userId)
+    {
+        _navMgr.NavigateTo($"adminGetDriverProfile/{userId}");
     }
 
 }
