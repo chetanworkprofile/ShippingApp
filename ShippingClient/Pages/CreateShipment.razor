@@ -251,13 +251,13 @@
     string searchProductType = "";
     string searchContainerType = "";
 
-    private async Task HandleKeyDown(KeyboardEventArgs e)
+    private void HandleKeyDown(KeyboardEventArgs e)
     {
         Snackbar.Clear();
 
         if (e.Key == "Enter")
         {
-            await ToggleOpen();
+            ToggleOpen();
         }
     }
 

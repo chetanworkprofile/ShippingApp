@@ -18,6 +18,23 @@
                             <InputText name="type" class="form-control" @bind-Value="checkpointModel.checkpointName" />
                             <ValidationMessage For="@(()=>checkpointModel.checkpointName)" />
                         </div>
+                        <div class="row" style="padding-top:10px">
+                            <div class="col-md">
+                                <label for="type">Select Parent CheckPoint</label>
+                                <input type="text" list="list-containerTypes" class="form-control" placeholder="search name" @bind="parentCheckoint" @bind:event="oninput" />
+                                <datalist id="list-containerTypes">
+                                    @if (listCheckpoints != null)
+                                    {
+                                        foreach (var a in listCheckpoints)
+                                        {
+                                            {
+                                                <option value="@a.checkpointName" />
+                                            }
+                                        }
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
                         <div class="my-2">
                             <button disabled="@IsSpin" type="submit" class="btn btn-primary">
                                 @if (IsSpin)
@@ -52,6 +69,8 @@
     public static Models.AddCheckpoint checkpointModel = new Models.AddCheckpoint();
     GlobalResponse addResponse = new();
     [Inject] ISnackbar Snackbar { get; set; }
+    List<Checkpoints> listCheckpoints = new();
+    string parentCheckoint = "";
     private bool loading;
     private bool IsSpin = false;
 
@@ -61,6 +80,14 @@
         {
             var d = await jsRuntime.InvokeAsync<object>("initialize", null);
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        GlobalResponse temp = await _apiService.GetCheckpoints();
+        var obj = JsonSerializer.Serialize(temp.data);
+        listCheckpoints = JsonSerializer.Deserialize<List<Checkpoints>>(obj);
+        return;
     }
 
     [JSInvokable]
@@ -73,7 +100,7 @@
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
         Snackbar.Clear();
-        
+
         if (e.Key == "Enter")
         {
             await DoAddCheckpoint();
@@ -84,7 +111,8 @@
     {
         //loading = true;
         IsSpin = true;
-        Console.WriteLine(IsSpin);
+        //Console.WriteLine(IsSpin);
+        checkpointModel.parentCheckpointId = listCheckpoints.Where(s => s.checkpointName == parentCheckoint).Select(s => s.checkpointId).FirstOrDefault();
         StateHasChanged();
         try
         {
@@ -113,6 +141,8 @@
                 });
             }
             checkpointModel.checkpointName = "";
+            parentCheckoint = "";
+            
             IsSpin = false;
             Console.WriteLine(IsSpin);
             StateHasChanged();

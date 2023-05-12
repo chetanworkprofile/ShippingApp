@@ -69,9 +69,44 @@
     protected override async Task OnInitializedAsync()
     {
         await GetShipmentsTypesList();
+        await SocketFunctions();
         //StateHasChanged();
     }
+    public async Task SocketFunctions()
+    {
+        HubConnection hub = socket.GetHubConnection();
+        if (hub == null)
+        {
+            await socket.Connect();
+        }
+        hub = socket.GetHubConnection();
+        //Console.WriteLine("helo from hub var" + hub);
 
+        hub.On("UserConnected", () =>
+        {
+            Console.WriteLine("user fxn");
+        });
+        hub.On("refresh", () =>
+        {
+            Snackbar.Clear();
+            var body =
+            Snackbar.Add($"<p>New Shipment Added at Your location</p>", Severity.Success, config =>
+            {
+                config.Icon = Icons.Material.Filled.DeliveryDining;
+                config.IconColor = Color.Warning;
+                config.IconSize = Size.Large;
+                config.Action = "Go To List";
+                config.ActionColor = Color.Primary;
+                config.Onclick = snackbar =>
+                {
+                    _navMgr.NavigateTo("/driverGetNotification");
+                    return Task.CompletedTask;
+                };
+            });
+            //_navMgr.NavigateTo("/driverGetNotification");
+            Console.WriteLine("refresh fxn");
+        });
+    }
     async Task GetShipmentsTypesList()
     {
         try

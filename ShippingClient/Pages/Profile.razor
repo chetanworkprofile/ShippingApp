@@ -263,8 +263,8 @@
 	DeleteUser deleteModel = new();
 
 	GlobalResponse res = new();
-        GetDriverEarnings? driverEarnings = new();
-        GetAdminEarnings? adminEarnings = new();
+	GetDriverEarnings? driverEarnings = new();
+	GetAdminEarnings? adminEarnings = new();
 	GetAdminEarningsForChart? adminEarningsForChart = new();
 
 	private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
@@ -297,9 +297,47 @@
 			_navMgr.NavigateTo("/logout");
 			return;
 		}
+		await SocketFunctions();
 		userModel = getUserResponse.data;
 		StateHasChanged();
+
 	}
+
+	public async Task SocketFunctions()
+    {
+        HubConnection hub = socket.GetHubConnection();
+        if (hub == null)
+        {
+            await socket.Connect();
+        }
+        hub = socket.GetHubConnection();
+        //Console.WriteLine("helo from hub var" + hub);
+
+        hub.On("UserConnected", () =>
+        {
+            Console.WriteLine("user fxn");
+        });
+        hub.On("refresh", () =>
+        {
+            Snackbar.Clear();
+            var body =
+            Snackbar.Add($"<p>New Shipment Added at Your location</p>", Severity.Success, config =>
+            {
+                config.Icon = Icons.Material.Filled.DeliveryDining;
+                config.IconColor = Color.Warning;
+                config.IconSize = Size.Large;
+                config.Action = "Go To List";
+                config.ActionColor = Color.Primary;
+                config.Onclick = snackbar =>
+                {
+                    _navMgr.NavigateTo("/driverGetNotification");
+                    return Task.CompletedTask;
+                };
+            });
+            //_navMgr.NavigateTo("/driverGetNotification");
+            Console.WriteLine("refresh fxn");
+        });
+    }
 
 	private async Task InitializeForDriver()
 	{

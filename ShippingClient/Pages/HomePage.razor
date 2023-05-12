@@ -200,24 +200,61 @@
     private bool enableSwipeGesture = true;
     private bool autocycle = true;
     private Transition transition = Transition.Slide;
-
+    [Inject] ISnackbar Snackbar { get; set; }
     private static HubConnection? hubConnection;
     private string messages = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-         //redirect to home if already logged in
+        //redirect to home if already logged in
         if (_authService.GetToken() != null)
         {
             _navMgr.NavigateTo("/login", true);
         }
+        await socketfxn();
+        //HubConnection hub = socket.GetHubConnection();
+        //if (hub == null)
+        //{
+        //    await socket.Connect();
+        //}
+        //hub = socket.GetHubConnection();
+        //Console.WriteLine("helo from hub var" + hub);
+        //Connect();
+    }
+
+    public async Task socketfxn()
+    {
         HubConnection hub = socket.GetHubConnection();
         if (hub == null)
         {
             await socket.Connect();
         }
         hub = socket.GetHubConnection();
-        Console.WriteLine("helo from hub var" + hub);
-        //Connect();
+        //Console.WriteLine("helo from hub var" + hub);
+
+        hub.On("UserConnected", () =>
+        {
+            Console.WriteLine("user fxn");
+        });
+        hub.On("refresh", () =>
+        {
+            Snackbar.Clear();
+            var body =
+            Snackbar.Add($"<p>New Shipment Added at Your location</p>", Severity.Success, config =>
+            {
+                config.Icon = Icons.Material.Filled.DeliveryDining;
+                config.IconColor = Color.Warning;
+                config.IconSize = Size.Large;
+                config.Action = "Go To List";
+                config.ActionColor = Color.Primary;
+                config.Onclick = snackbar =>
+                {
+                    _navMgr.NavigateTo("/driverGetNotification");
+                    return Task.CompletedTask;
+                };
+            });
+            //_navMgr.NavigateTo("/driverGetNotification");
+            Console.WriteLine("refresh fxn");
+        });
     }
 }
